@@ -1,0 +1,94 @@
+---
+title: "Introduction to the tidyverse"
+author: |
+        | Christopher Skovron
+        | Northwestern University 
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  revealjs::revealjs_presentation: 
+    theme: simple
+    highlight: haddock
+    center: false
+    transition: none
+    #css: reveal.css
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+setwd('~/Dropbox/tidyverse-workshop/')
+```
+
+
+          
+# The tidyverse: Let's get organized          
+          
+## A new and changing set of tools
+
+- An "opinionated" set of R packages
+- A dogma about "tidy" data organization and code
+- Rigid but the best current approach for a lot of reasons
+
+## Core packages
+
+- `ggplot2` - visualization
+- `dplyr` - data wrangling
+- `tidyr` - data cleaning and tidying
+- `readr` - read in data
+- `purrr` - functional programming
+- `tibble` - tidy version of data frames
+- `stringr` - strings and text 
+- `forcats` - better living through factors
+
+## Others that play well with tidyverse (partial list)
+
+- `broom` - tidy model outputs
+- `lubridate` - work with dates and times
+- `httr` - scrape web APIs
+- `rvest` - web scraping
+
+## The tidyverse is constantly evolving
+
+- It's an official RStudio product, so watch their website
+- Easy install and load:
+  - `install.packages(tidyverse)`
+  - `library(tidyverse)`
+  
+  
+# The holy text of the tidyverse
+
+![](R4dsCover.png)
+
+# Read data: `readr`
+
+- Can largely replace `foreign` for reading in data
+- Advantages: Speed, flexibility, customization
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Visualize data: `ggplot2`
+
+## The grammar of graphics
+- `ggplot2` is the subject of its own workshop
+- It plays very nicely with tidy data
+
+
+## Pipe into `ggplot()`
+
+
+
+
+
+
+
