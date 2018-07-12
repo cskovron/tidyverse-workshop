@@ -1,0 +1,53 @@
+---
+title: "Intro to tidyverse: What is the tidyverse?"
+author: "Christopher Skovron"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+params:
+  notes: no
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+notes<-params$notes
+```
+
+# What is tidyverse?
+
+The tidyverse is a set of packages that are useful for essential data science tasks like preparing and cleaning data, manipulating data, and visualization. The packages are designed to "play well together" and have similar structures. Development of the tidyverse is centered around RStudio.
+
+
+# R for Data Science, the sacred text of the tidyverse 
+
+![](../images/R4dsCover.png)
+
+
+## Key packages of the tidyverse
+![](../images/download-2.jpg)
+
+
+
+
+# Tidy data principles 
+
+![](../images/data-science-explore.png)
+
+
+
+# Key concepts: Chaining commands with the pipe 
+
+A key feature of the tidyverse is that it aims to clean up your R code by using a pip operator to chain commands together. The pipe looks like this.
+
+![](../images/magrittr.png)
+
+Those are gnarly characters to type, but fortunately RStudio has a keyboard shortcut, CMD+SHIFT+M (CTRL+SHIFT+M on Windows) to quickly type a pipe for you. 
+
+"Dataframe first, dataframe once"
