@@ -1,6 +1,6 @@
-# Intro to R Workshop Materials
+# Intro to tidyverse Workshop Materials
 
-Materials for Northwestern [Research Computing Services](http://www.it.northwestern.edu/research/) workshop.  
+Materials for Northwestern [Research Computing Services](http://www.it.northwestern.edu/research/) workshop, July 2018. 
 
 # Software and Files
 
@@ -52,3 +52,6 @@ An extensive list of good R resources can be found in the [main R workshop repos
 
 
 
+# Acknolwedgements
+
+Materials in this workshop have been lifted in large part from [R for Data Science](http://r4ds.had.co.nz/). I also rely on Christina Maimone’s Intro to R workshop for the backbone of some of these materials. 
