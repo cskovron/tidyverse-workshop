@@ -21,13 +21,17 @@ setwd('~/Dropbox/tidyverse-workshop/')
 
 
           
-# The tidyverse: Let's get organized          
+## The tidyverse: Let's get organized          
           
 ## A new and changing set of tools
 
 - An "opinionated" set of R packages
 - A dogma about "tidy" data organization and code
 - Rigid but the best current approach for a lot of reasons
+
+## Core packages
+
+![](../images/hexes.jpg)
 
 ## Core packages
 
@@ -55,9 +59,20 @@ setwd('~/Dropbox/tidyverse-workshop/')
   - `library(tidyverse)`
   
   
-# The holy text of the tidyverse
+## The holy text of the tidyverse
 
-![](R4dsCover.png)
+![](../images/R4dsCover.png)
+
+
+
+## This workshop is a partial walkthrough of R4DS
+
+- Adding in additional lessons on some of my favorite tidy analysis tasks
+- Focus on `dplyr` 
+
+
+
+
 
 # Read data: `readr`
 
@@ -73,11 +88,23 @@ setwd('~/Dropbox/tidyverse-workshop/')
 
 
 
+## Verbs and pipes 
+
+
+
+![](../images/magrittr.png)
 
 
 
 
-# Visualize data: `ggplot2`
+
+
+
+
+
+
+
+## Visualize data: `ggplot2`
 
 ## The grammar of graphics
 - `ggplot2` is the subject of its own workshop
