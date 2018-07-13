@@ -1,5 +1,5 @@
 ---
-title: "Introduction to the tidyverse"
+title: "Introduction to the tidyverse: tidying data with `tidyr`"
 author: |
         | Christopher Skovron
         | Northwestern University 

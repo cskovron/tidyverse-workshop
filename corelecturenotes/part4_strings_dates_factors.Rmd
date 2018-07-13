@@ -1,0 +1,14 @@
+---
+title: "Intro to tidyverse: Data Wrangling with tibbles, readr, and tidyr"
+author: "Christopher Skovron"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+params:
+  notes: no
+---
+
+    
