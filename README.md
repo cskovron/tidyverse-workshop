@@ -23,16 +23,13 @@ Download all of the materials to your laptop.  See [Downloading from GitHub refe
 
 ### Option 2: RStudio Cloud
 
-Go to https://rstudio.cloud and log in (or create an account if needed).  Click on Your Workspace in the left Menu.  Then make sure you are on the Projects tab, and click the blue button for New Project.  Choose the option of creating one from a GitHub repo.  The repo address is https://github.com/nuitrcs/r_intro_june2018.  This will take a few moments to copy files from this repository.  You'll then need to install packages.  Open `packagelist.r` and run the code.  The tidyverse package will take a while to install.  
+Go to https://rstudio.cloud and log in (or create an account if needed).  Click on Your Workspace in the left Menu.  Then make sure you are on the Projects tab, and click the blue button for New Project.  Choose the option of creating one from a GitHub repo.  The repo address is https://github.com/cskovron/tidyverse-workshop.  This will take a few moments to copy files from this repository.  You'll then need to install packages.  Open `packagelist.r` and run the code.  The tidyverse package will take a while to install.  
 
 You can use this space like you would your RStudio on own computer, except you can only access the files that are part of the project and save files within the project.
 
 ## Types of Files
 
-The main materials are slides. HTML and PDF versions are available: 
-
-[[XXXX]]
-
+The main materials are slides. HTML and PDF versions are available in the slides directory of the repository.
 
 Exercises we do during the workshop are either in the slides or in .R files in the [exercises directory](/exercises).
 
