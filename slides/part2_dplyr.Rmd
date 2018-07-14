@@ -22,21 +22,7 @@ setwd('~/Dropbox/tidyverse-workshop/')
 
           
 ## dplyr: data manipulation 
-         
-
----
-title: "Intro to tidyverse: Data Manipulation with dplyr"
-author: "Christopher Skovron"
-date: "`r Sys.Date()`"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
-    toc_depth: 3
-params:
-  notes: no
----
-
+      
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -48,10 +34,10 @@ notes<-params$notes
 
 ## dplyr is the main workhorse of the tidyverse
 
+This lesson draws on Chapter 5 of R for Data Science. 
 
-This lesson draws on Chapter XX of R for Data Science. 
 
-In this chapter we're going to focus on how to use the dplyr package, another core member of the tidyverse. We'll illustrate the key ideas using data from the nycflights13 package, and use ggplot2 to help us understand the data. 
+## Example data: nycflights13
 
 ```{r setup, message = FALSE}
 library(nycflights13)
@@ -83,7 +69,7 @@ You might also have noticed the row of three (or four) letter abbreviations unde
 
 * `dttm` stands for date-times (a date + a time).
 
-There are three other common types of variables that aren't used in this dataset but you'll encounter later in the book:
+## Other kinds of variables you may see in a tibble
 
 * `lgl` stands for logical, vectors that contain only `TRUE` or `FALSE`.
 
@@ -92,15 +78,17 @@ There are three other common types of variables that aren't used in this dataset
 
 * `date` stands for dates.
 
-## dplyr basics
+## dplyr verbs
 
-In this chapter you are going to learn the five key dplyr functions that allow you to solve the vast majority of your data manipulation challenges:
 
 * Pick observations by their values (`filter()`).
 * Reorder the rows (`arrange()`).
 * Pick variables by their names (`select()`).
 * Create new variables with functions of existing variables (`mutate()`).
 * Collapse many values down to a single summary (`summarise()`).
+
+
+## We will frequently used these on grouped data 
 
 These can all be used in conjunction with `group_by()` which changes the scope of each function from operating on the entire dataset to operating on it group-by-group. These six functions provide the verbs for a language of data manipulation.
 
@@ -131,22 +119,20 @@ When you run that line of code, dplyr executes the filtering operation and retur
 jan1 <- filter(flights, month == 1, day == 1)
 ```
 
-R either prints out the results, or saves them to a variable. If you want to do both, you can wrap the assignment in parentheses:
 
-```{r}
-(dec25 <- filter(flights, month == 12, day == 25))
-```
 
-### Comparisons
+## Comparisons
 
 To use filtering effectively, you have to know how to select the observations that you want using the comparison operators. R provides the standard suite: `>`, `>=`, `<`, `<=`, `!=` (not equal), and `==` (equal). 
 
-When you're starting out with R, the easiest mistake to make is to use `=` instead of `==` when testing for equality. When this happens you'll get an informative error:
+Remember to use `=` instead of `==` when testing for equality. When this happens you'll get an informative error:
 
 ```{r, error = TRUE}
 filter(flights, month = 1)
 ```
 
+
+## Issues with floaitng point numbers 
 There's another common problem you might encounter when using `==`: floating point numbers. These results might surprise you!
 
 ```{r}
@@ -154,6 +140,8 @@ sqrt(2) ^ 2 == 2
 1/49 * 49 == 1
 ```
 
+
+## Use `near()` instead
 Computers use finite precision arithmetic (they obviously can't store an infinite number of digits!) so remember that every number you see is an approximation. Instead of relying on `==`, use `near()`:
 
 ```{r}
@@ -161,23 +149,18 @@ near(sqrt(2) ^ 2,  2)
 near(1 / 49 * 49, 1)
 ```
 
-### Logical operators
+## Logical operators
 
-Multiple arguments to `filter()` are combined with "and": every expression must be true in order for a row to be included in the output. For other types of combinations, you'll need to use Boolean operators yourself: `&` is "and", `|` is "or", and `!` is "not". Figure \@ref(fig:bool-ops) shows the complete set of Boolean operations.
+Multiple arguments to `filter()` are combined with "and": every expression must be true in order for a row to be included in the output. For other types of combinations, you'll need to use Boolean operators yourself: `&` is "and", `|` is "or", and `!` is "not". 
 
-```{r bool-ops, echo = FALSE, fig.cap = "Complete set of boolean operations. `x` is the left-hand circle, `y` is the right-hand circle, and the shaded region show which parts each operator selects."}
-knitr::include_graphics("diagrams/transform-logical.png")
-```
-
-The following code finds all flights that departed in November or December:
+## Find all flights that departed in November or December:
 
 ```{r, eval = FALSE}
 filter(flights, month == 11 | month == 12)
 ```
 
-The order of operations doesn't work like English. You can't write `filter(flights, month == 11 | 12)`, which you might literally translate into  "finds all flights that departed in November or December". Instead it finds all months that equal `11 | 12`, an expression that evaluates to `TRUE`. In a numeric context (like here), `TRUE` becomes one, so this finds all flights in January, not November or December. This is quite confusing!
 
-A useful short-hand for this problem is `x %in% y`. This will select every row where `x` is one of the values in `y`. We could use it to rewrite the code above:
+## Another way to write it using `%in%
 
 ```{r, eval = FALSE}
 nov_dec <- filter(flights, month %in% c(11, 12))

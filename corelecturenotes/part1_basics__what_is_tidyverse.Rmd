@@ -31,7 +31,7 @@ The tidyverse is a set of packages that are useful for essential data science ta
 
 
 ## Key packages of the tidyverse
-![](../images/download-2.jpg)
+![](../images/hexes.jpg)
 
 
 
@@ -39,6 +39,8 @@ The tidyverse is a set of packages that are useful for essential data science ta
 # Tidy data principles 
 
 ![](../images/data-science-explore.png)
+
+
 
 
 
@@ -50,4 +52,22 @@ A key feature of the tidyverse is that it aims to clean up your R code by using 
 
 Those are gnarly characters to type, but fortunately RStudio has a keyboard shortcut, CMD+SHIFT+M (CTRL+SHIFT+M on Windows) to quickly type a pipe for you. 
 
+A good mantra for effectively using the pipe in your
 "Dataframe first, dataframe once"
+
+If you don't use the pipe, your code, *even if you use dplyr*, can end up with a horrid-looking and unintiutive structure of nested parentheses and objects called in an unintuitive order:
+
+```{r, eval = FALSE}
+car_data <- 
+  transform(aggregate(. ~ cyl, 
+                      data = subset(mtcars, hp > 100), 
+                      FUN = function(x) round(mean(x, 2))), 
+            kpl = mpg*0.4251)
+```
+
+With the pipe, you can simpify this to a 
+
+
+Some people read ` %>% ` as "then" when they are reading their code aloud. 
+
+

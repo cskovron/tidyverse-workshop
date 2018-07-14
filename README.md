@@ -31,9 +31,9 @@ You can use this space like you would your RStudio on own computer, except you c
 
 The main materials are slides. HTML and PDF versions are available in the slides directory of the repository.
 
-Exercises we do during the workshop are either in the slides or in .R files in the [exercises directory](/exercises).
+Exercises taken from the R for Data Science text  are either in the slides or in .Rmd files in the [r4dsexercises directory](/r4dsexercises). For solutions to the book exercises, consult [Jeffrey Arnold’s solutions](https://jrnold.github.io/r4ds-exercise-solutions/), some of which I have reproduced as .Rmd files in [/r4dsexercises/solutions](/r4dsexercises/solutions).
 
-Reference materials and independent practice exercises are written in RMarkdown (*.Rmd).  You can open these files directly in RStudio and run the code chunks.  The RMarkdown files have also been converted to html files for easy viewing.  Exercise files have one RMarkdown file (with answers) and two html files (one with and one without answers).  Links to the html files are in the [coreexercises directory](/coreexercises).
+Reference materials and independent practice exercises are written in RMarkdown (*.Rmd).  You can open these files directly in RStudio and run the code chunks.  The RMarkdown files have also been converted to html files for easy viewing.  Additional exercise files are taken from RStudio’s “Master the tidyverse” short course. .Rmd files with the excercises are in the [master-tidyverse-exercises directory](/master-tidyverse-exercises) and .Rmd files with solutions to those are in the [solutions subdirectory](/master-tidyverse-exercises/solutions).
 
 ### Opening/Downloading Files
 
@@ -42,13 +42,11 @@ RMarkdown files can be previewed in GitHub, but they won't include the output of
 REMEMBER: if downloading individual files from GitHub, you want to download the RAW version of a file.  Otherwise, it's often better to download everything together by using the green clone/download button for the entire repository.  [Downloading from GitHub reference](https://sites.northwestern.edu/summerworkshops/resources/downloading-from-github/).
 
 
-
 # Other Resources
 
 An extensive list of good R resources can be found in the [main R workshop repository](https://github.com/nuitrcs/rworkshops).
 
 
-
-# Acknolwedgements
+# Acknowledgements
 
 Materials in this workshop have been lifted in large part from [R for Data Science](http://r4ds.had.co.nz/). I also rely on Christina Maimone’s Intro to R workshop for the backbone of some of these materials. 
