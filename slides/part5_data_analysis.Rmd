@@ -1,0 +1,25 @@
+---
+title: "Introduction to the tidyverse: Data analysis with `infer` and `broom`""
+author: |
+        | Christopher Skovron
+        | Northwestern University 
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  revealjs::revealjs_presentation: 
+    theme: simple
+    highlight: haddock
+    center: false
+    transition: none
+    #css: reveal.css
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+setwd('~/Dropbox/tidyverse-workshop/')
+```
+
+
+## HOw do I do tidy data analysis? 
+
+Everything we've seen so far has been nicely organized

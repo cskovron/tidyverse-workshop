@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="dcterms.date" content="2018-07-15" />
+  <title>Introduction to the tidyverse: data manipulation with dplyr</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="part2_dplyr_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+</style>
+
+<link rel="stylesheet" href="part2_dplyr_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Introduction to the tidyverse: data manipulation with <code>dplyr</code></h1>
+    <h2 class="author"><div style="white-space: pre-line;">Christopher Skovron
+Northwestern University</div></h2>
+    <h3 class="date">July 15, 2018</h3>
+</section>
+
+<section id="dplyr-data-manipulation" class="slide level2">
+<h2>dplyr: data manipulation</h2>
+</section>
+<section id="dplyr-is-the-main-workhorse-of-the-tidyverse" class="slide level2">
+<h2>dplyr is the main workhorse of the tidyverse</h2>
+<p>This lesson draws on Chapter 5 of R for Data Science.</p>
+</section>
+<section id="example-data-nycflights13" class="slide level2">
+<h2>Example data: nycflights13</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#install.packages(c(&#39;nycflights13&#39;, &#39;tidyverse&#39;))</span>
+<span class="kw">library</span>(nycflights13)</code></pre></div>
+<pre><code>## Warning: package &#39;nycflights13&#39; was built under R version 3.4.4</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)</code></pre></div>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.3</code></pre>
+</section>
+<section id="note-conflicts-when-you-load-the-tidyverse" class="slide level2">
+<h2>Note conflicts when you load the tidyverse</h2>
+<p>Take careful note of the conflicts message that’s printed when you load the tidyverse. It tells you that dplyr overwrites some functions in base R. If you want to use the base version of these functions after loading dplyr, you’ll need to use their full names: <code>stats::filter()</code> and <code>stats::lag()</code>.</p>
+</section>
+<section id="nycflights13" class="slide level2">
+<h2>nycflights13</h2>
+<p>Example data: <code>nycflights13::flights</code>. This data frame contains all 336,776 flights that departed from New York City in 2013.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     1      517            515        2.      830
+##  2  2013     1     1      533            529        4.      850
+##  3  2013     1     1      542            540        2.      923
+##  4  2013     1     1      544            545       -1.     1004
+##  5  2013     1     1      554            600       -6.      812
+##  6  2013     1     1      554            558       -4.      740
+##  7  2013     1     1      555            600       -5.      913
+##  8  2013     1     1      557            600       -3.      709
+##  9  2013     1     1      557            600       -3.      838
+## 10  2013     1     1      558            600       -2.      753
+## # ... with 336,766 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</section>
+<section id="it-prints-as-a-tibble" class="slide level2">
+<h2>It prints as a tibble</h2>
+<p>You might also have noticed the row of three (or four) letter abbreviations under the column names. These describe the type of each variable:</p>
+<ul>
+<li><p><code>int</code> stands for integers.</p></li>
+<li><p><code>dbl</code> stands for doubles, or real numbers.</p></li>
+<li><p><code>chr</code> stands for character vectors, or strings.</p></li>
+<li><p><code>dttm</code> stands for date-times (a date + a time).</p></li>
+</ul>
+</section>
+<section id="other-kinds-of-variables-you-may-see-in-a-tibble" class="slide level2">
+<h2>Other kinds of variables you may see in a tibble</h2>
+<ul>
+<li><p><code>lgl</code> stands for logical, vectors that contain only <code>TRUE</code> or <code>FALSE</code>.</p></li>
+<li><p><code>fctr</code> stands for factors, which R uses to represent categorical variables with fixed possible values.</p></li>
+<li><p><code>date</code> stands for dates.</p></li>
+</ul>
+</section>
+<section id="dplyr-verbs" class="slide level2">
+<h2>dplyr verbs</h2>
+<ul>
+<li>Pick observations by their values (<code>filter()</code>).</li>
+<li>Reorder the rows (<code>arrange()</code>).</li>
+<li>Pick variables by their names (<code>select()</code>).</li>
+<li>Create new variables with functions of existing variables (<code>mutate()</code>).</li>
+<li>Collapse many values down to a single summary (<code>summarise()</code>).</li>
+</ul>
+</section>
+<section id="we-will-frequently-used-these-on-grouped-data" class="slide level2">
+<h2>We will frequently used these on grouped data</h2>
+<p>These can all be used in conjunction with <code>group_by()</code> which changes the scope of each function from operating on the entire dataset to operating on it group-by-group. These six functions provide the verbs for a language of data manipulation.</p>
+</section>
+<section id="how-dplyr-verbs-work" class="slide level2">
+<h2>How dplyr verbs work</h2>
+<p>All verbs work similarly:</p>
+<ol type="1">
+<li><p>The first argument is a data frame.</p></li>
+<li><p>The subsequent arguments describe what to do with the data frame, using the variable names (without quotes).</p></li>
+<li><p>The result is a new data frame.</p></li>
+</ol>
+<p>Together these properties make it easy to chain together multiple simple steps to achieve a complex result. Let’s dive in and see how these verbs work.</p>
+</section>
+<section id="choose-rows-with-filter" class="slide level2">
+<h2>Choose rows with <code>filter()</code></h2>
+<p>For example, we can select all flights on January 1st with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, month <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, day <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## # A tibble: 842 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     1      517            515        2.      830
+##  2  2013     1     1      533            529        4.      850
+##  3  2013     1     1      542            540        2.      923
+##  4  2013     1     1      544            545       -1.     1004
+##  5  2013     1     1      554            600       -6.      812
+##  6  2013     1     1      554            558       -4.      740
+##  7  2013     1     1      555            600       -5.      913
+##  8  2013     1     1      557            600       -3.      709
+##  9  2013     1     1      557            600       -3.      838
+## 10  2013     1     1      558            600       -2.      753
+## # ... with 832 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>When you run that line of code, dplyr executes the filtering operation and returns a new data frame. dplyr functions never modify their inputs, so if you want to save the result, you’ll need to use the assignment operator, <code>&lt;-</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">jan1 &lt;-<span class="st"> </span><span class="kw">filter</span>(flights, month <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, day <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+</section>
+<section id="comparisons" class="slide level2">
+<h2>Comparisons</h2>
+<p>To use filtering effectively, you have to know how to select the observations that you want using the comparison operators. R provides the standard suite: <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>!=</code> (not equal), and <code>==</code> (equal).</p>
+<p>Remember to use <code>=</code> instead of <code>==</code> when testing for equality. When this happens you’ll get an informative error:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, <span class="dt">month =</span> <span class="dv">1</span>)</code></pre></div>
+<pre><code>## Error: `month` (`month = 1`) must not be named, do you need `==`?</code></pre>
+</section>
+<section id="issues-with-floaitng-point-numbers" class="slide level2">
+<h2>Issues with floaitng point numbers</h2>
+<p>There’s another common problem you might encounter when using <code>==</code>: floating point numbers. These results might surprise you!</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sqrt</span>(<span class="dv">2</span>) <span class="op">^</span><span class="st"> </span><span class="dv">2</span> <span class="op">==</span><span class="st"> </span><span class="dv">2</span></code></pre></div>
+<pre><code>## [1] FALSE</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span><span class="op">/</span><span class="dv">49</span> <span class="op">*</span><span class="st"> </span><span class="dv">49</span> <span class="op">==</span><span class="st"> </span><span class="dv">1</span></code></pre></div>
+<pre><code>## [1] FALSE</code></pre>
+</section>
+<section id="use-near-instead" class="slide level2">
+<h2>Use <code>near()</code> instead</h2>
+<p>Computers use finite precision arithmetic (they obviously can’t store an infinite number of digits!) so remember that every number you see is an approximation. Instead of relying on <code>==</code>, use <code>near()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">near</span>(<span class="kw">sqrt</span>(<span class="dv">2</span>) <span class="op">^</span><span class="st"> </span><span class="dv">2</span>,  <span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">near</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span><span class="dv">49</span> <span class="op">*</span><span class="st"> </span><span class="dv">49</span>, <span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+</section>
+<section id="logical-operators" class="slide level2">
+<h2>Logical operators</h2>
+<p>Multiple arguments to <code>filter()</code> are combined with “and”: every expression must be true in order for a row to be included in the output. For other types of combinations, you’ll need to use Boolean operators yourself: <code>&amp;</code> is “and”, <code>|</code> is “or”, and <code>!</code> is “not”.</p>
+</section>
+<section id="find-all-flights-that-departed-in-november-or-december" class="slide level2">
+<h2>Find all flights that departed in November or December:</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, month <span class="op">==</span><span class="st"> </span><span class="dv">11</span> <span class="op">|</span><span class="st"> </span>month <span class="op">==</span><span class="st"> </span><span class="dv">12</span>)</code></pre></div>
+</section>
+<section id="another-way-to-write-it-using-in" class="slide level2">
+<h2>Another way to write it using `%in%</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nov_dec &lt;-<span class="st"> </span><span class="kw">filter</span>(flights, month <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">11</span>, <span class="dv">12</span>))</code></pre></div>
+<p>Sometimes you can simplify complicated subsetting by remembering De Morgan’s law: <code>!(x &amp; y)</code> is the same as <code>!x | !y</code>, and <code>!(x | y)</code> is the same as <code>!x &amp; !y</code>. For example, if you wanted to find flights that weren’t delayed (on arrival or departure) by more than two hours, you could use either of the following two filters:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, <span class="op">!</span>(arr_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">120</span> <span class="op">|</span><span class="st"> </span>dep_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">120</span>))
+<span class="kw">filter</span>(flights, arr_delay <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>, dep_delay <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>)</code></pre></div>
+<p>As well as <code>&amp;</code> and <code>|</code>, R also has <code>&amp;&amp;</code> and <code>||</code>. Don’t use them here! You’ll learn when you should use them in [conditional execution].</p>
+<p>Whenever you start using complicated, multipart expressions in <code>filter()</code>, consider making them explicit variables instead. That makes it much easier to check your work. You’ll learn how to create new variables shortly.</p>
+<h3 id="missing-values">Missing values</h3>
+<p>One important feature of R that can make comparison tricky are missing values, or <code>NA</code>s (“not availables”). <code>NA</code> represents an unknown value so missing values are “contagious”: almost any operation involving an unknown value will also be unknown.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span></code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">10</span> <span class="op">==</span><span class="st"> </span><span class="ot">NA</span></code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">+</span><span class="st"> </span><span class="dv">10</span></code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span></code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<p>The most confusing result is this one:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">==</span><span class="st"> </span><span class="ot">NA</span></code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<p>It’s easiest to understand why this is true with a bit more context:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Let x be Mary&#39;s age. We don&#39;t know how old she is.</span>
+x &lt;-<span class="st"> </span><span class="ot">NA</span>
+
+<span class="co"># Let y be John&#39;s age. We don&#39;t know how old he is.</span>
+y &lt;-<span class="st"> </span><span class="ot">NA</span>
+
+<span class="co"># Are John and Mary the same age?</span>
+x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
+<pre><code>## [1] NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># We don&#39;t know!</span></code></pre></div>
+<p>If you want to determine if a value is missing, use <code>is.na()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">is.na</span>(x)</code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p><code>filter()</code> only includes rows where the condition is <code>TRUE</code>; it excludes both <code>FALSE</code> and <code>NA</code> values. If you want to preserve missing values, ask for them explicitly:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="ot">NA</span>, <span class="dv">3</span>))
+<span class="kw">filter</span>(df, x <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+<pre><code>## # A tibble: 1 x 1
+##       x
+##   &lt;dbl&gt;
+## 1    3.</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(df, <span class="kw">is.na</span>(x) <span class="op">|</span><span class="st"> </span>x <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
+<pre><code>## # A tibble: 2 x 1
+##       x
+##   &lt;dbl&gt;
+## 1   NA 
+## 2    3.</code></pre>
+</section>
+<section id="arrange-rows-with-arrange" class="slide level2">
+<h2>Arrange rows with <code>arrange()</code></h2>
+<p><code>arrange()</code> changes the order of rows order. It takes a data frame and a set of column names (or more complicated expressions) to order by. If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">arrange</span>(flights, year, month, day)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     1      517            515        2.      830
+##  2  2013     1     1      533            529        4.      850
+##  3  2013     1     1      542            540        2.      923
+##  4  2013     1     1      544            545       -1.     1004
+##  5  2013     1     1      554            600       -6.      812
+##  6  2013     1     1      554            558       -4.      740
+##  7  2013     1     1      555            600       -5.      913
+##  8  2013     1     1      557            600       -3.      709
+##  9  2013     1     1      557            600       -3.      838
+## 10  2013     1     1      558            600       -2.      753
+## # ... with 336,766 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</section>
+<section id="arrange-rows-with-arrange-1" class="slide level2">
+<h2>Arrange rows with <code>arrange()</code></h2>
+<p>Use <code>desc()</code> to re-order by a column in descending order:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">arrange</span>(flights, <span class="kw">desc</span>(arr_delay))</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     9      641            900     1301.     1242
+##  2  2013     6    15     1432           1935     1137.     1607
+##  3  2013     1    10     1121           1635     1126.     1239
+##  4  2013     9    20     1139           1845     1014.     1457
+##  5  2013     7    22      845           1600     1005.     1044
+##  6  2013     4    10     1100           1900      960.     1342
+##  7  2013     3    17     2321            810      911.      135
+##  8  2013     7    22     2257            759      898.      121
+##  9  2013    12     5      756           1700      896.     1058
+## 10  2013     5     3     1133           2055      878.     1250
+## # ... with 336,766 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</section>
+<section id="arrange-rows-with-arrange-2" class="slide level2">
+<h2>Arrange rows with <code>arrange()</code></h2>
+<p>Missing values are always sorted at the end:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">2</span>, <span class="ot">NA</span>))
+<span class="kw">arrange</span>(df, x)</code></pre></div>
+<pre><code>## # A tibble: 3 x 1
+##       x
+##   &lt;dbl&gt;
+## 1    2.
+## 2    5.
+## 3   NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">arrange</span>(df, <span class="kw">desc</span>(x))</code></pre></div>
+<pre><code>## # A tibble: 3 x 1
+##       x
+##   &lt;dbl&gt;
+## 1    5.
+## 2    2.
+## 3   NA</code></pre>
+</section>
+<section id="select-columns-with-select" class="slide level2">
+<h2>Select columns with <code>select()</code></h2>
+<p><code>select()</code> chooses the columns you want out of the whole set of columns</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select columns by name</span>
+<span class="kw">select</span>(flights, year, month, day)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 3
+##     year month   day
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1  2013     1     1
+##  2  2013     1     1
+##  3  2013     1     1
+##  4  2013     1     1
+##  5  2013     1     1
+##  6  2013     1     1
+##  7  2013     1     1
+##  8  2013     1     1
+##  9  2013     1     1
+## 10  2013     1     1
+## # ... with 336,766 more rows</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select all columns between year and day (inclusive)</span>
+<span class="kw">select</span>(flights, year<span class="op">:</span>day)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 3
+##     year month   day
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1  2013     1     1
+##  2  2013     1     1
+##  3  2013     1     1
+##  4  2013     1     1
+##  5  2013     1     1
+##  6  2013     1     1
+##  7  2013     1     1
+##  8  2013     1     1
+##  9  2013     1     1
+## 10  2013     1     1
+## # ... with 336,766 more rows</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select all columns except those from year to day (inclusive)</span>
+<span class="kw">select</span>(flights, <span class="op">-</span>(year<span class="op">:</span>day))</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 16
+##    dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+##       &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+##  1      517            515        2.      830            819       11.
+##  2      533            529        4.      850            830       20.
+##  3      542            540        2.      923            850       33.
+##  4      544            545       -1.     1004           1022      -18.
+##  5      554            600       -6.      812            837      -25.
+##  6      554            558       -4.      740            728       12.
+##  7      555            600       -5.      913            854       19.
+##  8      557            600       -3.      709            723      -14.
+##  9      557            600       -3.      838            846       -8.
+## 10      558            600       -2.      753            745        8.
+## # ... with 336,766 more rows, and 10 more variables: carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</section>
+<section id="helpers-for-select" class="slide level2">
+<h2>Helpers for <code>select()</code></h2>
+<p>There are a number of helper functions you can use within <code>select()</code>:</p>
+<ul>
+<li><p><code>starts_with(&quot;abc&quot;)</code>: matches names that begin with “abc”.</p></li>
+<li><p><code>ends_with(&quot;xyz&quot;)</code>: matches names that end with “xyz”.</p></li>
+<li><p><code>contains(&quot;ijk&quot;)</code>: matches names that contain “ijk”.</p></li>
+<li><p><code>matches(&quot;(.)\\1&quot;)</code>: selects variables that match a regular expression. This one matches any variables that contain repeated characters. You’ll learn more about regular expressions in [strings].</p></li>
+<li><p><code>num_range(&quot;x&quot;, 1:3)</code> matches <code>x1</code>, <code>x2</code> and <code>x3</code>.</p></li>
+</ul>
+</section>
+<section id="use-rename-to-rename-variables" class="slide level2">
+<h2>Use <code>rename()</code> to rename variables</h2>
+<p><code>select()</code> can be used to rename variables, but it’s rarely useful because it drops all of the variables not explicitly mentioned. Instead, use <code>rename()</code>, which is a variant of <code>select()</code> that keeps all the variables that aren’t explicitly mentioned:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rename</span>(flights, <span class="dt">tail_num =</span> tailnum)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     1      517            515        2.      830
+##  2  2013     1     1      533            529        4.      850
+##  3  2013     1     1      542            540        2.      923
+##  4  2013     1     1      544            545       -1.     1004
+##  5  2013     1     1      554            600       -6.      812
+##  6  2013     1     1      554            558       -4.      740
+##  7  2013     1     1      555            600       -5.      913
+##  8  2013     1     1      557            600       -3.      709
+##  9  2013     1     1      557            600       -3.      838
+## 10  2013     1     1      558            600       -2.      753
+## # ... with 336,766 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tail_num &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>Note that it’s old_name = new_name. This always throws me off.</p>
+</section>
+<section id="add-new-variables-with-mutate" class="slide level2">
+<h2>Add new variables with <code>mutate()</code></h2>
+<p>Besides selecting sets of existing columns, it’s often useful to add new columns that are functions of existing columns. That’s the job of <code>mutate()</code>.</p>
+</section>
+<section id="make-a-smaller-version-of-the-dataset-so-we-can-see-our-work" class="slide level2">
+<h2>Make a smaller version of the dataset so we can see our work</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights_sml &lt;-<span class="st"> </span><span class="kw">select</span>(flights, 
+  year<span class="op">:</span>day, 
+  <span class="kw">ends_with</span>(<span class="st">&quot;delay&quot;</span>), 
+  distance, 
+  air_time
+)
+<span class="kw">mutate</span>(flights_sml,
+  <span class="dt">gain =</span> arr_delay <span class="op">-</span><span class="st"> </span>dep_delay,
+  <span class="dt">speed =</span> distance <span class="op">/</span><span class="st"> </span>air_time <span class="op">*</span><span class="st"> </span><span class="dv">60</span>
+)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 9
+##     year month   day dep_delay arr_delay distance air_time  gain speed
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1        2.       11.    1400.     227.    9.  370.
+##  2  2013     1     1        4.       20.    1416.     227.   16.  374.
+##  3  2013     1     1        2.       33.    1089.     160.   31.  408.
+##  4  2013     1     1       -1.      -18.    1576.     183.  -17.  517.
+##  5  2013     1     1       -6.      -25.     762.     116.  -19.  394.
+##  6  2013     1     1       -4.       12.     719.     150.   16.  288.
+##  7  2013     1     1       -5.       19.    1065.     158.   24.  404.
+##  8  2013     1     1       -3.      -14.     229.      53.  -11.  259.
+##  9  2013     1     1       -3.       -8.     944.     140.   -5.  405.
+## 10  2013     1     1       -2.        8.     733.     138.   10.  319.
+## # ... with 336,766 more rows</code></pre>
+<p>Note that you can refer to columns that you’ve just created:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mutate</span>(flights_sml,
+  <span class="dt">gain =</span> arr_delay <span class="op">-</span><span class="st"> </span>dep_delay,
+  <span class="dt">hours =</span> air_time <span class="op">/</span><span class="st"> </span><span class="dv">60</span>,
+  <span class="dt">gain_per_hour =</span> gain <span class="op">/</span><span class="st"> </span>hours
+)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 10
+##     year month   day dep_delay arr_delay distance air_time  gain hours
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1        2.       11.    1400.     227.    9. 3.78 
+##  2  2013     1     1        4.       20.    1416.     227.   16. 3.78 
+##  3  2013     1     1        2.       33.    1089.     160.   31. 2.67 
+##  4  2013     1     1       -1.      -18.    1576.     183.  -17. 3.05 
+##  5  2013     1     1       -6.      -25.     762.     116.  -19. 1.93 
+##  6  2013     1     1       -4.       12.     719.     150.   16. 2.50 
+##  7  2013     1     1       -5.       19.    1065.     158.   24. 2.63 
+##  8  2013     1     1       -3.      -14.     229.      53.  -11. 0.883
+##  9  2013     1     1       -3.       -8.     944.     140.   -5. 2.33 
+## 10  2013     1     1       -2.        8.     733.     138.   10. 2.30 
+## # ... with 336,766 more rows, and 1 more variable: gain_per_hour &lt;dbl&gt;</code></pre>
+<p>If you only want to keep the new variables, use <code>transmute()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">transmute</span>(flights,
+  <span class="dt">gain =</span> arr_delay <span class="op">-</span><span class="st"> </span>dep_delay,
+  <span class="dt">hours =</span> air_time <span class="op">/</span><span class="st"> </span><span class="dv">60</span>,
+  <span class="dt">gain_per_hour =</span> gain <span class="op">/</span><span class="st"> </span>hours
+)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 3
+##     gain hours gain_per_hour
+##    &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;
+##  1    9. 3.78           2.38
+##  2   16. 3.78           4.23
+##  3   31. 2.67          11.6 
+##  4  -17. 3.05          -5.57
+##  5  -19. 1.93          -9.83
+##  6   16. 2.50           6.40
+##  7   24. 2.63           9.11
+##  8  -11. 0.883        -12.5 
+##  9   -5. 2.33          -2.14
+## 10   10. 2.30           4.35
+## # ... with 336,766 more rows</code></pre>
+<h3 id="mutate-funs">Useful creation functions</h3>
+<p>There are many functions for creating new variables that you can use with <code>mutate()</code>. The key property is that the function must be vectorised: it must take a vector of values as input, return a vector with the same number of values as output. There’s no way to list every possible function that you might use, but here’s a selection of functions that are frequently useful:</p>
+<ul>
+<li><p>Arithmetic operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>. These are all vectorised, using the so called “recycling rules”. If one parameter is shorter than the other, it will be automatically extended to be the same length. This is most useful when one of the arguments is a single number: <code>air_time / 60</code>, <code>hours * 60 + minute</code>, etc.</p>
+<p>Arithmetic operators are also useful in conjunction with the aggregate functions you’ll learn about later. For example, <code>x / sum(x)</code> calculates the proportion of a total, and <code>y - mean(y)</code> computes the difference from the mean.</p></li>
+<li><p>Modular arithmetic: <code>%/%</code> (integer division) and <code>%%</code> (remainder), where <code>x == y * (x %/% y) + (x %% y)</code>. Modular arithmetic is a handy tool because it allows you to break integers up into pieces. For example, in the flights dataset, you can compute <code>hour</code> and <code>minute</code> from <code>dep_time</code> with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">transmute</span>(flights,
+  dep_time,
+  <span class="dt">hour =</span> dep_time <span class="op">%/%</span><span class="st"> </span><span class="dv">100</span>,
+  <span class="dt">minute =</span> dep_time <span class="op">%%</span><span class="st"> </span><span class="dv">100</span>
+)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 3
+##    dep_time  hour minute
+##       &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1      517    5.    17.
+##  2      533    5.    33.
+##  3      542    5.    42.
+##  4      544    5.    44.
+##  5      554    5.    54.
+##  6      554    5.    54.
+##  7      555    5.    55.
+##  8      557    5.    57.
+##  9      557    5.    57.
+## 10      558    5.    58.
+## # ... with 336,766 more rows</code></pre></li>
+<li><p>Logs: <code>log()</code>, <code>log2()</code>, <code>log10()</code>. Logarithms are an incredibly useful transformation for dealing with data that ranges across multiple orders of magnitude. They also convert multiplicative relationships to additive, a feature we’ll come back to in modelling.</p>
+<p>All else being equal, I recommend using <code>log2()</code> because it’s easy to interpret: a difference of 1 on the log scale corresponds to doubling on the original scale and a difference of -1 corresponds to halving.</p></li>
+<li><p>Offsets: <code>lead()</code> and <code>lag()</code> allow you to refer to leading or lagging values. This allows you to compute running differences (e.g. <code>x - lag(x)</code>) or find when values change (<code>x != lag(x))</code>. They are most useful in conjunction with <code>group_by()</code>, which you’ll learn about shortly.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</code></pre></div>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lag</span>(x)</code></pre></div>
+<pre><code>##  [1] NA  1  2  3  4  5  6  7  8  9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lead</span>(x)</code></pre></div>
+<pre><code>##  [1]  2  3  4  5  6  7  8  9 10 NA</code></pre></li>
+<li><p>Cumulative and rolling aggregates: R provides functions for running sums, products, mins and maxes: <code>cumsum()</code>, <code>cumprod()</code>, <code>cummin()</code>, <code>cummax()</code>; and dplyr provides <code>cummean()</code> for cumulative means. If you need rolling aggregates (i.e. a sum computed over a rolling window), try the RcppRoll package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x</code></pre></div>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cumsum</span>(x)</code></pre></div>
+<pre><code>##  [1]  1  3  6 10 15 21 28 36 45 55</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cummean</span>(x)</code></pre></div>
+<pre><code>##  [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5</code></pre></li>
+<li><p>Logical comparisons, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>!=</code>, which you learned about earlier. If you’re doing a complex sequence of logical operations it’s often a good idea to store the interim values in new variables so you can check that each step is working as expected.</p></li>
+<li><p>Ranking: there are a number of ranking functions, but you should start with <code>min_rank()</code>. It does the most usual type of ranking (e.g. 1st, 2nd, 2nd, 4th). The default gives smallest values the small ranks; use <code>desc(x)</code> to give the largest values the smallest ranks.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="ot">NA</span>, <span class="dv">3</span>, <span class="dv">4</span>)
+<span class="kw">min_rank</span>(y)</code></pre></div>
+<pre><code>## [1]  1  2  2 NA  4  5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">min_rank</span>(<span class="kw">desc</span>(y))</code></pre></div>
+<pre><code>## [1]  5  3  3 NA  2  1</code></pre>
+<p>If <code>min_rank()</code> doesn’t do what you need, look at the variants <code>row_number()</code>, <code>dense_rank()</code>, <code>percent_rank()</code>, <code>cume_dist()</code>, <code>ntile()</code>. See their help pages for more details.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">row_number</span>(y)</code></pre></div>
+<pre><code>## [1]  1  2  3 NA  4  5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dense_rank</span>(y)</code></pre></div>
+<pre><code>## [1]  1  2  2 NA  3  4</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">percent_rank</span>(y)</code></pre></div>
+<pre><code>## [1] 0.00 0.25 0.25   NA 0.75 1.00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cume_dist</span>(y)</code></pre></div>
+<pre><code>## [1] 0.2 0.6 0.6  NA 0.8 1.0</code></pre></li>
+</ul>
+</section>
+<section id="grouped-summaries-with-summarise" class="slide level2">
+<h2>Grouped summaries with <code>summarise()</code></h2>
+<p>The last key verb is <code>summarise()</code>. It collapses a data frame to a single row:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summarise</span>(flights, <span class="dt">delay =</span> <span class="kw">mean</span>(dep_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>## # A tibble: 1 x 1
+##   delay
+##   &lt;dbl&gt;
+## 1  12.6</code></pre>
+<p>(We’ll come back to what that <code>na.rm = TRUE</code> means very shortly.)</p>
+<p><code>summarise()</code> is not terribly useful unless we pair it with <code>group_by()</code>. This changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”. For example, if we applied exactly the same code to a data frame grouped by date, we get the average delay per date:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">by_day &lt;-<span class="st"> </span><span class="kw">group_by</span>(flights, year, month, day)
+<span class="kw">summarise</span>(by_day, <span class="dt">delay =</span> <span class="kw">mean</span>(dep_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day delay
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1 11.5 
+##  2  2013     1     2 13.9 
+##  3  2013     1     3 11.0 
+##  4  2013     1     4  8.95
+##  5  2013     1     5  5.73
+##  6  2013     1     6  7.15
+##  7  2013     1     7  5.42
+##  8  2013     1     8  2.55
+##  9  2013     1     9  2.28
+## 10  2013     1    10  2.84
+## # ... with 355 more rows</code></pre>
+<p>Together <code>group_by()</code> and <code>summarise()</code> provide one of the tools that you’ll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.</p>
+<h3 id="combining-multiple-operations-with-the-pipe">Combining multiple operations with the pipe</h3>
+<p>Imagine that we want to explore the relationship between the distance and average delay for each location. Using what you know about dplyr, you might write code like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">by_dest &lt;-<span class="st"> </span><span class="kw">group_by</span>(flights, dest)
+delay &lt;-<span class="st"> </span><span class="kw">summarise</span>(by_dest,
+  <span class="dt">count =</span> <span class="kw">n</span>(),
+  <span class="dt">dist =</span> <span class="kw">mean</span>(distance, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+  <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+)
+delay &lt;-<span class="st"> </span><span class="kw">filter</span>(delay, count <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, dest <span class="op">!=</span><span class="st"> &quot;HNL&quot;</span>)
+
+<span class="co"># It looks like delays increase with distance up to ~750 miles </span>
+<span class="co"># and then decrease. Maybe as flights get longer there&#39;s more </span>
+<span class="co"># ability to make up delays in the air?</span>
+<span class="kw">ggplot</span>(<span class="dt">data =</span> delay, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> dist, <span class="dt">y =</span> delay)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">size =</span> count), <span class="dt">alpha =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-31-1.png" width="576" /></p>
+<p>There are three steps to prepare this data:</p>
+<ol type="1">
+<li><p>Group flights by destination.</p></li>
+<li><p>Summarise to compute distance, average delay, and number of flights.</p></li>
+<li><p>Filter to remove noisy points and Honolulu airport, which is almost twice as far away as the next closest airport.</p></li>
+</ol>
+<p>This code is a little frustrating to write because we have to give each intermediate data frame a name, even though we don’t care about it. Naming things is hard, so this slows down our analysis.</p>
+<p>There’s another way to tackle the same problem with the pipe, <code>%&gt;%</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">delays &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(dest) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">count =</span> <span class="kw">n</span>(),
+    <span class="dt">dist =</span> <span class="kw">mean</span>(distance, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+    <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(count <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, dest <span class="op">!=</span><span class="st"> &quot;HNL&quot;</span>)</code></pre></div>
+<p>This focuses on the transformations, not what’s being transformed, which makes the code easier to read. You can read it as a series of imperative statements: group, then summarise, then filter. As suggested by this reading, a good way to pronounce <code>%&gt;%</code> when reading code is “then”.</p>
+<p>Behind the scenes, <code>x %&gt;% f(y)</code> turns into <code>f(x, y)</code>, and <code>x %&gt;% f(y) %&gt;% g(z)</code> turns into <code>g(f(x, y), z)</code> and so on. You can use the pipe to rewrite multiple operations in a way that you can read left-to-right, top-to-bottom. We’ll use piping frequently from now on because it considerably improves the readability of code, and we’ll come back to it in more detail in [pipes].</p>
+<p>Working with the pipe is one of the key criteria for belonging to the tidyverse. The only exception is ggplot2: it was written before the pipe was discovered. Unfortunately, the next iteration of ggplot2, ggvis, which does use the pipe, isn’t quite ready for prime time yet.</p>
+<h3 id="missing-values-1">Missing values</h3>
+<p>You may have wondered about the <code>na.rm</code> argument we used above. What happens if we don’t set it?</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(dep_delay))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day  mean
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1    NA
+##  2  2013     1     2    NA
+##  3  2013     1     3    NA
+##  4  2013     1     4    NA
+##  5  2013     1     5    NA
+##  6  2013     1     6    NA
+##  7  2013     1     7    NA
+##  8  2013     1     8    NA
+##  9  2013     1     9    NA
+## 10  2013     1    10    NA
+## # ... with 355 more rows</code></pre>
+<p>We get a lot of missing values! That’s because aggregation functions obey the usual rule of missing values: if there’s any missing value in the input, the output will be a missing value. Fortunately, all aggregation functions have an <code>na.rm</code> argument which removes the missing values prior to computation:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(dep_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day  mean
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1 11.5 
+##  2  2013     1     2 13.9 
+##  3  2013     1     3 11.0 
+##  4  2013     1     4  8.95
+##  5  2013     1     5  5.73
+##  6  2013     1     6  7.15
+##  7  2013     1     7  5.42
+##  8  2013     1     8  2.55
+##  9  2013     1     9  2.28
+## 10  2013     1    10  2.84
+## # ... with 355 more rows</code></pre>
+<p>In this case, where missing values represent cancelled flights, we could also tackle the problem by first removing the cancelled flights. We’ll save this dataset so we can reuse in the next few examples.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">not_cancelled &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(dep_delay), <span class="op">!</span><span class="kw">is.na</span>(arr_delay))
+
+not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(dep_delay))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day  mean
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1 11.4 
+##  2  2013     1     2 13.7 
+##  3  2013     1     3 10.9 
+##  4  2013     1     4  8.97
+##  5  2013     1     5  5.73
+##  6  2013     1     6  7.15
+##  7  2013     1     7  5.42
+##  8  2013     1     8  2.56
+##  9  2013     1     9  2.30
+## 10  2013     1    10  2.84
+## # ... with 355 more rows</code></pre>
+<h3 id="counts">Counts</h3>
+<p>Whenever you do any aggregation, it’s always a good idea to include either a count (<code>n()</code>), or a count of non-missing values (<code>sum(!is.na(x))</code>). That way you can check that you’re not drawing conclusions based on very small amounts of data. For example, let’s look at the planes (identified by their tail number) that have the highest average delays:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">delays &lt;-<span class="st"> </span>not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(tailnum) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay)
+  )
+
+<span class="kw">ggplot</span>(<span class="dt">data =</span> delays, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> delay)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_freqpoly</span>(<span class="dt">binwidth =</span> <span class="dv">10</span>)</code></pre></div>
+<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-36-1.png" width="768" /></p>
+</section>
+<section id="grouped-summaries" class="slide level2">
+<h2>Grouped summaries</h2>
+</section>
+<section id="measures-of-location-weve-used-meanx-but-medianx-is-also" class="slide level2">
+<h2>Measures of location: we’ve used <code>mean(x)</code>, but <code>median(x)</code> is also</h2>
+<pre><code>useful. The mean is the sum divided by the length; the median is a value 
+where 50% of `x` is above it, and 50% is below it.
+
+
+
+```r
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(
+    avg_delay1 = mean(arr_delay),
+    avg_delay2 = mean(arr_delay[arr_delay &gt; 0]) # the average positive delay
+  )
+```
+
+```
+## # A tibble: 365 x 5
+## # Groups:   year, month [?]
+##     year month   day avg_delay1 avg_delay2
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1  2013     1     1     12.7         32.5
+##  2  2013     1     2     12.7         32.0
+##  3  2013     1     3      5.73        27.7
+##  4  2013     1     4     -1.93        28.3
+##  5  2013     1     5     -1.53        22.6
+##  6  2013     1     6      4.24        24.4
+##  7  2013     1     7     -4.95        27.8
+##  8  2013     1     8     -3.23        20.8
+##  9  2013     1     9     -0.264       25.6
+## 10  2013     1    10     -5.90        27.3
+## # ... with 355 more rows
+```</code></pre>
+</section>
+<section id="measures-of-spread-sdx-iqrx-madx.-the-mean-squared-deviation" class="slide level2">
+<h2>Measures of spread: <code>sd(x)</code>, <code>IQR(x)</code>, <code>mad(x)</code>. The mean squared deviation,</h2>
+<pre><code>or standard deviation or sd for short, is the standard measure of spread.
+The interquartile range `IQR()` and median absolute deviation `mad(x)`
+are robust equivalents that may be more useful if you have outliers.
+
+
+```r
+# Why is distance to some destinations more variable than to others?
+not_cancelled %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(distance_sd = sd(distance)) %&gt;% 
+  arrange(desc(distance_sd))
+```
+
+```
+## # A tibble: 104 x 2
+##    dest  distance_sd
+##    &lt;chr&gt;       &lt;dbl&gt;
+##  1 EGE         10.5 
+##  2 SAN         10.4 
+##  3 SFO         10.2 
+##  4 HNL         10.0 
+##  5 SEA          9.98
+##  6 LAS          9.91
+##  7 PDX          9.87
+##  8 PHX          9.86
+##  9 LAX          9.66
+## 10 IND          9.46
+## # ... with 94 more rows
+```</code></pre>
+</section>
+<section id="measures-of-rank-minx-quantilex-0.25-maxx.-quantiles" class="slide level2">
+<h2>Measures of rank: <code>min(x)</code>, <code>quantile(x, 0.25)</code>, <code>max(x)</code>. Quantiles</h2>
+<pre><code>are a generalisation of the median. For example, `quantile(x, 0.25)`
+will find a value of `x` that is greater than 25% of the values,
+and less than the remaining 75%.
+
+
+```r
+# When do the first and last flights leave each day?
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(
+    first = min(dep_time),
+    last = max(dep_time)
+  )
+```
+
+```
+## # A tibble: 365 x 5
+## # Groups:   year, month [?]
+##     year month   day first  last
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1  517. 2356.
+##  2  2013     1     2   42. 2354.
+##  3  2013     1     3   32. 2349.
+##  4  2013     1     4   25. 2358.
+##  5  2013     1     5   14. 2357.
+##  6  2013     1     6   16. 2355.
+##  7  2013     1     7   49. 2359.
+##  8  2013     1     8  454. 2351.
+##  9  2013     1     9    2. 2252.
+## 10  2013     1    10    3. 2320.
+## # ... with 355 more rows
+```</code></pre>
+</section>
+<section id="measures-of-position-firstx-nthx-2-lastx.-these-work" class="slide level2">
+<h2>Measures of position: <code>first(x)</code>, <code>nth(x, 2)</code>, <code>last(x)</code>. These work</h2>
+<pre><code>similarly to `x[1]`, `x[2]`, and `x[length(x)]` but let you set a default 
+value if that position does not exist (i.e. you&#39;re trying to get the 3rd
+element from a group that only has two elements). For example, we can
+find the first and last departure for each day:
+
+
+```r
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(
+    first_dep = first(dep_time), 
+    last_dep = last(dep_time)
+  )
+```
+
+```
+## # A tibble: 365 x 5
+## # Groups:   year, month [?]
+##     year month   day first_dep last_dep
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;int&gt;    &lt;int&gt;
+##  1  2013     1     1       517     2356
+##  2  2013     1     2        42     2354
+##  3  2013     1     3        32     2349
+##  4  2013     1     4        25     2358
+##  5  2013     1     5        14     2357
+##  6  2013     1     6        16     2355
+##  7  2013     1     7        49     2359
+##  8  2013     1     8       454     2351
+##  9  2013     1     9         2     2252
+## 10  2013     1    10         3     2320
+## # ... with 355 more rows
+```
+
+These functions are complementary to filtering on ranks. Filtering gives
+you all variables, with each observation in a separate row:
+
+
+```r
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  mutate(r = min_rank(desc(dep_time))) %&gt;% 
+  filter(r %in% range(r))
+```
+
+```
+## # A tibble: 770 x 20
+## # Groups:   year, month, day [365]
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     1      517            515        2.      830
+##  2  2013     1     1     2356           2359       -3.      425
+##  3  2013     1     2       42           2359       43.      518
+##  4  2013     1     2     2354           2359       -5.      413
+##  5  2013     1     3       32           2359       33.      504
+##  6  2013     1     3     2349           2359      -10.      434
+##  7  2013     1     4       25           2359       26.      505
+##  8  2013     1     4     2358           2359       -1.      429
+##  9  2013     1     4     2358           2359       -1.      436
+## 10  2013     1     5       14           2359       15.      503
+## # ... with 760 more rows, and 13 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;, r &lt;int&gt;
+```</code></pre>
+</section>
+<section id="counts-youve-seen-n-which-takes-no-arguments-and-returns-the" class="slide level2">
+<h2>Counts: You’ve seen <code>n()</code>, which takes no arguments, and returns the</h2>
+<pre><code>size of the current group. To count the number of non-missing values, use
+`sum(!is.na(x))`. To count the number of distinct (unique) values, use
+`n_distinct(x)`.
+
+
+```r
+# Which destinations have the most carriers?
+not_cancelled %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(carriers = n_distinct(carrier)) %&gt;% 
+  arrange(desc(carriers))
+```
+
+```
+## # A tibble: 104 x 2
+##    dest  carriers
+##    &lt;chr&gt;    &lt;int&gt;
+##  1 ATL          7
+##  2 BOS          7
+##  3 CLT          7
+##  4 ORD          7
+##  5 TPA          7
+##  6 AUS          6
+##  7 DCA          6
+##  8 DTW          6
+##  9 IAD          6
+## 10 MSP          6
+## # ... with 94 more rows
+```
+
+Counts are so useful that dplyr provides a simple helper if all you want is 
+a count:
+
+
+```r
+not_cancelled %&gt;% 
+  count(dest)
+```
+
+```
+## # A tibble: 104 x 2
+##    dest      n
+##    &lt;chr&gt; &lt;int&gt;
+##  1 ABQ     254
+##  2 ACK     264
+##  3 ALB     418
+##  4 ANC       8
+##  5 ATL   16837
+##  6 AUS    2411
+##  7 AVL     261
+##  8 BDL     412
+##  9 BGR     358
+## 10 BHM     269
+## # ... with 94 more rows
+```
+
+You can optionally provide a weight variable. For example, you could use 
+this to &quot;count&quot; (sum) the total number of miles a plane flew:
+
+
+```r
+not_cancelled %&gt;% 
+  count(tailnum, wt = distance)
+```
+
+```
+## # A tibble: 4,037 x 2
+##    tailnum       n
+##    &lt;chr&gt;     &lt;dbl&gt;
+##  1 D942DN    3418.
+##  2 N0EGMQ  239143.
+##  3 N10156  109664.
+##  4 N102UW   25722.
+##  5 N103US   24619.
+##  6 N104UW   24616.
+##  7 N10575  139903.
+##  8 N105UW   23618.
+##  9 N107US   21677.
+## 10 N108UW   32070.
+## # ... with 4,027 more rows
+```</code></pre>
+</section>
+<section id="counts-and-proportions-of-logical-values-sumx-10-meany-0." class="slide level2">
+<h2>Counts and proportions of logical values: <code>sum(x &gt; 10)</code>, <code>mean(y == 0)</code>.</h2>
+<pre><code>When used with numeric functions, `TRUE` is converted to 1 and `FALSE` to 0. 
+This makes `sum()` and `mean()` very useful: `sum(x)` gives the number of 
+`TRUE`s in `x`, and `mean(x)` gives the proportion.
+
+
+```r
+# How many flights left before 5am? (these usually indicate delayed
+# flights from the previous day)
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(n_early = sum(dep_time &lt; 500))
+```
+
+```
+## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day n_early
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
+##  1  2013     1     1       0
+##  2  2013     1     2       3
+##  3  2013     1     3       4
+##  4  2013     1     4       3
+##  5  2013     1     5       3
+##  6  2013     1     6       2
+##  7  2013     1     7       2
+##  8  2013     1     8       1
+##  9  2013     1     9       3
+## 10  2013     1    10       3
+## # ... with 355 more rows
+```
+
+```r
+# What proportion of flights are delayed by more than an hour?
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(hour_perc = mean(arr_delay &gt; 60))
+```
+
+```
+## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day hour_perc
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;
+##  1  2013     1     1    0.0722
+##  2  2013     1     2    0.0851
+##  3  2013     1     3    0.0567
+##  4  2013     1     4    0.0396
+##  5  2013     1     5    0.0349
+##  6  2013     1     6    0.0470
+##  7  2013     1     7    0.0333
+##  8  2013     1     8    0.0213
+##  9  2013     1     9    0.0202
+## 10  2013     1    10    0.0183
+## # ... with 355 more rows
+```</code></pre>
+</section>
+<section id="grouping-by-multiple-variables" class="slide level2">
+<h2>Grouping by multiple variables</h2>
+<p>When you group by multiple variables, each summary peels off one level of the grouping. That makes it easy to progressively roll up a dataset:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">daily &lt;-<span class="st"> </span><span class="kw">group_by</span>(flights, year, month, day)
+(per_day   &lt;-<span class="st"> </span><span class="kw">summarise</span>(daily, <span class="dt">flights =</span> <span class="kw">n</span>()))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [?]
+##     year month   day flights
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
+##  1  2013     1     1     842
+##  2  2013     1     2     943
+##  3  2013     1     3     914
+##  4  2013     1     4     915
+##  5  2013     1     5     720
+##  6  2013     1     6     832
+##  7  2013     1     7     933
+##  8  2013     1     8     899
+##  9  2013     1     9     902
+## 10  2013     1    10     932
+## # ... with 355 more rows</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(per_month &lt;-<span class="st"> </span><span class="kw">summarise</span>(per_day, <span class="dt">flights =</span> <span class="kw">sum</span>(flights)))</code></pre></div>
+<pre><code>## # A tibble: 12 x 3
+## # Groups:   year [?]
+##     year month flights
+##    &lt;int&gt; &lt;int&gt;   &lt;int&gt;
+##  1  2013     1   27004
+##  2  2013     2   24951
+##  3  2013     3   28834
+##  4  2013     4   28330
+##  5  2013     5   28796
+##  6  2013     6   28243
+##  7  2013     7   29425
+##  8  2013     8   29327
+##  9  2013     9   27574
+## 10  2013    10   28889
+## 11  2013    11   27268
+## 12  2013    12   28135</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(per_year  &lt;-<span class="st"> </span><span class="kw">summarise</span>(per_month, <span class="dt">flights =</span> <span class="kw">sum</span>(flights)))</code></pre></div>
+<pre><code>## # A tibble: 1 x 2
+##    year flights
+##   &lt;int&gt;   &lt;int&gt;
+## 1  2013  336776</code></pre>
+<p>Be careful when progressively rolling up summaries: it’s OK for sums and counts, but you need to think about weighting means and variances, and it’s not possible to do it exactly for rank-based statistics like the median. In other words, the sum of groupwise sums is the overall sum, but the median of groupwise medians is not the overall median.</p>
+</section>
+<section id="ungrouping" class="slide level2">
+<h2>Ungrouping</h2>
+<p>If you need to remove grouping, and return to operations on ungrouped data, use <code>ungroup()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">daily <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st">             </span><span class="co"># no longer grouped by date</span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">flights =</span> <span class="kw">n</span>())  <span class="co"># all flights</span></code></pre></div>
+<pre><code>## # A tibble: 1 x 1
+##   flights
+##     &lt;int&gt;
+## 1  336776</code></pre>
+</section>
+<section id="grouped-mutates-and-filters" class="slide level2">
+<h2>Grouped mutates (and filters)</h2>
+<p>Grouping is most useful in conjunction with <code>summarise()</code>, but you can also do convenient operations with <code>mutate()</code> and <code>filter()</code>:</p>
+</section>
+<section id="find-the-worst-members-of-each-group" class="slide level2">
+<h2>Find the worst members of each group:</h2>
+<pre><code>```r
+flights_sml %&gt;% 
+  group_by(year, month, day) %&gt;%
+  filter(rank(desc(arr_delay)) &lt; 10)
+```
+
+```
+## # A tibble: 3,306 x 7
+## # Groups:   year, month, day [365]
+##     year month   day dep_delay arr_delay distance air_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1  2013     1     1      853.      851.     184.      41.
+##  2  2013     1     1      290.      338.    1134.     213.
+##  3  2013     1     1      260.      263.     266.      46.
+##  4  2013     1     1      157.      174.     213.      60.
+##  5  2013     1     1      216.      222.     708.     121.
+##  6  2013     1     1      255.      250.     589.     115.
+##  7  2013     1     1      285.      246.    1085.     146.
+##  8  2013     1     1      192.      191.     199.      44.
+##  9  2013     1     1      379.      456.    1092.     222.
+## 10  2013     1     2      224.      207.     550.      94.
+## # ... with 3,296 more rows
+```</code></pre>
+</section>
+<section id="find-all-groups-bigger-than-a-threshold" class="slide level2">
+<h2>Find all groups bigger than a threshold:</h2>
+<pre><code>```r
+popular_dests &lt;- flights %&gt;% 
+  group_by(dest) %&gt;% 
+  filter(n() &gt; 365)
+popular_dests
+```
+
+```
+## # A tibble: 332,577 x 19
+## # Groups:   dest [77]
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1     1      517            515        2.      830
+##  2  2013     1     1      533            529        4.      850
+##  3  2013     1     1      542            540        2.      923
+##  4  2013     1     1      544            545       -1.     1004
+##  5  2013     1     1      554            600       -6.      812
+##  6  2013     1     1      554            558       -4.      740
+##  7  2013     1     1      555            600       -5.      913
+##  8  2013     1     1      557            600       -3.      709
+##  9  2013     1     1      557            600       -3.      838
+## 10  2013     1     1      558            600       -2.      753
+## # ... with 332,567 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```</code></pre>
+</section>
+<section id="standardise-to-compute-per-group-metrics" class="slide level2">
+<h2>Standardise to compute per group metrics:</h2>
+<pre><code>```r
+popular_dests %&gt;% 
+  filter(arr_delay &gt; 0) %&gt;% 
+  mutate(prop_delay = arr_delay / sum(arr_delay)) %&gt;% 
+  select(year:day, dest, arr_delay, prop_delay)
+```
+
+```
+## # A tibble: 131,106 x 6
+## # Groups:   dest [77]
+##     year month   day dest  arr_delay prop_delay
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+##  1  2013     1     1 IAH         11.  0.000111 
+##  2  2013     1     1 IAH         20.  0.000201 
+##  3  2013     1     1 MIA         33.  0.000235 
+##  4  2013     1     1 ORD         12.  0.0000424
+##  5  2013     1     1 FLL         19.  0.0000938
+##  6  2013     1     1 ORD          8.  0.0000283
+##  7  2013     1     1 LAX          7.  0.0000344
+##  8  2013     1     1 DFW         31.  0.000282 
+##  9  2013     1     1 ATL         12.  0.0000400
+## 10  2013     1     1 DTW         16.  0.000116 
+## # ... with 131,096 more rows
+```</code></pre>
+</section>
+    </div>
+  </div>
+
+  <script src="part2_dplyr_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="part2_dplyr_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>
