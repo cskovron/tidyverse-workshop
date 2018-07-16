@@ -20,6 +20,7 @@ setwd('~/Dropbox/tidyverse-workshop/')
 ```
 
 
+
 ## So what's a tibble, anyway?
 
 Tibbles _are_ data frames, but they tweak some older behaviours to make life a little easier. 
@@ -50,6 +51,8 @@ tibble(
 )
 ```
 
+## Differences from `data.frame()`
+
 If you're already familiar with `data.frame()`, note that `tibble()` does much less: it never changes the type of the inputs (e.g. it never converts strings to factors!), it never changes the names of variables, and it never creates row names.
 
 ## tibble column names 
@@ -72,7 +75,7 @@ You'll also need the backticks when working with these variables in other packag
 
 There are two main differences in the usage of a tibble vs. a classic `data.frame`: printing and subsetting.
 
-### Printing
+## Printing
 
 Tibbles have a refined print method that shows only the first 10 rows, and all the columns that fit on screen. This makes it much easier to work with large data. In addition to its name, each column reports its type, a nice feature borrowed from `str()`:
 
@@ -95,60 +98,7 @@ nycflights13::flights %>%
   print(n = 10, width = Inf)
 ```
 
-You can also control the default print behaviour by setting options:
 
-* `options(tibble.print_max = n, tibble.print_min = m)`: if more than `m`
-  rows, print only `n` rows. Use `options(dplyr.print_min = Inf)` to always
-  show all rows.
-
-* Use `options(tibble.width = Inf)` to always print all columns, regardless
-  of the width of the screen.
-
-You can see a complete list of options by looking at the package help with `package?tibble`.
-
-A final option is to use RStudio's built-in data viewer to get a scrollable view of the complete dataset. This is also often useful at the end of a long chain of manipulations.
-
-```{r, eval = FALSE}
-nycflights13::flights %>% 
-  View()
-```
-
-### Subsetting
-
-So far all the tools you've learned have worked with complete data frames. If you want to pull out a single variable, you need some new tools, `$` and `[[`. `[[` can extract by name or position; `$` only extracts by name but is a little less typing.
-
-```{r}
-df <- tibble(
-  x = runif(5),
-  y = rnorm(5)
-)
-
-# Extract by name
-df$x
-df[["x"]]
-
-# Extract by position
-df[[1]]
-```
-
-To use these in a pipe, you'll need to use the special placeholder `.`:
-
-```{r}
-df %>% .$x
-df %>% .[["x"]]
-```
-
-Compared to a `data.frame`, tibbles are more strict: they never do partial matching, and they will generate a warning if the column you are trying to access does not exist.
-
-## Interacting with older code
-
-Some older functions don't work with tibbles. If you encounter one of these functions, use `as.data.frame()` to turn a tibble back to a `data.frame`:
-
-```{r}
-class(as.data.frame(tb))
-```
-
-The main reason that some older functions don't work with tibble is the `[` function.  We don't use `[` much in this book because `dplyr::filter()` and `dplyr::select()` allow you to solve the same problems with clearer code (but you will learn a little about it in [vector subsetting](#vector-subsetting)). With base R data frames, `[` sometimes returns a data frame, and sometimes returns a vector. With tibbles, `[` always returns another tibble.
 
 
 ## Data import with readr 
@@ -169,21 +119,18 @@ Most of readr's functions are concerned with turning flat files into data frames
   `read_table()` reads a common variation of fixed width files where columns
   are separated by white space.
 
-* `read_log()` reads Apache style log files. (But also check out
-  [webreadr](https://github.com/Ironholds/webreadr) which is built on top
-  of `read_log()` and provides many more helpful tools.)
 
 ## Arguments 
 
 The first argument to `read_csv()` is the most important: it's the path to the file to read.
 
-```{r, message = TRUE}
+```{r, eval = FALSE}
 heights <- read_csv("data/heights.csv")
 ```
 
 When you run `read_csv()` it prints out a column specification that gives the name and type of each column. 
 
-## First line defaults to colnames, but you can chagne sthat 
+## First line defaults to colnames, but you can change that 
 
 
 1.  Sometimes there are a few lines of metadata at the top of the file. You can
@@ -200,7 +147,8 @@ When you run `read_csv()` it prints out a column specification that gives the na
       x,y,z
       1,2,3", comment = "#")
     ```
-## First line defaults to colnames, but you can chagne sthat 
+
+## First line defaults to colnames, but you can change that 
     
     
 1.  The data might not have column names. You can use `col_names = FALSE` to
@@ -211,7 +159,7 @@ When you run `read_csv()` it prints out a column specification that gives the na
     read_csv("1,2,3\n4,5,6", col_names = FALSE)
     ```
     
-## First line defaults to colnames, but you can chagne sthat 
+## First line defaults to colnames, but you can change that 
 
     
     Alternatively you can pass `col_names` a character vector which will be
@@ -279,7 +227,6 @@ fruit <- c("apple", "banana")
 parse_factor(c("apple", "banana", "bananana"), levels = fruit)
 ```
 
-But if you have many problematic entries, it's often easier to leave as character vectors and then use the tools in stringr and forcats to clean them. 
 
 ## Dates, date-times, and times 
 
@@ -296,16 +243,16 @@ You pick between three parsers depending on whether you want a date (the number 
     parse_datetime("20101010")
     ```
     
-    This is the most important date/time standard, and if you work with
-    dates and times frequently, I recommend reading
-    <https://en.wikipedia.org/wiki/ISO_8601>
-    
+## Dates, date-times, and times 
+
 *   `parse_date()` expects a four digit year, a `-` or `/`, the month, a `-` 
     or `/`, then the day:
     
     ```{r}
     parse_date("2010-10-01")
     ```
+
+## Dates, date-times, and times 
 
 *   `parse_time()` expects the hour, `:`, minutes, optionally `:` and seconds, 
     and an optional am/pm specifier:
@@ -315,59 +262,14 @@ You pick between three parsers depending on whether you want a date (the number 
     parse_time("01:10 am")
     parse_time("20:10:01")
     ```
+ 
+## Dates, date-times, and times 
     
     Base R doesn't have a great built in class for time data, so we use 
     the one provided in the hms package.
 
-If these defaults don't work for your data you can supply your own date-time `format`, built up of the following pieces:
-
-Year
-: `%Y` (4 digits). 
-: `%y` (2 digits); 00-69 -> 2000-2069, 70-99 -> 1970-1999.
-
-Month
-: `%m` (2 digits).
-: `%b` (abbreviated name, like "Jan").
-: `%B` (full name, "January").
-
-Day
-: `%d` (2 digits).
-: `%e` (optional leading space).
-
-Time
-: `%H` 0-23 hour.
-: `%I` 0-12, must be used with `%p`.
-: `%p` AM/PM indicator.
-: `%M` minutes.
-: `%S` integer seconds.
-: `%OS` real seconds. 
-: `%Z` Time zone (as name, e.g. `America/Chicago`). Beware of abbreviations:
-  if you're American, note that "EST" is a Canadian time zone that does not
-  have daylight savings time. It is _not_ Eastern Standard Time! We'll
-  come back to this [time zones].
-: `%z` (as offset from UTC, e.g. `+0800`). 
-
-Non-digits
-: `%.` skips one non-digit character.
-: `%*` skips any number of non-digits.
-
-The best way to figure out the correct format is to create a few examples in a character vector, and test with one of the parsing functions. For example:
-
-```{r}
-parse_date("01/02/15", "%m/%d/%y")
-parse_date("01/02/15", "%d/%m/%y")
-parse_date("01/02/15", "%y/%m/%d")
-```
-
-If you're using `%b` or `%B` with non-English month names, you'll need to set the  `lang` argument to `locale()`. See the list of built-in languages in `date_names_langs()`, or if your language is not already included, create your own with `date_names()`.
-
-```{r}
-parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
-```
 
 ## Other types of data
-
-To get other types of data into R, we recommend starting with the tidyverse packages listed below. They're certainly not perfect, but they are a good place to start. For rectangular data:
 
 * __haven__ reads SPSS, Stata, and SAS files.
 
@@ -397,17 +299,33 @@ For other file types, try the [R data import/export manual](https://cran.r-proje
 
 You can represent the same underlying data in multiple ways. The example below shows the same data organised in four different ways. Each dataset shows the same values of four variables *country*, *year*, *population*, and *cases*, but each dataset organises the values in a different way.
 
+## Table 1
+
 ```{r}
 table1
-table2
-table3
 
+```
+
+## Table 2
+```{r}
+table2
+
+```
+
+## Table 3
+```{r}
+table3
+```
+
+## Table 4
+```{r}
 # Spread across two tibbles
 table4a  # cases
 table4b  # population
 ```
 
-These are all representations of the same underlying data, but they are not equally easy to use. One dataset, the tidy dataset, will be much easier to work with inside the tidyverse. 
+
+
 
 ## Tidy data principles 
 
@@ -422,48 +340,60 @@ There are three interrelated rules which make a dataset tidy:
 
 ![](../images/tidy-1.png)
 
+## Tidy data principles 
+
 These three rules are interrelated because it's impossible to only satisfy two of the three. That interrelationship leads to an even simpler set of practical instructions:
 
 1.  Put each dataset in a tibble.
 1.  Put each variable in a column.
 
-## The tidyverse needs tidy data as an input 
 
-dplyr, ggplot2, and all the other packages in the tidyverse are designed to work with tidy data. Here are a couple of small examples showing how you might work with `table1`.
+## Tidy data principles 
 
-```{r, out.width = "50%"}
-# Compute rate per 10,000
-table1 %>% 
-  mutate(rate = cases / population * 10000)
+- Every data task will be different, but tidy data principles will help you keep organized
+- Much of your workflow will be getting data inputs into a tidy format
+- From the beginning, lay out what you need your dataset to look like to do the analyses you want, then work backward from there
+- [Hadley's vignette on tidy data principles](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html)
+- [Chapter of R for Data Science on tidy data](http://r4ds.had.co.nz/tidy-data.html)
 
-# Compute cases per year
-table1 %>% 
-  count(year, wt = cases)
 
-# Visualise changes over time
-library(ggplot2)
-ggplot(table1, aes(year, cases)) + 
-  geom_line(aes(group = country), colour = "grey50") + 
-  geom_point(aes(colour = country))
-```
+## Tidy data has
 
-### Exercises
+- Each variable forms a column.
+- Each observation forms a row.
+- Each type of observational unit forms a table.
 
-1.  Using prose, describe how the variables and observations are organised in
-    each of the sample tables.
+## Tidy data does not have 
+- Column headers are values, not variable names.
+- Multiple variables are stored in one column.
+- Variables are stored in both rows and columns.
+- Multiple types of observational units are stored in the same table.
+- A single observational unit is stored in multiple tables.
 
-1.  Compute the `rate` for `table2`, and `table4a` + `table4b`. 
-    You will need to perform four operations:
 
-    1.  Extract the number of TB cases per country per year.
-    1.  Extract the matching population per country per year.
-    1.  Divide cases by population, and multiply by 10000.
-    1.  Store back in the appropriate place.
-    
-    Which representation is easiest to work with? Which is hardest? Why?
+## Long vs wide data
 
-1.  Recreate the plot showing change in cases over time using `table2`
-    instead of `table1`. What do you need to do first?
+
+![via Sean Anderson](http://seananderson.ca/images/dcast-illustration.png)
+
+
+## Relational data 
+- Some data has structures more complex than simple tables
+- For example, Netflix has a database where each user has a table of movies they've watched and a separate table for each movie of the users who have watched it
+- This is "relational data"
+- It's often, but not always, big 
+- Requires special tools, usually SQL 
+
+
+## Checking up on your data cleaning
+- glance at your data: 
+    - `View()` (but be careful!)
+    - `summary()` (be careful on big datasets)
+    - `head()` and `tail()`
+    - `tibble::glimpse()`
+    - `is.na()` and `sum(is.na())`
+
+
 
 ## Spreading and gathering
 
@@ -475,8 +405,7 @@ The principles of tidy data seem so obvious that you might wonder if you'll ever
 1.  Data is often organised to facilitate some use other than analysis. For 
     example, data is often organised to make entry as easy as possible.
     
-This means for most real analyses, you'll need to do some tidying. The first step is always to figure out what the variables and observations are. Sometimes this is easy; other times you'll need to consult with the people who originally generated the data. 
-The second step is to resolve one of two common problems:
+## Common problems 
 
 1. One variable might be spread across multiple columns.
 
@@ -484,13 +413,15 @@ The second step is to resolve one of two common problems:
 
 Typically a dataset will only suffer from one of these problems; it'll only suffer from both if you're really unlucky! To fix these problems, you'll need the two most important functions in tidyr: `gather()` and `spread()`.
 
-### Gathering
+## Gathering
 
 A common problem is a dataset where some of the column names are not names of variables, but _values_ of a variable. Take `table4a`: the column names `1999` and `2000` represent values of the `year` variable, and each row represents two observations, not one.
 
 ```{r}
 table4a
 ```
+
+## Gathering
 
 To tidy a dataset like this, we need to __gather__ those columns into a new pair of variables. To describe that operation we need three parameters:
 
@@ -503,6 +434,8 @@ To tidy a dataset like this, we need to __gather__ those columns into a new pair
 * The name of the variable whose values are spread over the cells. I call 
   that `value`, and here it's the number of `cases`.
   
+## Gathering
+
 Together those parameters generate the call to `gather()`:
 
 ```{r}
@@ -510,18 +443,16 @@ table4a %>%
   gather(`1999`, `2000`, key = "year", value = "cases")
 ```
 
-The columns to gather are specified with `dplyr::select()` style notation. Here there are only two columns, so we list them individually. Note that "1999" and "2000" are non-syntactic names (because they don't start with a letter) so we have to surround them in backticks. To refresh your memory of the other ways to select columns, see [select](#select).
+The columns to gather are specified with `dplyr::select()` style notation. Here there are only two columns, so we list them individually. Note that "1999" and "2000" are non-syntactic names (because they don't start with a letter) so we have to surround them in backticks. 
 
-```{r tidy-gather, echo = FALSE, out.width = "100%", fig.cap = "Gathering `table4` into a tidy form."}
-knitr::include_graphics("images/tidy-9.png")
-```
+## Gathering
 
-In the final result, the gathered columns are dropped, and we get new `key` and `value` columns. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure \@ref(fig:tidy-gather). We can use `gather()` to tidy `table4b` in a similar fashion. The only difference is the variable stored in the cell values:
+![](../images/tidy-9.png)
 
-```{r}
-table4b %>% 
-  gather(`1999`, `2000`, key = "year", value = "population")
-```
+
+## Gathering
+
+In the final result, the gathered columns are dropped, and we get new `key` and `value` columns. 
 
 To combine the tidied versions of `table4a` and `table4b` into a single tibble, we need to use `dplyr::left_join()`, which you'll learn about in [relational data].
 
@@ -533,7 +464,7 @@ tidy4b <- table4b %>%
 left_join(tidy4a, tidy4b)
 ```
 
-### Spreading
+## Spreading
 
 Spreading is the opposite of gathering. You use it when an observation is scattered across multiple rows. For example, take `table2`: an observation is a country in a year, but each observation is spread across two rows.
 
@@ -548,6 +479,8 @@ To tidy this up, we first analyse the representation in similar way to `gather()
 
 * The column that contains values forms multiple variables, the `value`
   column. Here it's `count`.
+
+## Spreading
 
 Once we've figured that out, we can use `spread()`, as shown programmatically below, and visually in Figure \@ref(fig:tidy-spread).
 
