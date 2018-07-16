@@ -487,6 +487,15 @@ Northwestern University</div></h2>
     <h3 class="date">July 16, 2018</h3>
 </section>
 
+<section id="chris-skovron" class="slide level2">
+<h2>Chris Skovron</h2>
+<ul>
+<li>Data Science Scholar, Northwestern Institute on Complex Systems and Institute for Policy Research</li>
+<li>PhD Political Science, Michigan, 2017</li>
+<li>Using R since 2009</li>
+<li>I wish I’d learned the tidyverse first!</li>
+</ul>
+</section>
 <section id="this-workshop" class="slide level2">
 <h2>This workshop:</h2>
 <ul>
@@ -495,6 +504,10 @@ Northwestern University</div></h2>
 <li>Practice sessions, Today and Wednesday, 1:30pm, Mudd Library, Small Classroom, Room 2124</li>
 </ul>
 <p>MATERIALS: <a href="https://github.com/cskovron/tidyverse-workshop" class="uri">https://github.com/cskovron/tidyverse-workshop</a></p>
+</section>
+<section id="prerequisites" class="slide level2">
+<h2>Prerequisites</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">&#39;tidyverse&#39;</span>,<span class="st">&#39;broom&#39;</span>,<span class="st">&#39;infer&#39;</span>,<span class="st">&#39;nycflights13&#39;</span>))</code></pre></div>
 </section>
 <section id="the-tidyverse-lets-get-organized" class="slide level2">
 <h2>The tidyverse: Let’s get organized</h2>
@@ -538,30 +551,34 @@ Northwestern University</div></h2>
 <ul>
 <li>It’s an official RStudio product, so watch their website</li>
 <li>Easy install and load:</li>
-<li><code>install.packages(tidyverse)</code></li>
+<li><code>install.packages('tidyverse')</code></li>
 <li><code>library(tidyverse)</code></li>
 </ul>
 </section>
 <section id="the-holy-text-of-the-tidyverse" class="slide level2">
 <h2>The holy text of the tidyverse</h2>
 <p><img src="../images/R4dsCover.png" /></p>
-<p><a href="r4ds.had.co.nz">R for Data Science</a> is freely available online. I encourage you to read all of it. We will only cover what I think are the most important chapters in these two days.</p>
+<p><a href="r4ds.had.co.nz">R for Data Science</a> is freely available online. I encourage you to read all of it. We will only cover what I think are the most important chapters in these two days. I’ve blatantly stolen major parts of the workshop from this book. It’s great!</p>
 </section>
 <section id="this-workshop-is-a-partial-walkthrough-of-r4ds" class="slide level2">
 <h2>This workshop is a partial walkthrough of R4DS</h2>
 <ul>
 <li>Adding in additional lessons on some of my favorite tidy analysis tasks</li>
 <li>Focus on <code>dplyr</code> for the first day, for most users the most important package to learn</li>
+<li>Will sprinklin in some <code>ggplot2</code> on the second day, but it’s the oldest and most well-known tidy package and has its own workshop. Learn it!</li>
 </ul>
 </section>
 <section id="verbs-and-pipes" class="slide level2">
 <h2>Verbs and pipes</h2>
 <p>This wacky thing is the pipe.</p>
 <p><img src="../images/magrittr.png" /></p>
+</section>
+<section id="the-pipe" class="slide level2">
+<h2>The pipe</h2>
 <p>The pipe chains together commands so that you can do a bunch of manipulations in order to a data frame without calling it repeatedly or nesting many parentheses</p>
 <p>Those are gnarly characters to type, but fortunately RStudio has a keyboard shortcut, CMD+SHIFT+M (CTRL+SHIFT+M on Windows) to quickly type a pipe for you.</p>
 </section>
-<section id="the-pipe" class="slide level2">
+<section id="the-pipe-1" class="slide level2">
 <h2>The pipe</h2>
 <p>A good mantra for effectively using the pipe in your workflow is:</p>
 <p>“Dataframe first, dataframe once”</p>
@@ -584,9 +601,49 @@ Northwestern University</div></h2>
 <span class="st">  </span><span class="kw">transform</span>(<span class="dt">kpl =</span> mpg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">multiply_by</span>(<span class="fl">0.4251</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span>print</code></pre></div>
 </section>
+<section id="unpiped-operation" class="slide level2">
+<h2>Unpiped operation</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">by_dest &lt;-<span class="st"> </span><span class="kw">group_by</span>(flights, dest)
+delay &lt;-<span class="st"> </span><span class="kw">summarise</span>(by_dest,
+  <span class="dt">count =</span> <span class="kw">n</span>(),
+  <span class="dt">dist =</span> <span class="kw">mean</span>(distance, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+  <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+)
+delay &lt;-<span class="st"> </span><span class="kw">filter</span>(delay, count <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, dest <span class="op">!=</span><span class="st"> &quot;HNL&quot;</span>)</code></pre></div>
+<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># It looks like delays increase with distance up to ~750 miles </span>
+<span class="co"># and then decrease. Maybe as flights get longer there&#39;s more </span>
+<span class="co"># ability to make up delays in the air?</span>
+<span class="kw">ggplot</span>(<span class="dt">data =</span> delay, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> dist, <span class="dt">y =</span> delay)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">size =</span> count), <span class="dt">alpha =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="part1_intro_files/figure-revealjs/unnamed-chunk-4-1.png" width="576" /></p>
+</section>
+<section id="break-down-your-work-into-steps" class="slide level2">
+<h2>Break down your work into steps</h2>
+<p>There are three steps to prepare this data:</p>
+<ol type="1">
+<li><p>Group flights by destination.</p></li>
+<li><p>Summarise to compute distance, average delay, and number of flights.</p></li>
+<li><p>Filter to remove noisy points and Honolulu airport, which is almost twice as far away as the next closest airport.</p></li>
+</ol>
+</section>
+<section id="cleaner-code-with-the-pipe" class="slide level2">
+<h2>Cleaner code with the pipe</h2>
+<p>There’s another way to tackle the same problem with the pipe, <code>%&gt;%</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">delays &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(dest) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">count =</span> <span class="kw">n</span>(),
+    <span class="dt">dist =</span> <span class="kw">mean</span>(distance, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+    <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(count <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, dest <span class="op">!=</span><span class="st"> &quot;HNL&quot;</span>)</code></pre></div>
+</section>
 <section id="pipe-into-ggplot" class="slide level2">
 <h2>Pipe into <code>ggplot()</code></h2>
-<p>Hopefully you’re either alread familiar with <code>ggplot2</code> or are taking the workshop, because that’s the one tidyverse package we won’t explore in any detail. You can use the pipe to pass data from a piped set of say, <code>dplyr</code> commands into a call to <code>ggplot()</code>. Just replace the data argument of the call to <code>ggplot</code> with a <code>.</code>.</p>
+<p>Hopefully you’re either already familiar with <code>ggplot2</code> or are taking the workshop, because that’s the one tidyverse package we won’t explore in enough detail. You can use the pipe to pass data from a piped set of say, <code>dplyr</code> commands into a call to <code>ggplot()</code>. Just replace the data argument of the call to <code>ggplot</code> with a <code>.</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">g =<span class="st"> </span>ncs <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(party,ideo_relative_to_legislature) <span class="op">%&gt;%</span>
 <span class="st">  </span>tally  <span class="op">%&gt;%</span>
@@ -614,8 +671,12 @@ Northwestern University</div></h2>
 <h2>Two sets of exercises</h2>
 <ul>
 <li>I pillaged all the exercises from the relevant chapters of R for Data Science. We’ll do a few of these during lectures, but they can mostly be done in the afternoon practice sessions or on your own time. Find them in the ‘r4dsexercises’ directory of the github repo.</li>
-<li>RStudio has a separate “Master the Tidyverse” class that has a lot of exercises on various aspects of the tidyverse. Some of the exercises are on parts of the tidyverse we won’t cover, but you should be able to get most of them.</li>
+<li>RStudio has a separate “Master the Tidyverse” class that has a lot of exercises on various aspects of the tidyverse. Some of the exercises are on parts of the tidyverse we won’t cover, but you should be able to get most of them. These are in the master-tidyverse-exercises folder of the repo. Solutions are there too, don’t peek!</li>
 </ul>
+</section>
+<section id="follow-along" class="slide level2">
+<h2>Follow along</h2>
+<p>I’m primarily working off of the slides. They are available as HTML and PDF, but you may find it useful to open the .Rmd files that the slides are written in and follow along. You’ll be able to run the code chunks and to see how the slides were written. There are some additional lecture notes in the corelecturenotes folder of the github repo, but these are a little thin, and I’d suggest you go straight to R for Data Science for further reading.</p>
 </section>
     </div>
   </div>

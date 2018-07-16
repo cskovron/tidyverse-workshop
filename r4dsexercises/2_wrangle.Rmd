@@ -14,4 +14,85 @@ answers<-params$answers
 ```{r global_options, echo = FALSE, include = FALSE}
 knitr::opts_chunk$set(echo=TRUE, warning = FALSE, message = FALSE,
                       cache = FALSE, tidy = FALSE, size = "small")
+library(tidyverse)
 ```
+
+
+## Exercises: tibbles 
+
+1.  How can you tell if an object is a tibble? (Hint: try printing `mtcars`,
+    which is a regular data frame). 
+
+1.  Compare and contrast the following operations on a `data.frame` and 
+    equivalent tibble. What is different? Why might the default data frame
+    behaviours cause you frustration?
+    
+    ```{r, eval = FALSE}
+    df <- data.frame(abc = 1, xyz = "a")
+    df$x
+    df[, "xyz"]
+    df[, c("abc", "xyz")]
+    ```
+
+1.  If you have the name of a variable stored in an object, e.g. `var <- "mpg"`,
+    how can you extract the reference variable from a tibble?
+
+1.  Practice referring to non-syntactic names in the following data frame by:
+
+    1.  Extracting the variable called `1`.
+
+    1.  Plotting a scatterplot of `1` vs `2`.
+
+    1.  Creating a new column called `3` which is `2` divided by `1`.
+        
+    1.  Renaming the columns to `one`, `two` and `three`. 
+    
+    ```{r}
+    annoying <- tibble(
+      `1` = 1:10,
+      `2` = `1` * 2 + rnorm(length(`1`))
+    )
+    ```
+
+1.  What does `tibble::enframe()` do? When might you use it?
+
+1.  What option controls how many additional column names are printed
+    at the footer of a tibble?
+
+    
+### Exercises: readr
+
+1.  What function would you use to read a file where fields were separated with  
+    "|"?
+    
+1.  Apart from `file`, `skip`, and `comment`, what other arguments do
+    `read_csv()` and `read_tsv()` have in common?
+    
+1.  What are the most important arguments to `read_fwf()`?
+   
+1.  Sometimes strings in a CSV file contain commas. To prevent them from
+    causing problems they need to be surrounded by a quoting character, like
+    `"` or `'`. By convention, `read_csv()` assumes that the quoting
+    character will be `"`, and if you want to change it you'll need to
+    use `read_delim()` instead. What arguments do you need to specify
+    to read the following text into a data frame?
+    
+    ```{r, eval = FALSE}
+    "x,y\n1,'a,b'"
+    ```
+    
+1.  Identify what is wrong with each of the following inline CSV files. 
+    What happens when you run the code?
+    
+    ```{r, eval = FALSE}
+    read_csv("a,b\n1,2,3\n4,5,6")
+    read_csv("a,b,c\n1,2\n1,2,3,4")
+    read_csv("a,b\n\"1")
+    read_csv("a,b\n1,2\na,b")
+    read_csv("a;b\n1;3")
+    ```
+    
+    
+    
+    
+    

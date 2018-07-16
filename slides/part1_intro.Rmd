@@ -17,7 +17,16 @@ output:
 
 ```{r setup, include=FALSE}
 #setwd('~/Dropbox/tidyverse-workshop/')
+library(tidyverse)
+library(nycflights13)
 ```
+
+## Chris Skovron 
+- Data Science Scholar, Northwestern Institute on Complex Systems and Institute for Policy Research
+- PhD Political Science, Michigan, 2017 
+- Using R since 2009
+- I wish I'd learned the tidyverse first! 
+
 
 ## This workshop: 
 - Today, 9 - 12
@@ -27,6 +36,13 @@ output:
 
 MATERIALS:
 https://github.com/cskovron/tidyverse-workshop
+
+
+## Prerequisites
+```{r, eval = FALSE}
+install.packages(c('tidyverse','broom','infer','nycflights13'))
+```
+
 
           
 ## The tidyverse: Let's get organized          
@@ -63,7 +79,7 @@ https://github.com/cskovron/tidyverse-workshop
 
 - It's an official RStudio product, so watch their website
 - Easy install and load:
-  - `install.packages(tidyverse)`
+  - `install.packages('tidyverse')`
   - `library(tidyverse)`
   
   
@@ -71,13 +87,13 @@ https://github.com/cskovron/tidyverse-workshop
 
 ![](../images/R4dsCover.png)
 
-[R for Data Science](r4ds.had.co.nz) is freely available online. I encourage you to read all of it. We will only cover what I think are the most important chapters in these two days. 
+[R for Data Science](r4ds.had.co.nz) is freely available online. I encourage you to read all of it. We will only cover what I think are the most important chapters in these two days. I've blatantly stolen major parts of the workshop from this book. It's great! 
 
 ## This workshop is a partial walkthrough of R4DS
 
 - Adding in additional lessons on some of my favorite tidy analysis tasks
 - Focus on `dplyr` for the first day, for most users the most important package to learn 
-
+- Will sprinklin in some `ggplot2` on the second day, but it's the oldest and most well-known tidy package and has its own workshop. Learn it! 
 
 
 ## Verbs and pipes 
@@ -85,6 +101,8 @@ https://github.com/cskovron/tidyverse-workshop
 This wacky thing is the pipe.
 
 ![](../images/magrittr.png)
+
+## The pipe
 
 The pipe chains together commands so that you can do a bunch of manipulations in order to a data frame without calling it repeatedly or nesting many parentheses
 
@@ -120,9 +138,58 @@ car_data <-
   print
 ```
 
+
+## Unpiped operation
+
+
+```{r, fig.width = 6}
+by_dest <- group_by(flights, dest)
+delay <- summarise(by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+)
+delay <- filter(delay, count > 20, dest != "HNL")
+
+# It looks like delays increase with distance up to ~750 miles 
+# and then decrease. Maybe as flights get longer there's more 
+# ability to make up delays in the air?
+ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
+```
+
+## Break down your work into steps
+
+There are three steps to prepare this data:
+
+1.  Group flights by destination.
+
+1.  Summarise to compute distance, average delay, and number of flights.
+
+1.  Filter to remove noisy points and Honolulu airport, which is almost
+    twice as far away as the next closest airport.
+
+## Cleaner code with the pipe 
+
+There's another way to tackle the same problem with the pipe, `%>%`:
+
+```{r}
+delays <- flights %>% 
+  group_by(dest) %>% 
+  summarise(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %>% 
+  filter(count > 20, dest != "HNL")
+```
+
+
+
 ## Pipe into `ggplot()`
 
-Hopefully you're either alread familiar with `ggplot2` or are taking the workshop, because that's the one tidyverse package we won't explore in any detail. You can use the pipe to pass data from a piped set of say, `dplyr` commands into a call to `ggplot()`. Just replace the data argument of the call to `ggplot` with a `.`. 
+Hopefully you're either already familiar with `ggplot2` or are taking the workshop, because that's the one tidyverse package we won't explore in enough detail. You can use the pipe to pass data from a piped set of say, `dplyr` commands into a call to `ggplot()`. Just replace the data argument of the call to `ggplot` with a `.`. 
 
 ```{r, eval = FALSE}
 g = ncs %>%
@@ -142,6 +209,7 @@ g = ncs %>%
 
 
 
+
 ## Outline of the rest of the workshop: 
 
 - Today: data transformation with dplyr
@@ -153,7 +221,10 @@ g = ncs %>%
 ## Two sets of exercises
 
 - I pillaged all the exercises from the relevant chapters of R for Data Science. We'll do a few of these during lectures, but they can mostly be done in the afternoon practice sessions or on your own time. Find them in the 'r4dsexercises' directory of the github repo.
-- RStudio has a separate "Master the Tidyverse" class that has a lot of exercises on various aspects of the tidyverse. Some of the exercises are on parts of the tidyverse we won't cover, but you should be able to get most of them. 
+- RStudio has a separate "Master the Tidyverse" class that has a lot of exercises on various aspects of the tidyverse. Some of the exercises are on parts of the tidyverse we won't cover, but you should be able to get most of them. These are in the master-tidyverse-exercises folder of the repo. Solutions are there too, don't peek! 
+
+## Follow along
+I'm primarily working off of the slides. They are available as HTML and PDF, but you may find it useful to open the .Rmd files that the slides are written in and follow along. You'll be able to run the code chunks and to see how the slides were written. There are some additional lecture notes in the corelecturenotes folder of the github repo, but these are a little thin, and I'd suggest you go straight to R for Data Science for further reading. 
 
 
 
