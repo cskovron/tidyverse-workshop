@@ -129,7 +129,7 @@ filter(flights, month = 1)
 ```
 
 
-## Issues with floaitng point numbers 
+## Issues with floating point numbers 
 There's another common problem you might encounter when using `==`: floating point numbers. These results might surprise you!
 
 ```{r}
