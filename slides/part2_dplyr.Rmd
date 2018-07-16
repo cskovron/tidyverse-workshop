@@ -33,7 +33,7 @@ For a condensed version, check out the [Introduction to dplyr](https://cran.r-pr
 
 ## Example data: nycflights13
 
-```{r, message = FALSE}
+```{r}
 #install.packages(c('nycflights13', 'tidyverse'))
 library(nycflights13)
 library(tidyverse)

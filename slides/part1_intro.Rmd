@@ -19,6 +19,14 @@ output:
 #setwd('~/Dropbox/tidyverse-workshop/')
 ```
 
+## This workshop: 
+- Today, 9 - 12
+- Wednesday, 9-12, same place
+- Practice sessions, Today and Wednesday, 1:30pm, Mudd Library, Small Classroom, Room 2124
+
+
+MATERIALS:
+https://github.com/cskovron/tidyverse-workshop
 
           
 ## The tidyverse: Let's get organized          
@@ -63,7 +71,7 @@ output:
 
 ![](../images/R4dsCover.png)
 
-
+[R for Data Science](r4ds.had.co.nz) is freely available online. I encourage you to read all of it. We will only cover what I think are the most important chapters in these two days. 
 
 ## This workshop is a partial walkthrough of R4DS
 
@@ -131,3 +139,23 @@ g = ncs %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggtitle("Candidates' perceptions of their ideology relative to the legislature")
 ```
+
+
+
+## Outline of the rest of the workshop: 
+
+- Today: data transformation with dplyr
+- Today/Wednesday: wrangle and tidy data with tibbles, tidyr and readr
+- Wednesday: an incomplete introduction to working with strings, dates, and factors
+- Finishing up: Tidying your modeling with infer and broom 
+
+
+## Two sets of exercises
+
+- I pillaged all the exercises from the relevant chapters of R for Data Science. We'll do a few of these during lectures, but they can mostly be done in the afternoon practice sessions or on your own time. Find them in the 'r4dsexercises' directory of the github repo.
+- RStudio has a separate "Master the Tidyverse" class that has a lot of exercises on various aspects of the tidyverse. Some of the exercises are on parts of the tidyverse we won't cover, but you should be able to get most of them. 
+
+
+
+
+

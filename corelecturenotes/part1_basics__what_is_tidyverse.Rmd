@@ -36,11 +36,11 @@ The tidyverse is a set of packages that are useful for essential data science ta
 
 
 
-# Tidy data principles 
+# Tidy workflow principles 
 
 ![](../images/data-science-explore.png)
 
-
+The tidyverse is set up to help you achieve the workflow steps in the figure above. `readr` handles import. 
 
 
 
@@ -52,8 +52,7 @@ A key feature of the tidyverse is that it aims to clean up your R code by using 
 
 Those are gnarly characters to type, but fortunately RStudio has a keyboard shortcut, CMD+SHIFT+M (CTRL+SHIFT+M on Windows) to quickly type a pipe for you. 
 
-A good mantra for effectively using the pipe in your
-"Dataframe first, dataframe once"
+A good mantra for effectively using the pipe in your research is "Dataframe first, dataframe once." Call the dataframe once, then do the operations you want to it. Note that you will need to store the data as a new object! 
 
 If you don't use the pipe, your code, *even if you use dplyr*, can end up with a horrid-looking and unintiutive structure of nested parentheses and objects called in an unintuitive order:
 
@@ -65,7 +64,16 @@ car_data <-
             kpl = mpg*0.4251)
 ```
 
-With the pipe, you can simpify this to a 
+With the pipe, you can simpify this to a cleaner version that is easier to read. 
+```{r, eval = FALSE}
+
+car_data <- 
+  mtcars %>%
+  subset(hp > 100) %>%
+  aggregate(. ~ cyl, data = ., FUN = . %>% mean %>% round(2)) %>%
+  transform(kpl = mpg %>% multiply_by(0.4251)) %>%
+  print
+```
 
 
 Some people read ` %>% ` as "then" when they are reading their code aloud. 
