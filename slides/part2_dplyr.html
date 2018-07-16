@@ -500,9 +500,17 @@ Northwestern University</div></h2>
 <span class="kw">library</span>(nycflights13)</code></pre></div>
 <pre><code>## Warning: package &#39;nycflights13&#39; was built under R version 3.4.4</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)</code></pre></div>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
+## ✔ tibble  1.4.2          ✔ dplyr   0.7.4     
+## ✔ tidyr   0.8.0          ✔ stringr 1.3.0     
+## ✔ readr   1.1.1          ✔ forcats 0.2.0</code></pre>
 <pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.4.3</code></pre>
 <pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.3</code></pre>
 <pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 </section>
 <section id="note-conflicts-when-you-load-the-tidyverse" class="slide level2">
 <h2>Note conflicts when you load the tidyverse</h2>
@@ -637,33 +645,11 @@ Northwestern University</div></h2>
 <p>Sometimes you can simplify complicated subsetting by remembering De Morgan’s law: <code>!(x &amp; y)</code> is the same as <code>!x | !y</code>, and <code>!(x | y)</code> is the same as <code>!x &amp; !y</code>. For example, if you wanted to find flights that weren’t delayed (on arrival or departure) by more than two hours, you could use either of the following two filters:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, <span class="op">!</span>(arr_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">120</span> <span class="op">|</span><span class="st"> </span>dep_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">120</span>))
 <span class="kw">filter</span>(flights, arr_delay <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>, dep_delay <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>)</code></pre></div>
-<h3 id="missing-values">Missing values</h3>
-<p>One important feature of R that can make comparison tricky are missing values, or <code>NA</code>s (“not availables”). <code>NA</code> represents an unknown value so missing values are “contagious”: almost any operation involving an unknown value will also be unknown.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span></code></pre></div>
-<pre><code>## [1] NA</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">10</span> <span class="op">==</span><span class="st"> </span><span class="ot">NA</span></code></pre></div>
-<pre><code>## [1] NA</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">+</span><span class="st"> </span><span class="dv">10</span></code></pre></div>
-<pre><code>## [1] NA</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span></code></pre></div>
-<pre><code>## [1] NA</code></pre>
-<p>The most confusing result is this one:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">==</span><span class="st"> </span><span class="ot">NA</span></code></pre></div>
-<pre><code>## [1] NA</code></pre>
-<p>It’s easiest to understand why this is true with a bit more context:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Let x be Mary&#39;s age. We don&#39;t know how old she is.</span>
-x &lt;-<span class="st"> </span><span class="ot">NA</span>
-
-<span class="co"># Let y be John&#39;s age. We don&#39;t know how old he is.</span>
-y &lt;-<span class="st"> </span><span class="ot">NA</span>
-
-<span class="co"># Are John and Mary the same age?</span>
-x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
-<pre><code>## [1] NA</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># We don&#39;t know!</span></code></pre></div>
+</section>
+<section id="missing-values" class="slide level2">
+<h2>Missing values</h2>
 <p>If you want to determine if a value is missing, use <code>is.na()</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">is.na</span>(x)</code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
 <p><code>filter()</code> only includes rows where the condition is <code>TRUE</code>; it excludes both <code>FALSE</code> and <code>NA</code> values. If you want to preserve missing values, ask for them explicitly:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="ot">NA</span>, <span class="dv">3</span>))
 <span class="kw">filter</span>(df, x <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
@@ -740,6 +726,34 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ## 1    5.
 ## 2    2.
 ## 3   NA</code></pre>
+</section>
+<section id="exercise" class="slide level2">
+<h2>Exercise</h2>
+<ol type="1">
+<li>Sort <code>flights</code> to find the fastest flights.</li>
+</ol>
+</section>
+<section id="solution" class="slide level2">
+<h2>Solution</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(air_time)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1  2013     1    16     1355           1315       40.     1442
+##  2  2013     4    13      537            527       10.      622
+##  3  2013    12     6      922            851       31.     1021
+##  4  2013     2     3     2153           2129       24.     2247
+##  5  2013     2     5     1303           1315      -12.     1342
+##  6  2013     2    12     2123           2130       -7.     2211
+##  7  2013     3     2     1450           1500      -10.     1547
+##  8  2013     3     8     2026           1935       51.     2131
+##  9  2013     3    18     1456           1329       87.     1533
+## 10  2013     3    19     2226           2145       41.     2305
+## # ... with 336,766 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 </section>
 <section id="select-columns-with-select" class="slide level2">
 <h2>Select columns with <code>select()</code></h2>
@@ -836,7 +850,7 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tail_num &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<p><em>Note that it’s old_name = new_name. This always throws me off.</em></p>
+<p><em>Note that it’s new_name = old_name. This always throws me off.</em></p>
 </section>
 <section id="add-new-variables-with-mutate" class="slide level2">
 <h2>Add new variables with <code>mutate()</code></h2>
@@ -917,66 +931,56 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9   -5. 2.33          -2.14
 ## 10   10. 2.30           4.35
 ## # ... with 336,766 more rows</code></pre>
+<p>There are many functions for creating new variables that you can use with <code>mutate()</code>. The key property is that the function must be vectorised: it must take a vector of values as input, return a vector with the same number of values as output. There’s no way to list every possible function that you might use, but here’s a selection of functions that are frequently useful:</p>
+<ul>
+<li>Logical comparisons, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>!=</code>, which you learned about earlier. If you’re doing a complex sequence of logical operations it’s often a good idea to store the interim values in new variables so you can check that each step is working as expected.</li>
+</ul>
 </section>
 <section id="useful-helpers-for-mutate" class="slide level2">
 <h2>Useful helpers for <code>mutate()</code></h2>
-<p>There are many functions for creating new variables that you can use with <code>mutate()</code>. The key property is that the function must be vectorised: it must take a vector of values as input, return a vector with the same number of values as output. There’s no way to list every possible function that you might use, but here’s a selection of functions that are frequently useful:</p>
 <ul>
-<li><p>Arithmetic operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>. These are all vectorised, using the so called “recycling rules”. If one parameter is shorter than the other, it will be automatically extended to be the same length. This is most useful when one of the arguments is a single number: <code>air_time / 60</code>, <code>hours * 60 + minute</code>, etc.</p>
-<p>Arithmetic operators are also useful in conjunction with the aggregate functions you’ll learn about later. For example, <code>x / sum(x)</code> calculates the proportion of a total, and <code>y - mean(y)</code> computes the difference from the mean.</p></li>
-<li><p>Modular arithmetic: <code>%/%</code> (integer division) and <code>%%</code> (remainder), where <code>x == y * (x %/% y) + (x %% y)</code>. Modular arithmetic is a handy tool because it allows you to break integers up into pieces. For example, in the flights dataset, you can compute <code>hour</code> and <code>minute</code> from <code>dep_time</code> with:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">transmute</span>(flights,
-  dep_time,
-  <span class="dt">hour =</span> dep_time <span class="op">%/%</span><span class="st"> </span><span class="dv">100</span>,
-  <span class="dt">minute =</span> dep_time <span class="op">%%</span><span class="st"> </span><span class="dv">100</span>
-)</code></pre></div>
-<pre><code>## # A tibble: 336,776 x 3
-##    dep_time  hour minute
-##       &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
-##  1      517    5.    17.
-##  2      533    5.    33.
-##  3      542    5.    42.
-##  4      544    5.    44.
-##  5      554    5.    54.
-##  6      554    5.    54.
-##  7      555    5.    55.
-##  8      557    5.    57.
-##  9      557    5.    57.
-## 10      558    5.    58.
-## # ... with 336,766 more rows</code></pre></li>
-<li><p>Logs: <code>log()</code>, <code>log2()</code>, <code>log10()</code>. Logarithms are an incredibly useful transformation for dealing with data that ranges across multiple orders of magnitude. They also convert multiplicative relationships to additive, a feature we’ll come back to in modelling.</p>
-<p>All else being equal, I recommend using <code>log2()</code> because it’s easy to interpret: a difference of 1 on the log scale corresponds to doubling on the original scale and a difference of -1 corresponds to halving.</p></li>
-<li><p>Offsets: <code>lead()</code> and <code>lag()</code> allow you to refer to leading or lagging values. This allows you to compute running differences (e.g. <code>x - lag(x)</code>) or find when values change (<code>x != lag(x))</code>. They are most useful in conjunction with <code>group_by()</code>, which you’ll learn about shortly.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</code></pre></div>
-<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lag</span>(x)</code></pre></div>
-<pre><code>##  [1] NA  1  2  3  4  5  6  7  8  9</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lead</span>(x)</code></pre></div>
-<pre><code>##  [1]  2  3  4  5  6  7  8  9 10 NA</code></pre></li>
-<li><p>Cumulative and rolling aggregates: R provides functions for running sums, products, mins and maxes: <code>cumsum()</code>, <code>cumprod()</code>, <code>cummin()</code>, <code>cummax()</code>; and dplyr provides <code>cummean()</code> for cumulative means. If you need rolling aggregates (i.e. a sum computed over a rolling window), try the RcppRoll package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x</code></pre></div>
-<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cumsum</span>(x)</code></pre></div>
-<pre><code>##  [1]  1  3  6 10 15 21 28 36 45 55</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cummean</span>(x)</code></pre></div>
-<pre><code>##  [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5</code></pre></li>
-<li><p>Logical comparisons, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>!=</code>, which you learned about earlier. If you’re doing a complex sequence of logical operations it’s often a good idea to store the interim values in new variables so you can check that each step is working as expected.</p></li>
 <li><p>Ranking: there are a number of ranking functions, but you should start with <code>min_rank()</code>. It does the most usual type of ranking (e.g. 1st, 2nd, 2nd, 4th). The default gives smallest values the small ranks; use <code>desc(x)</code> to give the largest values the smallest ranks.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="ot">NA</span>, <span class="dv">3</span>, <span class="dv">4</span>)
 <span class="kw">min_rank</span>(y)</code></pre></div>
 <pre><code>## [1]  1  2  2 NA  4  5</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">min_rank</span>(<span class="kw">desc</span>(y))</code></pre></div>
-<pre><code>## [1]  5  3  3 NA  2  1</code></pre>
-<p>If <code>min_rank()</code> doesn’t do what you need, look at the variants <code>row_number()</code>, <code>dense_rank()</code>, <code>percent_rank()</code>, <code>cume_dist()</code>, <code>ntile()</code>. See their help pages for more details.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">row_number</span>(y)</code></pre></div>
-<pre><code>## [1]  1  2  3 NA  4  5</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dense_rank</span>(y)</code></pre></div>
-<pre><code>## [1]  1  2  2 NA  3  4</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">percent_rank</span>(y)</code></pre></div>
-<pre><code>## [1] 0.00 0.25 0.25   NA 0.75 1.00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cume_dist</span>(y)</code></pre></div>
-<pre><code>## [1] 0.2 0.6 0.6  NA 0.8 1.0</code></pre></li>
+<pre><code>## [1]  5  3  3 NA  2  1</code></pre></li>
 </ul>
+</section>
+<section id="useful-helpers-for-mutate-1" class="slide level2">
+<h2>Useful helpers for <code>mutate()</code></h2>
+<p>If <code>min_rank()</code> doesn’t do what you need, look at the variants <code>row_number()</code>, <code>dense_rank()</code>, <code>percent_rank()</code>, <code>cume_dist()</code>, <code>ntile()</code>. See their help pages for more details.</p>
+<pre><code>```r
+row_number(y)
+```
+
+```
+## [1]  1  2  3 NA  4  5
+```
+
+```r
+dense_rank(y)
+```
+
+```
+## [1]  1  2  2 NA  3  4
+```
+
+```r
+percent_rank(y)
+```
+
+```
+## [1] 0.00 0.25 0.25   NA 0.75 1.00
+```
+
+```r
+cume_dist(y)
+```
+
+```
+## [1] 0.2 0.6 0.6  NA 0.8 1.0
+```</code></pre>
 </section>
 <section id="grouped-summaries-with-summarise" class="slide level2">
 <h2>Grouped summaries with <code>summarise()</code></h2>
@@ -986,7 +990,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##   delay
 ##   &lt;dbl&gt;
 ## 1  12.6</code></pre>
-<p>(We’ll come back to what that <code>na.rm = TRUE</code> means very shortly.)</p>
+</section>
+<section id="grouped-summaries-with-summarise-1" class="slide level2">
+<h2>Grouped summaries with <code>summarise()</code></h2>
 <p><code>summarise()</code> is not terribly useful unless we pair it with <code>group_by()</code>. This changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”. For example, if we applied exactly the same code to a data frame grouped by date, we get the average delay per date:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">by_day &lt;-<span class="st"> </span><span class="kw">group_by</span>(flights, year, month, day)
 <span class="kw">summarise</span>(by_day, <span class="dt">delay =</span> <span class="kw">mean</span>(dep_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
@@ -1005,44 +1011,6 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9  2013     1     9  2.28
 ## 10  2013     1    10  2.84
 ## # ... with 355 more rows</code></pre>
-<p>Together <code>group_by()</code> and <code>summarise()</code> provide one of the tools that you’ll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.</p>
-<h3 id="combining-multiple-operations-with-the-pipe">Combining multiple operations with the pipe</h3>
-<p>Imagine that we want to explore the relationship between the distance and average delay for each location. Using what you know about dplyr, you might write code like this:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">by_dest &lt;-<span class="st"> </span><span class="kw">group_by</span>(flights, dest)
-delay &lt;-<span class="st"> </span><span class="kw">summarise</span>(by_dest,
-  <span class="dt">count =</span> <span class="kw">n</span>(),
-  <span class="dt">dist =</span> <span class="kw">mean</span>(distance, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-  <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
-)
-delay &lt;-<span class="st"> </span><span class="kw">filter</span>(delay, count <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, dest <span class="op">!=</span><span class="st"> &quot;HNL&quot;</span>)
-
-<span class="co"># It looks like delays increase with distance up to ~750 miles </span>
-<span class="co"># and then decrease. Maybe as flights get longer there&#39;s more </span>
-<span class="co"># ability to make up delays in the air?</span>
-<span class="kw">ggplot</span>(<span class="dt">data =</span> delay, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> dist, <span class="dt">y =</span> delay)) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">size =</span> count), <span class="dt">alpha =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-34-1.png" width="576" /></p>
-<p>There are three steps to prepare this data:</p>
-<ol type="1">
-<li><p>Group flights by destination.</p></li>
-<li><p>Summarise to compute distance, average delay, and number of flights.</p></li>
-<li><p>Filter to remove noisy points and Honolulu airport, which is almost twice as far away as the next closest airport.</p></li>
-</ol>
-<p>This code is a little frustrating to write because we have to give each intermediate data frame a name, even though we don’t care about it. Naming things is hard, so this slows down our analysis.</p>
-<p>There’s another way to tackle the same problem with the pipe, <code>%&gt;%</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">delays &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">group_by</span>(dest) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">summarise</span>(
-    <span class="dt">count =</span> <span class="kw">n</span>(),
-    <span class="dt">dist =</span> <span class="kw">mean</span>(distance, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
-    <span class="dt">delay =</span> <span class="kw">mean</span>(arr_delay, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
-  ) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(count <span class="op">&gt;</span><span class="st"> </span><span class="dv">20</span>, dest <span class="op">!=</span><span class="st"> &quot;HNL&quot;</span>)</code></pre></div>
-<p>This focuses on the transformations, not what’s being transformed, which makes the code easier to read. You can read it as a series of imperative statements: group, then summarise, then filter. As suggested by this reading, a good way to pronounce <code>%&gt;%</code> when reading code is “then”.</p>
-<p>Behind the scenes, <code>x %&gt;% f(y)</code> turns into <code>f(x, y)</code>, and <code>x %&gt;% f(y) %&gt;% g(z)</code> turns into <code>g(f(x, y), z)</code> and so on. You can use the pipe to rewrite multiple operations in a way that you can read left-to-right, top-to-bottom. We’ll use piping frequently from now on because it considerably improves the readability of code, and we’ll come back to it in more detail in [pipes].</p>
-<p>Working with the pipe is one of the key criteria for belonging to the tidyverse. The only exception is ggplot2: it was written before the pipe was discovered. Unfortunately, the next iteration of ggplot2, ggvis, which does use the pipe, isn’t quite ready for prime time yet.</p>
 <h3 id="missing-values-1">Missing values</h3>
 <p>You may have wondered about the <code>na.rm</code> argument we used above. What happens if we don’t set it?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1063,6 +1031,9 @@ delay &lt;-<span class="st"> </span><span class="kw">filter</span>(delay, count 
 ##  9  2013     1     9    NA
 ## 10  2013     1    10    NA
 ## # ... with 355 more rows</code></pre>
+</section>
+<section id="missing-values-2" class="slide level2">
+<h2>Missing values</h2>
 <p>We get a lot of missing values! That’s because aggregation functions obey the usual rule of missing values: if there’s any missing value in the input, the output will be a missing value. Fortunately, all aggregation functions have an <code>na.rm</code> argument which removes the missing values prior to computation:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1082,6 +1053,9 @@ delay &lt;-<span class="st"> </span><span class="kw">filter</span>(delay, count 
 ##  9  2013     1     9  2.28
 ## 10  2013     1    10  2.84
 ## # ... with 355 more rows</code></pre>
+</section>
+<section id="missing-values-3" class="slide level2">
+<h2>Missing values</h2>
 <p>In this case, where missing values represent cancelled flights, we could also tackle the problem by first removing the cancelled flights. We’ll save this dataset so we can reuse in the next few examples.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">not_cancelled &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(dep_delay), <span class="op">!</span><span class="kw">is.na</span>(arr_delay))
@@ -1104,7 +1078,9 @@ not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
 ##  9  2013     1     9  2.30
 ## 10  2013     1    10  2.84
 ## # ... with 355 more rows</code></pre>
-<h3 id="counts">Counts</h3>
+</section>
+<section id="counts" class="slide level2">
+<h2>Counts</h2>
 <p>Whenever you do any aggregation, it’s always a good idea to include either a count (<code>n()</code>), or a count of non-missing values (<code>sum(!is.na(x))</code>). That way you can check that you’re not drawing conclusions based on very small amounts of data. For example, let’s look at the planes (identified by their tail number) that have the highest average delays:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">delays &lt;-<span class="st"> </span>not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">group_by</span>(tailnum) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1114,7 +1090,19 @@ not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
 
 <span class="kw">ggplot</span>(<span class="dt">data =</span> delays, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> delay)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_freqpoly</span>(<span class="dt">binwidth =</span> <span class="dv">10</span>)</code></pre></div>
-<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-39-1.png" width="768" /></p>
+<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-32-1.png" width="768" /></p>
+</section>
+<section id="exercise-1" class="slide level2">
+<h2>Exercise</h2>
+<ol type="1">
+<li><p>Find all flights that</p>
+<ol type="1">
+<li>Had an arrival delay of two or more hours</li>
+<li>Flew to Houston (<code>IAH</code> or <code>HOU</code>)</li>
+<li>Were operated by United, American, or Delta</li>
+<li>Departed in summer (July, August, and September)</li>
+</ol></li>
+</ol>
 </section>
 <section id="grouped-summaries" class="slide level2">
 <h2>Grouped summaries</h2>
@@ -1122,16 +1110,12 @@ not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
 <section id="counts-1" class="slide level2">
 <h2>Counts</h2>
 <p>You’ve seen <code>n()</code>, which takes no arguments, and returns the size of the current group. To count the number of non-missing values, use <code>sum(!is.na(x))</code>. To count the number of distinct (unique) values, use <code>n_distinct(x)</code>.</p>
-<pre><code>```r
-# Which destinations have the most carriers?
-not_cancelled %&gt;% 
-  group_by(dest) %&gt;% 
-  summarise(carriers = n_distinct(carrier)) %&gt;% 
-  arrange(desc(carriers))
-```
-
-```
-## # A tibble: 104 x 2
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    <span class="co"># Which destinations have the most carriers?</span>
+    not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">group_by</span>(dest) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">summarise</span>(<span class="dt">carriers =</span> <span class="kw">n_distinct</span>(carrier)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">arrange</span>(<span class="kw">desc</span>(carriers))</code></pre></div>
+<pre><code>## # A tibble: 104 x 2
 ##    dest  carriers
 ##    &lt;chr&gt;    &lt;int&gt;
 ##  1 ATL          7
@@ -1144,22 +1128,14 @@ not_cancelled %&gt;%
 ##  8 DTW          6
 ##  9 IAD          6
 ## 10 MSP          6
-## # ... with 94 more rows
-```</code></pre>
+## # ... with 94 more rows</code></pre>
 </section>
 <section id="counts-2" class="slide level2">
 <h2>Counts</h2>
-<pre><code>Counts are so useful that dplyr provides a simple helper if all you want is 
-a count:
-
-
-```r
-not_cancelled %&gt;% 
-  count(dest)
-```
-
-```
-## # A tibble: 104 x 2
+<p>Counts are so useful that dplyr provides a simple helper if all you want is a count:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">count</span>(dest)</code></pre></div>
+<pre><code>## # A tibble: 104 x 2
 ##    dest      n
 ##    &lt;chr&gt; &lt;int&gt;
 ##  1 ABQ     254
@@ -1172,22 +1148,14 @@ not_cancelled %&gt;%
 ##  8 BDL     412
 ##  9 BGR     358
 ## 10 BHM     269
-## # ... with 94 more rows
-```</code></pre>
+## # ... with 94 more rows</code></pre>
 </section>
 <section id="counts-3" class="slide level2">
 <h2>Counts</h2>
-<pre><code>You can optionally provide a weight variable. For example, you could use 
-this to &quot;count&quot; (sum) the total number of miles a plane flew:
-
-
-```r
-not_cancelled %&gt;% 
-  count(tailnum, wt = distance)
-```
-
-```
-## # A tibble: 4,037 x 2
+<p>You can optionally provide a weight variable. For example, you could use this to “count” (sum) the total number of miles a plane flew:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">count</span>(tailnum, <span class="dt">wt =</span> distance)</code></pre></div>
+<pre><code>## # A tibble: 4,037 x 2
 ##    tailnum       n
 ##    &lt;chr&gt;     &lt;dbl&gt;
 ##  1 D942DN    3418.
@@ -1200,22 +1168,17 @@ not_cancelled %&gt;%
 ##  8 N105UW   23618.
 ##  9 N107US   21677.
 ## 10 N108UW   32070.
-## # ... with 4,027 more rows
-```</code></pre>
+## # ... with 4,027 more rows</code></pre>
 </section>
 <section id="counts-4" class="slide level2">
 <h2>Counts</h2>
 <p>Counts and proportions of logical values: <code>sum(x &gt; 10)</code>, <code>mean(y == 0)</code>. When used with numeric functions, <code>TRUE</code> is converted to 1 and <code>FALSE</code> to 0. This makes <code>sum()</code> and <code>mean()</code> very useful: <code>sum(x)</code> gives the number of <code>TRUE</code>s in <code>x</code>, and <code>mean(x)</code> gives the proportion.</p>
-<pre><code>```r
-# How many flights left before 5am? (these usually indicate delayed
-# flights from the previous day)
-not_cancelled %&gt;% 
-  group_by(year, month, day) %&gt;% 
-  summarise(n_early = sum(dep_time &lt; 500))
-```
-
-```
-## # A tibble: 365 x 4
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    <span class="co"># How many flights left before 5am? (these usually indicate delayed</span>
+    <span class="co"># flights from the previous day)</span>
+    not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">summarise</span>(<span class="dt">n_early =</span> <span class="kw">sum</span>(dep_time <span class="op">&lt;</span><span class="st"> </span><span class="dv">500</span>))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
 ## # Groups:   year, month [?]
 ##     year month   day n_early
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
@@ -1229,18 +1192,12 @@ not_cancelled %&gt;%
 ##  8  2013     1     8       1
 ##  9  2013     1     9       3
 ## 10  2013     1    10       3
-## # ... with 355 more rows
-```
-
-```r
-# What proportion of flights are delayed by more than an hour?
-not_cancelled %&gt;% 
-  group_by(year, month, day) %&gt;% 
-  summarise(hour_perc = mean(arr_delay &gt; 60))
-```
-
-```
-## # A tibble: 365 x 4
+## # ... with 355 more rows</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    <span class="co"># What proportion of flights are delayed by more than an hour?</span>
+    not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">summarise</span>(<span class="dt">hour_perc =</span> <span class="kw">mean</span>(arr_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">60</span>))</code></pre></div>
+<pre><code>## # A tibble: 365 x 4
 ## # Groups:   year, month [?]
 ##     year month   day hour_perc
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;
@@ -1254,8 +1211,7 @@ not_cancelled %&gt;%
 ##  8  2013     1     8    0.0213
 ##  9  2013     1     9    0.0202
 ## 10  2013     1    10    0.0183
-## # ... with 355 more rows
-```</code></pre>
+## # ... with 355 more rows</code></pre>
 </section>
 <section id="grouping-by-multiple-variables" class="slide level2">
 <h2>Grouping by multiple variables</h2>
@@ -1399,8 +1355,254 @@ popular_dests %&gt;%
 ## # ... with 131,096 more rows
 ```</code></pre>
 </section>
-<section id="advanced-verbs-mutate_at-summarize_at" class="slide level2">
-<h2>Advanced verbs: <code>mutate_at()</code>, <code>summarize_at()</code></h2>
+<section id="exercise-2" class="slide level2">
+<h2>Exercise</h2>
+<ol type="1">
+<li><p>Come up with another approach that will give you the same output as <code>not_cancelled %&gt;% count(dest)</code> and <code>not_cancelled %&gt;%</code> <code>count(tailnum, wt = distance)</code> (without using <code>count()</code>).</p></li>
+<li><p>Which carrier has the worst delays?</p></li>
+</ol>
+</section>
+<section id="advanced-verbs-summarize_all-summarize_at-summarize_if" class="slide level2">
+<h2>Advanced verbs: <code>summarize_all()</code>, <code>summarize_at()</code>, <code>summarize_if()</code></h2>
+<p>The <code>_all</code>, <code>_at</code> and <code>_if</code> suffixes work on <code>mutate</code>, <code>summarize</code>, and <code>transmute</code>. (British English speakers, you can use <code>summarise</code> too.)</p>
+<ul>
+<li><code>_all</code> applies the operation to all columns</li>
+<li><code>_at</code> applies the operation only to named columns</li>
+<li><code>_if</code> applies the operation if some condition is true</li>
+</ul>
+</section>
+<section id="summarize_all" class="slide level2">
+<h2><code>summarize_all()</code></h2>
+<pre><code>```r
+iris %&gt;%
+  group_by(Species) %&gt;%
+  summarise_all(mean)
+```
+
+```
+## # A tibble: 3 x 5
+##   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width
+##   &lt;fct&gt;             &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+## 1 setosa             5.01        3.43         1.46       0.246
+## 2 versicolor         5.94        2.77         4.26       1.33 
+## 3 virginica          6.59        2.97         5.55       2.03
+```</code></pre>
+</section>
+<section id="summarize_at" class="slide level2">
+<h2><code>summarize_at()</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">starwars <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="kw">summarise_at</span>(<span class="kw">c</span>(<span class="st">&quot;height&quot;</span>, <span class="st">&quot;mass&quot;</span>), mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## # A tibble: 1 x 2
+##   height  mass
+##    &lt;dbl&gt; &lt;dbl&gt;
+## 1   174.  97.3</code></pre>
+</section>
+<section id="mutate_at-with-a-helper-to-choose-columns" class="slide level2">
+<h2><code>mutate_at()</code> with a helper to choose columns</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">iris <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate_at</span>(<span class="kw">vars</span>(<span class="kw">matches</span>(<span class="st">&quot;Sepal&quot;</span>)), log)</code></pre></div>
+<pre><code>##     Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+## 1       1.629241   1.2527630          1.4         0.2     setosa
+## 2       1.589235   1.0986123          1.4         0.2     setosa
+## 3       1.547563   1.1631508          1.3         0.2     setosa
+## 4       1.526056   1.1314021          1.5         0.2     setosa
+## 5       1.609438   1.2809338          1.4         0.2     setosa
+## 6       1.686399   1.3609766          1.7         0.4     setosa
+## 7       1.526056   1.2237754          1.4         0.3     setosa
+## 8       1.609438   1.2237754          1.5         0.2     setosa
+## 9       1.481605   1.0647107          1.4         0.2     setosa
+## 10      1.589235   1.1314021          1.5         0.1     setosa
+## 11      1.686399   1.3083328          1.5         0.2     setosa
+## 12      1.568616   1.2237754          1.6         0.2     setosa
+## 13      1.568616   1.0986123          1.4         0.1     setosa
+## 14      1.458615   1.0986123          1.1         0.1     setosa
+## 15      1.757858   1.3862944          1.2         0.2     setosa
+## 16      1.740466   1.4816045          1.5         0.4     setosa
+## 17      1.686399   1.3609766          1.3         0.4     setosa
+## 18      1.629241   1.2527630          1.4         0.3     setosa
+## 19      1.740466   1.3350011          1.7         0.3     setosa
+## 20      1.629241   1.3350011          1.5         0.3     setosa
+## 21      1.686399   1.2237754          1.7         0.2     setosa
+## 22      1.629241   1.3083328          1.5         0.4     setosa
+## 23      1.526056   1.2809338          1.0         0.2     setosa
+## 24      1.629241   1.1939225          1.7         0.5     setosa
+## 25      1.568616   1.2237754          1.9         0.2     setosa
+## 26      1.609438   1.0986123          1.6         0.2     setosa
+## 27      1.609438   1.2237754          1.6         0.4     setosa
+## 28      1.648659   1.2527630          1.5         0.2     setosa
+## 29      1.648659   1.2237754          1.4         0.2     setosa
+## 30      1.547563   1.1631508          1.6         0.2     setosa
+## 31      1.568616   1.1314021          1.6         0.2     setosa
+## 32      1.686399   1.2237754          1.5         0.4     setosa
+## 33      1.648659   1.4109870          1.5         0.1     setosa
+## 34      1.704748   1.4350845          1.4         0.2     setosa
+## 35      1.589235   1.1314021          1.5         0.2     setosa
+## 36      1.609438   1.1631508          1.2         0.2     setosa
+## 37      1.704748   1.2527630          1.3         0.2     setosa
+## 38      1.589235   1.2809338          1.4         0.1     setosa
+## 39      1.481605   1.0986123          1.3         0.2     setosa
+## 40      1.629241   1.2237754          1.5         0.2     setosa
+## 41      1.609438   1.2527630          1.3         0.3     setosa
+## 42      1.504077   0.8329091          1.3         0.3     setosa
+## 43      1.481605   1.1631508          1.3         0.2     setosa
+## 44      1.609438   1.2527630          1.6         0.6     setosa
+## 45      1.629241   1.3350011          1.9         0.4     setosa
+## 46      1.568616   1.0986123          1.4         0.3     setosa
+## 47      1.629241   1.3350011          1.6         0.2     setosa
+## 48      1.526056   1.1631508          1.4         0.2     setosa
+## 49      1.667707   1.3083328          1.5         0.2     setosa
+## 50      1.609438   1.1939225          1.4         0.2     setosa
+## 51      1.945910   1.1631508          4.7         1.4 versicolor
+## 52      1.856298   1.1631508          4.5         1.5 versicolor
+## 53      1.931521   1.1314021          4.9         1.5 versicolor
+## 54      1.704748   0.8329091          4.0         1.3 versicolor
+## 55      1.871802   1.0296194          4.6         1.5 versicolor
+## 56      1.740466   1.0296194          4.5         1.3 versicolor
+## 57      1.840550   1.1939225          4.7         1.6 versicolor
+## 58      1.589235   0.8754687          3.3         1.0 versicolor
+## 59      1.887070   1.0647107          4.6         1.3 versicolor
+## 60      1.648659   0.9932518          3.9         1.4 versicolor
+## 61      1.609438   0.6931472          3.5         1.0 versicolor
+## 62      1.774952   1.0986123          4.2         1.5 versicolor
+## 63      1.791759   0.7884574          4.0         1.0 versicolor
+## 64      1.808289   1.0647107          4.7         1.4 versicolor
+## 65      1.722767   1.0647107          3.6         1.3 versicolor
+## 66      1.902108   1.1314021          4.4         1.4 versicolor
+## 67      1.722767   1.0986123          4.5         1.5 versicolor
+## 68      1.757858   0.9932518          4.1         1.0 versicolor
+## 69      1.824549   0.7884574          4.5         1.5 versicolor
+## 70      1.722767   0.9162907          3.9         1.1 versicolor
+## 71      1.774952   1.1631508          4.8         1.8 versicolor
+## 72      1.808289   1.0296194          4.0         1.3 versicolor
+## 73      1.840550   0.9162907          4.9         1.5 versicolor
+## 74      1.808289   1.0296194          4.7         1.2 versicolor
+## 75      1.856298   1.0647107          4.3         1.3 versicolor
+## 76      1.887070   1.0986123          4.4         1.4 versicolor
+## 77      1.916923   1.0296194          4.8         1.4 versicolor
+## 78      1.902108   1.0986123          5.0         1.7 versicolor
+## 79      1.791759   1.0647107          4.5         1.5 versicolor
+## 80      1.740466   0.9555114          3.5         1.0 versicolor
+## 81      1.704748   0.8754687          3.8         1.1 versicolor
+## 82      1.704748   0.8754687          3.7         1.0 versicolor
+## 83      1.757858   0.9932518          3.9         1.2 versicolor
+## 84      1.791759   0.9932518          5.1         1.6 versicolor
+## 85      1.686399   1.0986123          4.5         1.5 versicolor
+## 86      1.791759   1.2237754          4.5         1.6 versicolor
+## 87      1.902108   1.1314021          4.7         1.5 versicolor
+## 88      1.840550   0.8329091          4.4         1.3 versicolor
+## 89      1.722767   1.0986123          4.1         1.3 versicolor
+## 90      1.704748   0.9162907          4.0         1.3 versicolor
+## 91      1.704748   0.9555114          4.4         1.2 versicolor
+## 92      1.808289   1.0986123          4.6         1.4 versicolor
+## 93      1.757858   0.9555114          4.0         1.2 versicolor
+## 94      1.609438   0.8329091          3.3         1.0 versicolor
+## 95      1.722767   0.9932518          4.2         1.3 versicolor
+## 96      1.740466   1.0986123          4.2         1.2 versicolor
+## 97      1.740466   1.0647107          4.2         1.3 versicolor
+## 98      1.824549   1.0647107          4.3         1.3 versicolor
+## 99      1.629241   0.9162907          3.0         1.1 versicolor
+## 100     1.740466   1.0296194          4.1         1.3 versicolor
+## 101     1.840550   1.1939225          6.0         2.5  virginica
+## 102     1.757858   0.9932518          5.1         1.9  virginica
+## 103     1.960095   1.0986123          5.9         2.1  virginica
+## 104     1.840550   1.0647107          5.6         1.8  virginica
+## 105     1.871802   1.0986123          5.8         2.2  virginica
+## 106     2.028148   1.0986123          6.6         2.1  virginica
+## 107     1.589235   0.9162907          4.5         1.7  virginica
+## 108     1.987874   1.0647107          6.3         1.8  virginica
+## 109     1.902108   0.9162907          5.8         1.8  virginica
+## 110     1.974081   1.2809338          6.1         2.5  virginica
+## 111     1.871802   1.1631508          5.1         2.0  virginica
+## 112     1.856298   0.9932518          5.3         1.9  virginica
+## 113     1.916923   1.0986123          5.5         2.1  virginica
+## 114     1.740466   0.9162907          5.0         2.0  virginica
+## 115     1.757858   1.0296194          5.1         2.4  virginica
+## 116     1.856298   1.1631508          5.3         2.3  virginica
+## 117     1.871802   1.0986123          5.5         1.8  virginica
+## 118     2.041220   1.3350011          6.7         2.2  virginica
+## 119     2.041220   0.9555114          6.9         2.3  virginica
+## 120     1.791759   0.7884574          5.0         1.5  virginica
+## 121     1.931521   1.1631508          5.7         2.3  virginica
+## 122     1.722767   1.0296194          4.9         2.0  virginica
+## 123     2.041220   1.0296194          6.7         2.0  virginica
+## 124     1.840550   0.9932518          4.9         1.8  virginica
+## 125     1.902108   1.1939225          5.7         2.1  virginica
+## 126     1.974081   1.1631508          6.0         1.8  virginica
+## 127     1.824549   1.0296194          4.8         1.8  virginica
+## 128     1.808289   1.0986123          4.9         1.8  virginica
+## 129     1.856298   1.0296194          5.6         2.1  virginica
+## 130     1.974081   1.0986123          5.8         1.6  virginica
+## 131     2.001480   1.0296194          6.1         1.9  virginica
+## 132     2.066863   1.3350011          6.4         2.0  virginica
+## 133     1.856298   1.0296194          5.6         2.2  virginica
+## 134     1.840550   1.0296194          5.1         1.5  virginica
+## 135     1.808289   0.9555114          5.6         1.4  virginica
+## 136     2.041220   1.0986123          6.1         2.3  virginica
+## 137     1.840550   1.2237754          5.6         2.4  virginica
+## 138     1.856298   1.1314021          5.5         1.8  virginica
+## 139     1.791759   1.0986123          4.8         1.8  virginica
+## 140     1.931521   1.1314021          5.4         2.1  virginica
+## 141     1.902108   1.1314021          5.6         2.4  virginica
+## 142     1.931521   1.1314021          5.1         2.3  virginica
+## 143     1.757858   0.9932518          5.1         1.9  virginica
+## 144     1.916923   1.1631508          5.9         2.3  virginica
+## 145     1.902108   1.1939225          5.7         2.5  virginica
+## 146     1.902108   1.0986123          5.2         2.3  virginica
+## 147     1.840550   0.9162907          5.0         1.9  virginica
+## 148     1.871802   1.0986123          5.2         2.0  virginica
+## 149     1.824549   1.2237754          5.4         2.3  virginica
+## 150     1.774952   1.0986123          5.1         1.8  virginica</code></pre>
+</section>
+<section id="summarise_if" class="slide level2">
+<h2><code>summarise_if</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># The _if() variants apply a predicate function (a function that</span>
+<span class="co"># returns TRUE or FALSE) to determine the relevant subset of</span>
+<span class="co"># columns. Here we apply mean() to the numeric columns:</span>
+starwars <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise_if</span>(is.numeric, mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## # A tibble: 1 x 3
+##   height  mass birth_year
+##    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1   174.  97.3       87.6</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&gt; # A tibble: 1 x 3</span>
+<span class="co">#&gt;   height  mass birth_year</span>
+<span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;</span>
+<span class="co">#&gt; 1   174.  97.3       87.6</span></code></pre></div>
+</section>
+<section id="multiple-grouped-transformations" class="slide level2">
+<h2>Multiple grouped transformations</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># If you want to apply multiple transformations, use funs()</span>
+by_species &lt;-<span class="st"> </span>iris <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(Species)
+
+by_species <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise_all</span>(<span class="kw">funs</span>(min, max))</code></pre></div>
+<pre><code>## # A tibble: 3 x 9
+##   Species    Sepal.Length_min Sepal.Width_min Petal.Length_min
+##   &lt;fct&gt;                 &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;
+## 1 setosa                 4.30            2.30             1.00
+## 2 versicolor             4.90            2.00             3.00
+## 3 virginica              4.90            2.20             4.50
+## # ... with 5 more variables: Petal.Width_min &lt;dbl&gt;,
+## #   Sepal.Length_max &lt;dbl&gt;, Sepal.Width_max &lt;dbl&gt;, Petal.Length_max &lt;dbl&gt;,
+## #   Petal.Width_max &lt;dbl&gt;</code></pre>
+</section>
+<section id="more-complex-transformations" class="slide level2">
+<h2>More complex transformations</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># You can express more complex inline transformations using .</span>
+by_species <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate_all</span>(<span class="kw">funs</span>(. <span class="op">/</span><span class="st"> </span><span class="fl">2.54</span>))</code></pre></div>
+<pre><code>## # A tibble: 150 x 5
+## # Groups:   Species [3]
+##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+##           &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+##  1         2.01        1.38        0.551      0.0787 setosa 
+##  2         1.93        1.18        0.551      0.0787 setosa 
+##  3         1.85        1.26        0.512      0.0787 setosa 
+##  4         1.81        1.22        0.591      0.0787 setosa 
+##  5         1.97        1.42        0.551      0.0787 setosa 
+##  6         2.13        1.54        0.669      0.157  setosa 
+##  7         1.81        1.34        0.551      0.118  setosa 
+##  8         1.97        1.34        0.591      0.0787 setosa 
+##  9         1.73        1.14        0.551      0.0787 setosa 
+## 10         1.93        1.22        0.591      0.0394 setosa 
+## # ... with 140 more rows</code></pre>
 </section>
     </div>
   </div>

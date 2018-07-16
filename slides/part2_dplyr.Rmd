@@ -110,7 +110,6 @@ filter(flights, month == 1, day == 1)
 
 ## Choose rows with `filter()`
 
-
 When you run that line of code, dplyr executes the filtering operation and returns a new data frame. dplyr functions never modify their inputs, so if you want to save the result, you'll need to use the assignment operator, `<-`:
 
 ```{r}
@@ -173,40 +172,11 @@ filter(flights, arr_delay <= 120, dep_delay <= 120)
 
 
 
-### Missing values
-
-One important feature of R that can make comparison tricky are missing values, or `NA`s ("not availables"). `NA` represents an unknown value so missing values are "contagious": almost any operation involving an unknown value will also be unknown.
-
-```{r}
-NA > 5
-10 == NA
-NA + 10
-NA / 2
-```
-
-The most confusing result is this one:
-
-```{r}
-NA == NA
-```
-
-It's easiest to understand why this is true with a bit more context:
-
-```{r}
-# Let x be Mary's age. We don't know how old she is.
-x <- NA
-
-# Let y be John's age. We don't know how old he is.
-y <- NA
-
-# Are John and Mary the same age?
-x == y
-# We don't know!
-```
+## Missing values
 
 If you want to determine if a value is missing, use `is.na()`:
 
-```{r}
+```{r, eval = FALSE}
 is.na(x)
 ```
 
@@ -306,7 +276,7 @@ There are a number of helper functions you can use within `select()`:
 rename(flights, tail_num = tailnum)
 ```
 
-*Note that it's old_name  = new_name. This always throws me off.* 
+*Note that it's new_name = old_name. This always throws me off.* 
 
 
 ## Add new variables with `mutate()`
@@ -375,6 +345,7 @@ There are many functions for creating new variables that you can use with `mutat
     min_rank(y)
     min_rank(desc(y))
     ```
+
 ## Useful helpers for `mutate()`
     
    If `min_rank()` doesn't do what you need, look at the variants
@@ -398,6 +369,8 @@ The last key verb is `summarise()`. It collapses a data frame to a single row:
 summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
 ```
 
+
+## Grouped summaries with `summarise()`
 
 `summarise()` is not terribly useful unless we pair it with `group_by()`. This changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they'll be automatically applied "by group". For example, if we applied exactly the same code to a data frame grouped by date, we get the average delay per date:
 
@@ -480,33 +453,33 @@ ggplot(data = delays, mapping = aes(x = delay)) +
     `sum(!is.na(x))`. To count the number of distinct (unique) values, use
     `n_distinct(x)`.
     
-    ```{r}
+```{r}
     # Which destinations have the most carriers?
     not_cancelled %>% 
       group_by(dest) %>% 
       summarise(carriers = n_distinct(carrier)) %>% 
       arrange(desc(carriers))
-    ```
+```
     
 ##   Counts
     
 Counts are so useful that dplyr provides a simple helper if all you want is 
     a count:
     
-    ```{r}
+```{r}
     not_cancelled %>% 
       count(dest)
-    ```
+```
 
 ##   Counts
     
 You can optionally provide a weight variable. For example, you could use 
     this to "count" (sum) the total number of miles a plane flew:
     
-    ```{r}
+```{r}
     not_cancelled %>% 
       count(tailnum, wt = distance)
-    ```
+```
 ##   Counts
   
   Counts and proportions of logical values: `sum(x > 10)`, `mean(y == 0)`.
@@ -514,7 +487,7 @@ You can optionally provide a weight variable. For example, you could use
     This makes `sum()` and `mean()` very useful: `sum(x)` gives the number of 
     `TRUE`s in `x`, and `mean(x)` gives the proportion.
     
-    ```{r}
+```{r}
     # How many flights left before 5am? (these usually indicate delayed
     # flights from the previous day)
     not_cancelled %>% 
@@ -525,7 +498,7 @@ You can optionally provide a weight variable. For example, you could use
     not_cancelled %>% 
       group_by(year, month, day) %>% 
       summarise(hour_perc = mean(arr_delay > 60))
-    ```
+```
 
 ## Grouping by multiple variables
 
@@ -585,12 +558,11 @@ Grouping is most useful in conjunction with `summarise()`, but you can also do c
 
 1.  Come up with another approach that will give you the same output as 
     `not_cancelled %>% count(dest)` and 
-    `not_cancelled %>% count(tailnum, wt = distance)` (without using 
-    `count()`).
+    `not_cancelled %>% `
+      `count(tailnum, wt = distance)` 
+    (without using  `count()`).
 
-1.  Which carrier has the worst delays? Challenge: can you disentangle the
-    effects of bad airports vs. bad carriers? Why/why not? (Hint: think about
-    `flights %>% group_by(carrier, dest) %>% summarise(n())`)
+1.  Which carrier has the worst delays? 
 
 ## Advanced verbs: `summarize_all()`, `summarize_at()`, `summarize_if()`
 
@@ -636,9 +608,21 @@ starwars %>% summarise_if(is.numeric, mean, na.rm = TRUE)
 #> 1   174.  97.3       87.6
 ```
 
+## Multiple grouped transformations
+
+```{r}
+# If you want to apply multiple transformations, use funs()
+by_species <- iris %>% group_by(Species)
+
+by_species %>% summarise_all(funs(min, max))
+```
 
 
-
+## More complex transformations
+```{r}
+# You can express more complex inline transformations using .
+by_species %>% mutate_all(funs(. / 2.54))
+```
 
 
 
