@@ -499,12 +499,12 @@ Northwestern University</div></h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#install.packages(c(&#39;nycflights13&#39;, &#39;tidyverse&#39;))</span>
 <span class="kw">library</span>(nycflights13)
 <span class="kw">library</span>(tidyverse)</code></pre></div>
-<pre><code>## ── Attaching packages ─────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 2.2.1     ✔ purrr   0.2.5
 ## ✔ tibble  1.4.2     ✔ dplyr   0.7.5
 ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
 ## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ───────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 </section>
@@ -1269,14 +1269,10 @@ not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
 </section>
 <section id="find-the-worst-members-of-each-group" class="slide level2">
 <h2>Find the worst members of each group:</h2>
-<pre><code>```r
-flights_sml %&gt;% 
-  group_by(year, month, day) %&gt;%
-  filter(rank(desc(arr_delay)) &lt; 10)
-```
-
-```
-## # A tibble: 3,306 x 7
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    flights_sml <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">group_by</span>(year, month, day) <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">filter</span>(<span class="kw">rank</span>(<span class="kw">desc</span>(arr_delay)) <span class="op">&lt;</span><span class="st"> </span><span class="dv">10</span>)</code></pre></div>
+<pre><code>## # A tibble: 3,306 x 7
 ## # Groups:   year, month, day [365]
 ##     year month   day dep_delay arr_delay distance air_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
@@ -1290,20 +1286,15 @@ flights_sml %&gt;%
 ##  8  2013     1     1       192       191      199       44
 ##  9  2013     1     1       379       456     1092      222
 ## 10  2013     1     2       224       207      550       94
-## # ... with 3,296 more rows
-```</code></pre>
+## # ... with 3,296 more rows</code></pre>
 </section>
 <section id="find-all-groups-bigger-than-a-threshold" class="slide level2">
 <h2>Find all groups bigger than a threshold:</h2>
-<pre><code>```r
-popular_dests &lt;- flights %&gt;% 
-  group_by(dest) %&gt;% 
-  filter(n() &gt; 365)
-popular_dests
-```
-
-```
-## # A tibble: 332,577 x 19
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    popular_dests &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">group_by</span>(dest) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">365</span>)
+    popular_dests</code></pre></div>
+<pre><code>## # A tibble: 332,577 x 19
 ## # Groups:   dest [77]
 ##     year month   day dep_time sched_dep_time dep_delay arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
@@ -1320,20 +1311,15 @@ popular_dests
 ## # ... with 332,567 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
-## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
-```</code></pre>
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 </section>
 <section id="standardise-to-compute-per-group-metrics" class="slide level2">
 <h2>Standardise to compute per group metrics:</h2>
-<pre><code>```r
-popular_dests %&gt;% 
-  filter(arr_delay &gt; 0) %&gt;% 
-  mutate(prop_delay = arr_delay / sum(arr_delay)) %&gt;% 
-  select(year:day, dest, arr_delay, prop_delay)
-```
-
-```
-## # A tibble: 131,106 x 6
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    popular_dests <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">filter</span>(arr_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">mutate</span>(<span class="dt">prop_delay =</span> arr_delay <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(arr_delay)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">select</span>(year<span class="op">:</span>day, dest, arr_delay, prop_delay)</code></pre></div>
+<pre><code>## # A tibble: 131,106 x 6
 ## # Groups:   dest [77]
 ##     year month   day dest  arr_delay prop_delay
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;     &lt;dbl&gt;      &lt;dbl&gt;
@@ -1347,8 +1333,7 @@ popular_dests %&gt;%
 ##  8  2013     1     1 DFW          31  0.000282 
 ##  9  2013     1     1 ATL          12  0.0000400
 ## 10  2013     1     1 DTW          16  0.000116 
-## # ... with 131,096 more rows
-```</code></pre>
+## # ... with 131,096 more rows</code></pre>
 </section>
 <section id="exercise-2" class="slide level2">
 <h2>Exercise</h2>
@@ -1368,20 +1353,15 @@ popular_dests %&gt;%
 </section>
 <section id="summarize_all" class="slide level2">
 <h2><code>summarize_all()</code></h2>
-<pre><code>```r
-iris %&gt;%
-  group_by(Species) %&gt;%
-  summarise_all(mean)
-```
-
-```
-## # A tibble: 3 x 5
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">iris <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(Species) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarise_all</span>(mean)</code></pre></div>
+<pre><code>## # A tibble: 3 x 5
 ##   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width
 ##   &lt;fct&gt;             &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 setosa             5.01        3.43         1.46       0.246
 ## 2 versicolor         5.94        2.77         4.26       1.33 
-## 3 virginica          6.59        2.97         5.55       2.03
-```</code></pre>
+## 3 virginica          6.59        2.97         5.55       2.03</code></pre>
 </section>
 <section id="summarize_at" class="slide level2">
 <h2><code>summarize_at()</code></h2>
