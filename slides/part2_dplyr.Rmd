@@ -27,7 +27,8 @@ setwd('~/Dropbox/tidyverse-workshop/')
 
 ## dplyr is the main workhorse of the tidyverse
 
-This lesson draws on Chapter 5 of R for Data Science. 
+This lesson draws on [Chapter 5 of R for Data Science](http://r4ds.had.co.nz/transform.html). 
+For a condensed version, check out the [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) vignette. 
 
 
 ## Example data: nycflights13
@@ -170,9 +171,7 @@ filter(flights, !(arr_delay > 120 | dep_delay > 120))
 filter(flights, arr_delay <= 120, dep_delay <= 120)
 ```
 
-As well as `&` and `|`, R also has `&&` and `||`. Don't use them here! You'll learn when you should use them in [conditional execution].
 
-Whenever you start using complicated, multipart expressions in `filter()`, consider making them explicit variables instead. That makes it much easier to check your work. You'll learn how to create new variables shortly.
 
 ### Missing values
 
@@ -256,8 +255,16 @@ arrange(df, desc(x))
 ```{r}
 # Select columns by name
 select(flights, year, month, day)
+```
+## Select columns with `select()` 
+
+```{r}
 # Select all columns between year and day (inclusive)
 select(flights, year:day)
+```
+## Select columns with `select()` 
+
+```{r}
 # Select all columns except those from year to day (inclusive)
 select(flights, -(year:day))
 ```
@@ -284,11 +291,13 @@ There are a number of helper functions you can use within `select()`:
 
 `select()` can be used to rename variables, but it's rarely useful because it drops all of the variables not explicitly mentioned. Instead, use `rename()`, which is a variant of `select()` that keeps all the variables that aren't explicitly mentioned:
 
+## Use `rename()` to rename variables     
+
 ```{r}
 rename(flights, tail_num = tailnum)
 ```
 
-Note that it's old_name  = new_name. This always throws me off. 
+*Note that it's old_name  = new_name. This always throws me off.* 
 
 
 ## Add new variables with `mutate()`
@@ -304,11 +313,15 @@ flights_sml <- select(flights,
   distance, 
   air_time
 )
+```
+## Add new variables with `mutate()`
+```{r}
 mutate(flights_sml,
   gain = arr_delay - dep_delay,
   speed = distance / air_time * 60
 )
 ```
+## Add new variables with `mutate()`
 
 Note that you can refer to columns that you've just created:
 
@@ -319,6 +332,7 @@ mutate(flights_sml,
   gain_per_hour = gain / hours
 )
 ```
+## Add new variables with `mutate()`
 
 If you only want to keep the new variables, use `transmute()`:
 
@@ -330,7 +344,7 @@ transmute(flights,
 )
 ```
 
-### Useful creation functions {#mutate-funs}
+## Useful helpers for `mutate()`
 
 There are many functions for creating new variables that you can use with `mutate()`. The key property is that the function must be vectorised: it must take a vector of values as input, return a vector with the same number of values as output. There's no way to list every possible function that you might use, but here's a selection of functions that are frequently useful:
 
@@ -539,75 +553,9 @@ ggplot(data = delays, mapping = aes(x = delay)) +
 ## Grouped summaries
 
 
+##   Counts
 
-##  Measures of location: we've used `mean(x)`, but `median(x)` is also
-    useful. The mean is the sum divided by the length; the median is a value 
-    where 50% of `x` is above it, and 50% is below it.
-    
-
-    ```{r}
-    not_cancelled %>% 
-      group_by(year, month, day) %>% 
-      summarise(
-        avg_delay1 = mean(arr_delay),
-        avg_delay2 = mean(arr_delay[arr_delay > 0]) # the average positive delay
-      )
-    ```
-
-##   Measures of spread: `sd(x)`, `IQR(x)`, `mad(x)`. The mean squared deviation,
-    or standard deviation or sd for short, is the standard measure of spread.
-    The interquartile range `IQR()` and median absolute deviation `mad(x)`
-    are robust equivalents that may be more useful if you have outliers.
-    
-    ```{r}
-    # Why is distance to some destinations more variable than to others?
-    not_cancelled %>% 
-      group_by(dest) %>% 
-      summarise(distance_sd = sd(distance)) %>% 
-      arrange(desc(distance_sd))
-    ```
-  
-##   Measures of rank: `min(x)`, `quantile(x, 0.25)`, `max(x)`. Quantiles
-    are a generalisation of the median. For example, `quantile(x, 0.25)`
-    will find a value of `x` that is greater than 25% of the values,
-    and less than the remaining 75%.
-
-    ```{r}
-    # When do the first and last flights leave each day?
-    not_cancelled %>% 
-      group_by(year, month, day) %>% 
-      summarise(
-        first = min(dep_time),
-        last = max(dep_time)
-      )
-    ```
-  
-##  Measures of position: `first(x)`, `nth(x, 2)`, `last(x)`. These work 
-    similarly to `x[1]`, `x[2]`, and `x[length(x)]` but let you set a default 
-    value if that position does not exist (i.e. you're trying to get the 3rd
-    element from a group that only has two elements). For example, we can
-    find the first and last departure for each day:
-    
-    ```{r}
-    not_cancelled %>% 
-      group_by(year, month, day) %>% 
-      summarise(
-        first_dep = first(dep_time), 
-        last_dep = last(dep_time)
-      )
-    ```
-    
-    These functions are complementary to filtering on ranks. Filtering gives
-    you all variables, with each observation in a separate row:
-    
-    ```{r}
-    not_cancelled %>% 
-      group_by(year, month, day) %>% 
-      mutate(r = min_rank(desc(dep_time))) %>% 
-      filter(r %in% range(r))
-    ```
-
-##   Counts: You've seen `n()`, which takes no arguments, and returns the 
+  You've seen `n()`, which takes no arguments, and returns the 
     size of the current group. To count the number of non-missing values, use
     `sum(!is.na(x))`. To count the number of distinct (unique) values, use
     `n_distinct(x)`.
@@ -620,6 +568,8 @@ ggplot(data = delays, mapping = aes(x = delay)) +
       arrange(desc(carriers))
     ```
     
+##   Counts
+    
     Counts are so useful that dplyr provides a simple helper if all you want is 
     a count:
     
@@ -627,6 +577,7 @@ ggplot(data = delays, mapping = aes(x = delay)) +
     not_cancelled %>% 
       count(dest)
     ```
+##   Counts
     
     You can optionally provide a weight variable. For example, you could use 
     this to "count" (sum) the total number of miles a plane flew:
@@ -635,8 +586,9 @@ ggplot(data = delays, mapping = aes(x = delay)) +
     not_cancelled %>% 
       count(tailnum, wt = distance)
     ```
+##   Counts
   
-##   Counts and proportions of logical values: `sum(x > 10)`, `mean(y == 0)`.
+  Counts and proportions of logical values: `sum(x > 10)`, `mean(y == 0)`.
     When used with numeric functions, `TRUE` is converted to 1 and `FALSE` to 0. 
     This makes `sum()` and `mean()` very useful: `sum(x)` gives the number of 
     `TRUE`s in `x`, and `mean(x)` gives the proportion.
@@ -707,5 +659,10 @@ Grouping is most useful in conjunction with `summarise()`, but you can also do c
       mutate(prop_delay = arr_delay / sum(arr_delay)) %>% 
       select(year:day, dest, arr_delay, prop_delay)
     ```
+
+
+## Advanced verbs: `mutate_at()`, `summarize_at()`
+
+
 
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="dcterms.date" content="2018-07-15" />
+  <meta name="dcterms.date" content="2018-07-16" />
   <title>Introduction to the tidyverse: data manipulation with dplyr</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -484,7 +484,7 @@ document.getElementsByTagName('head')[0].appendChild(style);
     <h1 class="title">Introduction to the tidyverse: data manipulation with <code>dplyr</code></h1>
     <h2 class="author"><div style="white-space: pre-line;">Christopher Skovron
 Northwestern University</div></h2>
-    <h3 class="date">July 15, 2018</h3>
+    <h3 class="date">July 16, 2018</h3>
 </section>
 
 <section id="dplyr-data-manipulation" class="slide level2">
@@ -492,7 +492,7 @@ Northwestern University</div></h2>
 </section>
 <section id="dplyr-is-the-main-workhorse-of-the-tidyverse" class="slide level2">
 <h2>dplyr is the main workhorse of the tidyverse</h2>
-<p>This lesson draws on Chapter 5 of R for Data Science.</p>
+<p>This lesson draws on <a href="http://r4ds.had.co.nz/transform.html">Chapter 5 of R for Data Science</a>. For a condensed version, check out the <a href="https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html">Introduction to dplyr</a> vignette.</p>
 </section>
 <section id="example-data-nycflights13" class="slide level2">
 <h2>Example data: nycflights13</h2>
@@ -594,6 +594,9 @@ Northwestern University</div></h2>
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+</section>
+<section id="choose-rows-with-filter-1" class="slide level2">
+<h2>Choose rows with <code>filter()</code></h2>
 <p>When you run that line of code, dplyr executes the filtering operation and returns a new data frame. dplyr functions never modify their inputs, so if you want to save the result, you’ll need to use the assignment operator, <code>&lt;-</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">jan1 &lt;-<span class="st"> </span><span class="kw">filter</span>(flights, month <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, day <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</code></pre></div>
 </section>
@@ -629,13 +632,11 @@ Northwestern University</div></h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, month <span class="op">==</span><span class="st"> </span><span class="dv">11</span> <span class="op">|</span><span class="st"> </span>month <span class="op">==</span><span class="st"> </span><span class="dv">12</span>)</code></pre></div>
 </section>
 <section id="another-way-to-write-it-using-in" class="slide level2">
-<h2>Another way to write it using `%in%</h2>
+<h2>Another way to write it using <code>%in%</code></h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nov_dec &lt;-<span class="st"> </span><span class="kw">filter</span>(flights, month <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">11</span>, <span class="dv">12</span>))</code></pre></div>
 <p>Sometimes you can simplify complicated subsetting by remembering De Morgan’s law: <code>!(x &amp; y)</code> is the same as <code>!x | !y</code>, and <code>!(x | y)</code> is the same as <code>!x &amp; !y</code>. For example, if you wanted to find flights that weren’t delayed (on arrival or departure) by more than two hours, you could use either of the following two filters:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(flights, <span class="op">!</span>(arr_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">120</span> <span class="op">|</span><span class="st"> </span>dep_delay <span class="op">&gt;</span><span class="st"> </span><span class="dv">120</span>))
 <span class="kw">filter</span>(flights, arr_delay <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>, dep_delay <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>)</code></pre></div>
-<p>As well as <code>&amp;</code> and <code>|</code>, R also has <code>&amp;&amp;</code> and <code>||</code>. Don’t use them here! You’ll learn when you should use them in [conditional execution].</p>
-<p>Whenever you start using complicated, multipart expressions in <code>filter()</code>, consider making them explicit variables instead. That makes it much easier to check your work. You’ll learn how to create new variables shortly.</p>
 <h3 id="missing-values">Missing values</h3>
 <p>One important feature of R that can make comparison tricky are missing values, or <code>NA</code>s (“not availables”). <code>NA</code> represents an unknown value so missing values are “contagious”: almost any operation involving an unknown value will also be unknown.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="ot">NA</span> <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span></code></pre></div>
@@ -759,6 +760,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9  2013     1     1
 ## 10  2013     1     1
 ## # ... with 336,766 more rows</code></pre>
+</section>
+<section id="select-columns-with-select-1" class="slide level2">
+<h2>Select columns with <code>select()</code></h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select all columns between year and day (inclusive)</span>
 <span class="kw">select</span>(flights, year<span class="op">:</span>day)</code></pre></div>
 <pre><code>## # A tibble: 336,776 x 3
@@ -775,6 +779,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9  2013     1     1
 ## 10  2013     1     1
 ## # ... with 336,766 more rows</code></pre>
+</section>
+<section id="select-columns-with-select-2" class="slide level2">
+<h2>Select columns with <code>select()</code></h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select all columns except those from year to day (inclusive)</span>
 <span class="kw">select</span>(flights, <span class="op">-</span>(year<span class="op">:</span>day))</code></pre></div>
 <pre><code>## # A tibble: 336,776 x 16
@@ -808,6 +815,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 <section id="use-rename-to-rename-variables" class="slide level2">
 <h2>Use <code>rename()</code> to rename variables</h2>
 <p><code>select()</code> can be used to rename variables, but it’s rarely useful because it drops all of the variables not explicitly mentioned. Instead, use <code>rename()</code>, which is a variant of <code>select()</code> that keeps all the variables that aren’t explicitly mentioned:</p>
+</section>
+<section id="use-rename-to-rename-variables-1" class="slide level2">
+<h2>Use <code>rename()</code> to rename variables</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rename</span>(flights, <span class="dt">tail_num =</span> tailnum)</code></pre></div>
 <pre><code>## # A tibble: 336,776 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time
@@ -826,7 +836,7 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tail_num &lt;chr&gt;,
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<p>Note that it’s old_name = new_name. This always throws me off.</p>
+<p><em>Note that it’s old_name = new_name. This always throws me off.</em></p>
 </section>
 <section id="add-new-variables-with-mutate" class="slide level2">
 <h2>Add new variables with <code>mutate()</code></h2>
@@ -839,8 +849,11 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
   <span class="kw">ends_with</span>(<span class="st">&quot;delay&quot;</span>), 
   distance, 
   air_time
-)
-<span class="kw">mutate</span>(flights_sml,
+)</code></pre></div>
+</section>
+<section id="add-new-variables-with-mutate-1" class="slide level2">
+<h2>Add new variables with <code>mutate()</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mutate</span>(flights_sml,
   <span class="dt">gain =</span> arr_delay <span class="op">-</span><span class="st"> </span>dep_delay,
   <span class="dt">speed =</span> distance <span class="op">/</span><span class="st"> </span>air_time <span class="op">*</span><span class="st"> </span><span class="dv">60</span>
 )</code></pre></div>
@@ -858,6 +871,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9  2013     1     1       -3.       -8.     944.     140.   -5.  405.
 ## 10  2013     1     1       -2.        8.     733.     138.   10.  319.
 ## # ... with 336,766 more rows</code></pre>
+</section>
+<section id="add-new-variables-with-mutate-2" class="slide level2">
+<h2>Add new variables with <code>mutate()</code></h2>
 <p>Note that you can refer to columns that you’ve just created:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mutate</span>(flights_sml,
   <span class="dt">gain =</span> arr_delay <span class="op">-</span><span class="st"> </span>dep_delay,
@@ -878,6 +894,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9  2013     1     1       -3.       -8.     944.     140.   -5. 2.33 
 ## 10  2013     1     1       -2.        8.     733.     138.   10. 2.30 
 ## # ... with 336,766 more rows, and 1 more variable: gain_per_hour &lt;dbl&gt;</code></pre>
+</section>
+<section id="add-new-variables-with-mutate-3" class="slide level2">
+<h2>Add new variables with <code>mutate()</code></h2>
 <p>If you only want to keep the new variables, use <code>transmute()</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">transmute</span>(flights,
   <span class="dt">gain =</span> arr_delay <span class="op">-</span><span class="st"> </span>dep_delay,
@@ -898,7 +917,9 @@ x <span class="op">==</span><span class="st"> </span>y</code></pre></div>
 ##  9   -5. 2.33          -2.14
 ## 10   10. 2.30           4.35
 ## # ... with 336,766 more rows</code></pre>
-<h3 id="mutate-funs">Useful creation functions</h3>
+</section>
+<section id="useful-helpers-for-mutate" class="slide level2">
+<h2>Useful helpers for <code>mutate()</code></h2>
 <p>There are many functions for creating new variables that you can use with <code>mutate()</code>. The key property is that the function must be vectorised: it must take a vector of values as input, return a vector with the same number of values as output. There’s no way to list every possible function that you might use, but here’s a selection of functions that are frequently useful:</p>
 <ul>
 <li><p>Arithmetic operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>. These are all vectorised, using the so called “recycling rules”. If one parameter is shorter than the other, it will be automatically extended to be the same length. This is most useful when one of the arguments is a single number: <code>air_time / 60</code>, <code>hours * 60 + minute</code>, etc.</p>
@@ -1002,7 +1023,7 @@ delay &lt;-<span class="st"> </span><span class="kw">filter</span>(delay, count 
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">size =</span> count), <span class="dt">alpha =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-31-1.png" width="576" /></p>
+<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-34-1.png" width="576" /></p>
 <p>There are three steps to prepare this data:</p>
 <ol type="1">
 <li><p>Group flights by destination.</p></li>
@@ -1093,187 +1114,15 @@ not_cancelled <span class="op">%&gt;%</span><span class="st"> </span>
 
 <span class="kw">ggplot</span>(<span class="dt">data =</span> delays, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> delay)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_freqpoly</span>(<span class="dt">binwidth =</span> <span class="dv">10</span>)</code></pre></div>
-<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-36-1.png" width="768" /></p>
+<p><img src="part2_dplyr_files/figure-revealjs/unnamed-chunk-39-1.png" width="768" /></p>
 </section>
 <section id="grouped-summaries" class="slide level2">
 <h2>Grouped summaries</h2>
 </section>
-<section id="measures-of-location-weve-used-meanx-but-medianx-is-also" class="slide level2">
-<h2>Measures of location: we’ve used <code>mean(x)</code>, but <code>median(x)</code> is also</h2>
-<pre><code>useful. The mean is the sum divided by the length; the median is a value 
-where 50% of `x` is above it, and 50% is below it.
-
-
-
-```r
-not_cancelled %&gt;% 
-  group_by(year, month, day) %&gt;% 
-  summarise(
-    avg_delay1 = mean(arr_delay),
-    avg_delay2 = mean(arr_delay[arr_delay &gt; 0]) # the average positive delay
-  )
-```
-
-```
-## # A tibble: 365 x 5
-## # Groups:   year, month [?]
-##     year month   day avg_delay1 avg_delay2
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;      &lt;dbl&gt;
-##  1  2013     1     1     12.7         32.5
-##  2  2013     1     2     12.7         32.0
-##  3  2013     1     3      5.73        27.7
-##  4  2013     1     4     -1.93        28.3
-##  5  2013     1     5     -1.53        22.6
-##  6  2013     1     6      4.24        24.4
-##  7  2013     1     7     -4.95        27.8
-##  8  2013     1     8     -3.23        20.8
-##  9  2013     1     9     -0.264       25.6
-## 10  2013     1    10     -5.90        27.3
-## # ... with 355 more rows
-```</code></pre>
-</section>
-<section id="measures-of-spread-sdx-iqrx-madx.-the-mean-squared-deviation" class="slide level2">
-<h2>Measures of spread: <code>sd(x)</code>, <code>IQR(x)</code>, <code>mad(x)</code>. The mean squared deviation,</h2>
-<pre><code>or standard deviation or sd for short, is the standard measure of spread.
-The interquartile range `IQR()` and median absolute deviation `mad(x)`
-are robust equivalents that may be more useful if you have outliers.
-
-
-```r
-# Why is distance to some destinations more variable than to others?
-not_cancelled %&gt;% 
-  group_by(dest) %&gt;% 
-  summarise(distance_sd = sd(distance)) %&gt;% 
-  arrange(desc(distance_sd))
-```
-
-```
-## # A tibble: 104 x 2
-##    dest  distance_sd
-##    &lt;chr&gt;       &lt;dbl&gt;
-##  1 EGE         10.5 
-##  2 SAN         10.4 
-##  3 SFO         10.2 
-##  4 HNL         10.0 
-##  5 SEA          9.98
-##  6 LAS          9.91
-##  7 PDX          9.87
-##  8 PHX          9.86
-##  9 LAX          9.66
-## 10 IND          9.46
-## # ... with 94 more rows
-```</code></pre>
-</section>
-<section id="measures-of-rank-minx-quantilex-0.25-maxx.-quantiles" class="slide level2">
-<h2>Measures of rank: <code>min(x)</code>, <code>quantile(x, 0.25)</code>, <code>max(x)</code>. Quantiles</h2>
-<pre><code>are a generalisation of the median. For example, `quantile(x, 0.25)`
-will find a value of `x` that is greater than 25% of the values,
-and less than the remaining 75%.
-
-
-```r
-# When do the first and last flights leave each day?
-not_cancelled %&gt;% 
-  group_by(year, month, day) %&gt;% 
-  summarise(
-    first = min(dep_time),
-    last = max(dep_time)
-  )
-```
-
-```
-## # A tibble: 365 x 5
-## # Groups:   year, month [?]
-##     year month   day first  last
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1  2013     1     1  517. 2356.
-##  2  2013     1     2   42. 2354.
-##  3  2013     1     3   32. 2349.
-##  4  2013     1     4   25. 2358.
-##  5  2013     1     5   14. 2357.
-##  6  2013     1     6   16. 2355.
-##  7  2013     1     7   49. 2359.
-##  8  2013     1     8  454. 2351.
-##  9  2013     1     9    2. 2252.
-## 10  2013     1    10    3. 2320.
-## # ... with 355 more rows
-```</code></pre>
-</section>
-<section id="measures-of-position-firstx-nthx-2-lastx.-these-work" class="slide level2">
-<h2>Measures of position: <code>first(x)</code>, <code>nth(x, 2)</code>, <code>last(x)</code>. These work</h2>
-<pre><code>similarly to `x[1]`, `x[2]`, and `x[length(x)]` but let you set a default 
-value if that position does not exist (i.e. you&#39;re trying to get the 3rd
-element from a group that only has two elements). For example, we can
-find the first and last departure for each day:
-
-
-```r
-not_cancelled %&gt;% 
-  group_by(year, month, day) %&gt;% 
-  summarise(
-    first_dep = first(dep_time), 
-    last_dep = last(dep_time)
-  )
-```
-
-```
-## # A tibble: 365 x 5
-## # Groups:   year, month [?]
-##     year month   day first_dep last_dep
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;int&gt;    &lt;int&gt;
-##  1  2013     1     1       517     2356
-##  2  2013     1     2        42     2354
-##  3  2013     1     3        32     2349
-##  4  2013     1     4        25     2358
-##  5  2013     1     5        14     2357
-##  6  2013     1     6        16     2355
-##  7  2013     1     7        49     2359
-##  8  2013     1     8       454     2351
-##  9  2013     1     9         2     2252
-## 10  2013     1    10         3     2320
-## # ... with 355 more rows
-```
-
-These functions are complementary to filtering on ranks. Filtering gives
-you all variables, with each observation in a separate row:
-
-
-```r
-not_cancelled %&gt;% 
-  group_by(year, month, day) %&gt;% 
-  mutate(r = min_rank(desc(dep_time))) %&gt;% 
-  filter(r %in% range(r))
-```
-
-```
-## # A tibble: 770 x 20
-## # Groups:   year, month, day [365]
-##     year month   day dep_time sched_dep_time dep_delay arr_time
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
-##  1  2013     1     1      517            515        2.      830
-##  2  2013     1     1     2356           2359       -3.      425
-##  3  2013     1     2       42           2359       43.      518
-##  4  2013     1     2     2354           2359       -5.      413
-##  5  2013     1     3       32           2359       33.      504
-##  6  2013     1     3     2349           2359      -10.      434
-##  7  2013     1     4       25           2359       26.      505
-##  8  2013     1     4     2358           2359       -1.      429
-##  9  2013     1     4     2358           2359       -1.      436
-## 10  2013     1     5       14           2359       15.      503
-## # ... with 760 more rows, and 13 more variables: sched_arr_time &lt;int&gt;,
-## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
-## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
-## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;, r &lt;int&gt;
-```</code></pre>
-</section>
-<section id="counts-youve-seen-n-which-takes-no-arguments-and-returns-the" class="slide level2">
-<h2>Counts: You’ve seen <code>n()</code>, which takes no arguments, and returns the</h2>
-<pre><code>size of the current group. To count the number of non-missing values, use
-`sum(!is.na(x))`. To count the number of distinct (unique) values, use
-`n_distinct(x)`.
-
-
-```r
+<section id="counts-1" class="slide level2">
+<h2>Counts</h2>
+<p>You’ve seen <code>n()</code>, which takes no arguments, and returns the size of the current group. To count the number of non-missing values, use <code>sum(!is.na(x))</code>. To count the number of distinct (unique) values, use <code>n_distinct(x)</code>.</p>
+<pre><code>```r
 # Which destinations have the most carriers?
 not_cancelled %&gt;% 
   group_by(dest) %&gt;% 
@@ -1296,9 +1145,11 @@ not_cancelled %&gt;%
 ##  9 IAD          6
 ## 10 MSP          6
 ## # ... with 94 more rows
-```
-
-Counts are so useful that dplyr provides a simple helper if all you want is 
+```</code></pre>
+</section>
+<section id="counts-2" class="slide level2">
+<h2>Counts</h2>
+<pre><code>Counts are so useful that dplyr provides a simple helper if all you want is 
 a count:
 
 
@@ -1322,9 +1173,11 @@ not_cancelled %&gt;%
 ##  9 BGR     358
 ## 10 BHM     269
 ## # ... with 94 more rows
-```
-
-You can optionally provide a weight variable. For example, you could use 
+```</code></pre>
+</section>
+<section id="counts-3" class="slide level2">
+<h2>Counts</h2>
+<pre><code>You can optionally provide a weight variable. For example, you could use 
 this to &quot;count&quot; (sum) the total number of miles a plane flew:
 
 
@@ -1350,14 +1203,10 @@ not_cancelled %&gt;%
 ## # ... with 4,027 more rows
 ```</code></pre>
 </section>
-<section id="counts-and-proportions-of-logical-values-sumx-10-meany-0." class="slide level2">
-<h2>Counts and proportions of logical values: <code>sum(x &gt; 10)</code>, <code>mean(y == 0)</code>.</h2>
-<pre><code>When used with numeric functions, `TRUE` is converted to 1 and `FALSE` to 0. 
-This makes `sum()` and `mean()` very useful: `sum(x)` gives the number of 
-`TRUE`s in `x`, and `mean(x)` gives the proportion.
-
-
-```r
+<section id="counts-4" class="slide level2">
+<h2>Counts</h2>
+<p>Counts and proportions of logical values: <code>sum(x &gt; 10)</code>, <code>mean(y == 0)</code>. When used with numeric functions, <code>TRUE</code> is converted to 1 and <code>FALSE</code> to 0. This makes <code>sum()</code> and <code>mean()</code> very useful: <code>sum(x)</code> gives the number of <code>TRUE</code>s in <code>x</code>, and <code>mean(x)</code> gives the proportion.</p>
+<pre><code>```r
 # How many flights left before 5am? (these usually indicate delayed
 # flights from the previous day)
 not_cancelled %&gt;% 
@@ -1549,6 +1398,9 @@ popular_dests %&gt;%
 ## 10  2013     1     1 DTW         16.  0.000116 
 ## # ... with 131,096 more rows
 ```</code></pre>
+</section>
+<section id="advanced-verbs-mutate_at-summarize_at" class="slide level2">
+<h2>Advanced verbs: <code>mutate_at()</code>, <code>summarize_at()</code></h2>
 </section>
     </div>
   </div>

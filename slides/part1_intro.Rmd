@@ -16,7 +16,7 @@ output:
 
 
 ```{r setup, include=FALSE}
-setwd('~/Dropbox/tidyverse-workshop/')
+#setwd('~/Dropbox/tidyverse-workshop/')
 ```
 
 
@@ -68,54 +68,66 @@ setwd('~/Dropbox/tidyverse-workshop/')
 ## This workshop is a partial walkthrough of R4DS
 
 - Adding in additional lessons on some of my favorite tidy analysis tasks
-- Focus on `dplyr` 
-
-
-
-
-
-# Read data: `readr`
-
-- Can largely replace `foreign` for reading in data
-- Advantages: Speed, flexibility, customization
-
-
-
-
-
-
-
+- Focus on `dplyr` for the first day, for most users the most important package to learn 
 
 
 
 ## Verbs and pipes 
 
-
+This wacky thing is the pipe.
 
 ![](../images/magrittr.png)
 
+The pipe chains together commands so that you can do a bunch of manipulations in order to a data frame without calling it repeatedly or nesting many parentheses
+
+Those are gnarly characters to type, but fortunately RStudio has a keyboard shortcut, CMD+SHIFT+M (CTRL+SHIFT+M on Windows) to quickly type a pipe for you. 
+
+## The pipe
+
+A good mantra for effectively using the pipe in your workflow is:
 
 
+"Dataframe first, dataframe once"
 
+## Ugly code without the pipe 
 
+If you don't use the pipe, your code, *even if you use dplyr*, can end up with a horrid-looking and unintiutive structure of nested parentheses and objects called in an unintuitive order:
 
+```{r, eval = FALSE}
+car_data <- 
+  transform(aggregate(. ~ cyl, 
+                      data = subset(mtcars, hp > 100), 
+                      FUN = function(x) round(mean(x, 2))), 
+            kpl = mpg*0.4251)
+```
 
+## Better code with the pipe
+```{r, eval = FALSE}
 
-
-
-
-## Visualize data: `ggplot2`
-
-## The grammar of graphics
-- `ggplot2` is the subject of its own workshop
-- It plays very nicely with tidy data
-
+car_data <- 
+  mtcars %>%
+  subset(hp > 100) %>%
+  aggregate(. ~ cyl, data = ., FUN = . %>% mean %>% round(2)) %>%
+  transform(kpl = mpg %>% multiply_by(0.4251)) %>%
+  print
+```
 
 ## Pipe into `ggplot()`
 
+Hopefully you're either alread familiar with `ggplot2` or are taking the workshop, because that's the one tidyverse package we won't explore in any detail. You can use the pipe to pass data from a piped set of say, `dplyr` commands into a call to `ggplot()`. Just replace the data argument of the call to `ggplot` with a `.`. 
 
-
-
-
-
-
+```{r, eval = FALSE}
+g = ncs %>%
+  group_by(party,ideo_relative_to_legislature) %>%
+  tally  %>%
+  group_by(party) %>%
+  mutate(pct=(100*n)/sum(n)) %>% 
+  filter(!is.na(party)) %>% 
+  filter(!is.na(ideo_relative_to_legislature)) %>% 
+  ggplot(., aes(x=ideo_relative_to_legislature, y = pct))+geom_col()+facet_grid(.~party) +
+  theme_bw()+ 
+  xlab('Candidate perception of self relative to legislature') +
+  ylab('Percent of party respondents') + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Candidates' perceptions of their ideology relative to the legislature")
+```
