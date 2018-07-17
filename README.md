@@ -35,6 +35,8 @@ Exercises taken from the R for Data Science text  are either in the slides or in
 
 Reference materials and independent practice exercises are written in RMarkdown (*.Rmd).  You can open these files directly in RStudio and run the code chunks.  The RMarkdown files have also been converted to html files for easy viewing.  Additional exercise files are taken from RStudio’s “Master the tidyverse” short course. .Rmd files with the excercises are in the [master-tidyverse-exercises directory](/master-tidyverse-exercises) and .Rmd files with solutions to those are in the [solutions subdirectory](/master-tidyverse-exercises/solutions).
 
+For additional exercises, check out the [R for Data Science Community's "#tidytuesday,"](https://github.com/rfordatascience/tidytuesday/blob/master/README.md) which posts a new dataset each Tuesday for users to explore and wrangle using the tidyverse. 
+
 ### Opening/Downloading Files
 
 RMarkdown files can be previewed in GitHub, but they won't include the output of the code cells.  HTML files generated from the RMarkdown generally can't be previewed directly in the GitHub repository view, but they can be viewed online through GitHub Pages; links are provided for that below.  HTML files are self-contained; this means they are on the large side, but they can be downloaded and viewed locally as a single file.
