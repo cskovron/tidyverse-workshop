@@ -12,12 +12,9 @@ output:
     transition: none
     #css: reveal.css
     self_contained: false
+    fig_width: 4
+    fig_height: 3
 ---
-
-
-```{r setup, include=FALSE}
-setwd('~/Dropbox/tidyverse-workshop/')
-```
 
 
 ## Work with strings: `stringr`
@@ -25,7 +22,7 @@ setwd('~/Dropbox/tidyverse-workshop/')
 ## Goals
 
 - Introduce you to how `stringr` works
-- Brief introduction to regular expressions
+- Set you up to get more out of it by learning regular expressions
 
 ```{r setup, message = FALSE}
 library(tidyverse)
@@ -359,120 +356,7 @@ str_view(fruit, "nana")
 str_view(fruit, regex("nana"))
 ```
 
-You can use the other arguments of `regex()` to control details of the match:
-
-*   `ignore_case = TRUE` allows characters to match either their uppercase or 
-    lowercase forms. This always uses the current locale.
-    
-    ```{r}
-    bananas <- c("banana", "Banana", "BANANA")
-    str_view(bananas, "banana")
-    str_view(bananas, regex("banana", ignore_case = TRUE))
-    ```
-    
-*   `multiline = TRUE` allows `^` and `$` to match the start and end of each
-    line rather than the start and end of the complete string.
-    
-    ```{r}
-    x <- "Line 1\nLine 2\nLine 3"
-    str_extract_all(x, "^Line")[[1]]
-    str_extract_all(x, regex("^Line", multiline = TRUE))[[1]]
-    ```
-    
-*   `comments = TRUE` allows you to use comments and white space to make 
-    complex regular expressions more understandable. Spaces are ignored, as is 
-    everything after `#`. To match a literal space, you'll need to escape it: 
-    `"\\ "`.
-    
-    ```{r}
-    phone <- regex("
-      \\(?     # optional opening parens
-      (\\d{3}) # area code
-      [)- ]?   # optional closing parens, dash, or space
-      (\\d{3}) # another three numbers
-      [ -]?    # optional space or dash
-      (\\d{3}) # three more numbers
-      ", comments = TRUE)
-    
-    str_match("514-791-8141", phone)
-    ```
-
-*   `dotall = TRUE` allows `.` to match everything, including `\n`.
-
-There are three other functions you can use instead of `regex()`:
-
-*   `fixed()`: matches exactly the specified sequence of bytes. It ignores
-    all special regular expressions and operates at a very low level. 
-    This allows you to avoid complex escaping and can be much faster than 
-    regular expressions. The following microbenchmark shows that it's about
-    3x faster for a simple example.
-  
-    ```{r}
-    microbenchmark::microbenchmark(
-      fixed = str_detect(sentences, fixed("the")),
-      regex = str_detect(sentences, "the"),
-      times = 20
-    )
-    ```
-    
-    Beware using `fixed()` with non-English data. It is problematic because 
-    there are often multiple ways of representing the same character. For 
-    example, there are two ways to define "á": either as a single character or 
-    as an "a" plus an accent:
-    
-    ```{r}
-    a1 <- "\u00e1"
-    a2 <- "a\u0301"
-    c(a1, a2)
-    a1 == a2
-    ```
-
-    They render identically, but because they're defined differently, 
-    `fixed()` doesn't find a match. Instead, you can use `coll()`, defined
-    next, to respect human character comparison rules:
-
-    ```{r}
-    str_detect(a1, fixed(a2))
-    str_detect(a1, coll(a2))
-    ```
-    
-*   `coll()`: compare strings using standard **coll**ation rules. This is 
-    useful for doing case insensitive matching. Note that `coll()` takes a
-    `locale` parameter that controls which rules are used for comparing
-    characters. Unfortunately different parts of the world use different rules!
-
-    ```{r}
-    # That means you also need to be aware of the difference
-    # when doing case insensitive matches:
-    i <- c("I", "İ", "i", "ı")
-    i
-    
-    str_subset(i, coll("i", ignore_case = TRUE))
-    str_subset(i, coll("i", ignore_case = TRUE, locale = "tr"))
-    ```
-    
-    Both `fixed()` and `regex()` have `ignore_case` arguments, but they
-    do not allow you to pick the locale: they always use the default locale.
-    You can see what that is with the following code; more on stringi
-    later.
-    
-    ```{r}
-    stringi::stri_locale_info()
-    ```
-    
-    The downside of `coll()` is speed; because the rules for recognising which
-    characters are the same are complicated, `coll()` is relatively slow
-    compared to `regex()` and `fixed()`.
-
-*   As you saw with `str_split()` you can use `boundary()` to match boundaries.
-    You can also use it with the other functions: 
-    
-    ```{r}
-    x <- "This is a sentence."
-    str_view_all(x, boundary("word"))
-    str_extract_all(x, boundary("word"))
-    ```
-
+ 
 
 ## Other uses of regular expressions
 
@@ -484,6 +368,8 @@ There are two useful function in base R that also use regular expressions:
     ```{r}
     apropos("replace")
     ```
+
+## Other uses of regular expressions
     
 *   `dir()` lists all the files in a directory. The `pattern` argument takes
     a regular expression and only returns file names that match the pattern.
@@ -494,9 +380,7 @@ There are two useful function in base R that also use regular expressions:
     head(dir(pattern = "\\.Rmd$"))
     ```
     
-    (If you're more comfortable with "globs" like `*.Rmd`, you can convert
-    them to regular expressions with `glob2rx()`):
-    
+
     
     
     
@@ -504,7 +388,7 @@ There are two useful function in base R that also use regular expressions:
 
 The key tidyverse tool is the __lubridate__ package. Must be loaded separately. We will also need nycflights13 for practice data.
 
-```{r setup, message = FALSE}
+```{r , message = FALSE}
 library(tidyverse)
 
 library(lubridate)
@@ -748,7 +632,7 @@ In R, factors are used to work with categorical variables, variables that have a
 ## Prerequisites
 
 
-```{r setup, message = FALSE}
+```{r , message = FALSE}
 library(tidyverse)
 library(forcats)
 ```
@@ -783,14 +667,7 @@ y1
 sort(y1)
 ```
 
-## Creating factors
 
-And any values not in the set will be silently converted to NA:
-
-```{r}
-y2 <- factor(x2, levels = month_levels)
-y2
-```
 
 ## Creating factors
 
@@ -798,15 +675,6 @@ If you omit the levels, they'll be taken from the data in alphabetical order:
 
 ```{r}
 factor(x1)
-```
-
-## Creating factors
-
-
-If you ever need to access the set of valid levels directly, you can do so with `levels()`:
-
-```{r}
-levels(f2)
 ```
 
 ## Example data: General Social Survey
@@ -847,6 +715,8 @@ ggplot(gss_cat, aes(race)) +
   scale_x_discrete(drop = FALSE)
 ```
 
+## Example data: General Social Survey
+
 These levels represent valid values that simply did not occur in this dataset. Unfortunately, dplyr doesn't yet have a `drop` option, but it will in the future.
 
 ## Exercise
@@ -857,6 +727,9 @@ These levels represent valid values that simply did not occur in this dataset. U
 ## Modifying factor order
 
 It's often useful to change the order of the factor levels in a visualisation. For example, imagine you want to explore the average number of hours spent watching TV per day across religions:
+
+## Modifying factor order
+
 
 ```{r}
 relig_summary <- gss_cat %>%
@@ -878,6 +751,9 @@ It is difficult to interpret this plot because there's no overall pattern. We ca
 * `x`, a numeric vector that you want to use to reorder the levels.
 * Optionally, `fun`, a function that's used if there are multiple values of
   `x` for each value of `f`. The default value is `median`.
+  
+## Modifying factor order
+
 
 ```{r}
 ggplot(relig_summary, aes(tvhours, fct_reorder(relig, tvhours))) +
@@ -903,6 +779,8 @@ ggplot(rincome_summary, aes(age, fct_reorder(rincome, age))) + geom_point()
 
 Another type of reordering is useful when you are colouring the lines on a plot. `fct_reorder2()` reorders the factor by the `y` values associated with the largest `x` values. This makes the plot easier to read because the line colours line up with the legend.
 
+## Modifying factor order
+
 ```{r, fig.align = "default", out.width = "50%", fig.width = 4}
 by_age <- gss_cat %>%
   filter(!is.na(age)) %>%
@@ -921,6 +799,8 @@ ggplot(by_age, aes(age, prop, colour = fct_reorder2(marital, age, prop))) +
 ## Modifying factor order
 
 Finally, for bar plots, you can use `fct_infreq()` to order levels in increasing frequency: this is the simplest type of reordering because it doesn't need any extra variables. You may want to combine with `fct_rev()`.
+
+## Modifying factor order
 
 ```{r}
 gss_cat %>%
@@ -948,6 +828,8 @@ More powerful than changing the orders of the levels is changing their values. T
 gss_cat %>% count(partyid)
 ```
 
+## Modifying factor order
+
 The levels are terse and inconsistent. Let's tweak them to be longer and use a parallel construction.
 
 ```{r}
@@ -966,6 +848,9 @@ gss_cat %>%
 ## Modifying factor levels
 
 `fct_recode()` will leave levels that aren't explicitly mentioned as is, and will warn you if you accidentally refer to a level that doesn't exist.
+
+## Modifying factor order
+
 
 To combine groups, you can assign multiple old levels to the same new level:
 

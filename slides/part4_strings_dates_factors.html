@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="dcterms.date" content="2018-07-18" />
+  <title>Introduction to the tidyverse: transformation with strings, dates, factors</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="part4_strings_dates_factors_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+</style>
+
+<link rel="stylesheet" href="part4_strings_dates_factors_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <script src="part4_strings_dates_factors_files/htmlwidgets-0.9/htmlwidgets.js"></script>
+    <link href="part4_strings_dates_factors_files/str_view-0.1.0/str_view.css" rel="stylesheet" />
+    <script src="part4_strings_dates_factors_files/str_view-binding-1.3.0/str_view.js"></script>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Introduction to the tidyverse: transformation with strings, dates, factors</h1>
+    <h2 class="author"><div style="white-space: pre-line;">Christopher Skovron
+Northwestern University</div></h2>
+    <h3 class="date">July 18, 2018</h3>
+</section>
+
+<section id="work-with-strings-stringr" class="slide level2">
+<h2>Work with strings: <code>stringr</code></h2>
+</section>
+<section id="goals" class="slide level2">
+<h2>Goals</h2>
+<ul>
+<li>Introduce you to how <code>stringr</code> works</li>
+<li>Set you up to get more out of it by learning regular expressions</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)</code></pre></div>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(stringr)</code></pre></div>
+</section>
+<section id="string-basics" class="slide level2">
+<h2>String basics</h2>
+<p>You can create strings with either single quotes or double quotes. Unlike other languages, there is no difference in behaviour. I recommend always using <code>&quot;</code>, unless you want to create a string that contains multiple <code>&quot;</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">string1 &lt;-<span class="st"> &quot;This is a string&quot;</span>
+string2 &lt;-<span class="st"> &#39;If I want to include a &quot;quote&quot; inside a string, I use single quotes&#39;</span></code></pre></div>
+</section>
+<section id="string-basics-1" class="slide level2">
+<h2>String basics</h2>
+<p>If you forget to close a quote, you’ll see <code>+</code>, the continuation character:</p>
+<pre><code>&gt; &quot;This is a string without a closing quote
++ 
++ 
++ HELP I&#39;M STUCK</code></pre>
+<p>If this happen to you, press Escape and try again!</p>
+</section>
+<section id="string-basics-2" class="slide level2">
+<h2>String basics</h2>
+<p>To include a literal single or double quote in a string you can use <code>\</code> to “escape” it:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">double_quote &lt;-<span class="st"> &quot;</span><span class="ch">\&quot;</span><span class="st">&quot;</span> <span class="co"># or &#39;&quot;&#39;</span>
+single_quote &lt;-<span class="st"> &#39;</span><span class="ch">\&#39;</span><span class="st">&#39;</span> <span class="co"># or &quot;&#39;&quot;</span></code></pre></div>
+<p>That means if you want to include a literal backslash, you’ll need to double it up: <code>&quot;\\&quot;</code>.</p>
+</section>
+<section id="string-basics-3" class="slide level2">
+<h2>String basics</h2>
+<p>Beware that the printed representation of a string is not the same as string itself, because the printed representation shows the escapes. To see the raw contents of the string, use <code>writeLines()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;</span><span class="ch">\&quot;</span><span class="st">&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">&quot;</span>)
+x</code></pre></div>
+<pre><code>## [1] &quot;\&quot;&quot; &quot;\\&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">writeLines</span>(x)</code></pre></div>
+<pre><code>## &quot;
+## \</code></pre>
+</section>
+<section id="string-basics-4" class="slide level2">
+<h2>String basics</h2>
+<p>There are a handful of other special characters. The most common are <code>&quot;\n&quot;</code>, newline, and <code>&quot;\t&quot;</code>, tab, but you can see the complete list by requesting help on <code>&quot;</code>: <code>?'&quot;'</code>, or <code>?&quot;'&quot;</code>. You’ll also sometimes see strings like <code>&quot;\u00b5&quot;</code>, this is a way of writing non-English characters that works on all platforms:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> &quot;\u00b5&quot;</span>
+x</code></pre></div>
+<pre><code>## [1] &quot;µ&quot;</code></pre>
+</section>
+<section id="string-basics-5" class="slide level2">
+<h2>String basics</h2>
+<p>Multiple strings are often stored in a character vector, which you can create with <code>c()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;one&quot;   &quot;two&quot;   &quot;three&quot;</code></pre>
+</section>
+<section id="string-length" class="slide level2">
+<h2>String length</h2>
+<p>Base R contains many functions to work with strings but we’ll avoid them because they can be inconsistent, which makes them hard to remember. Instead we’ll use functions from stringr. These have more intuitive names, and all start with <code>str_</code>. For example, <code>str_length()</code> tells you the number of characters in a string:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_length</span>(<span class="kw">c</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;R for data science&quot;</span>, <span class="ot">NA</span>))</code></pre></div>
+<pre><code>## [1]  1 18 NA</code></pre>
+</section>
+<section id="combining-strings" class="slide level2">
+<h2>Combining strings</h2>
+<p>To combine two or more strings, use <code>str_c()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;xy&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;xyz&quot;</code></pre>
+</section>
+<section id="combining-strings-1" class="slide level2">
+<h2>Combining strings</h2>
+<p>Use the <code>sep</code> argument to control how they’re separated:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;, &quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;x, y&quot;</code></pre>
+</section>
+<section id="combining-strings-2" class="slide level2">
+<h2>Combining strings</h2>
+<p>Like most other functions in R, missing values are contagious. If you want them to print as <code>&quot;NA&quot;</code>, use <code>str_replace_na()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;abc&quot;</span>, <span class="ot">NA</span>)
+<span class="kw">str_c</span>(<span class="st">&quot;|-&quot;</span>, x, <span class="st">&quot;-|&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;|-abc-|&quot; NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_c</span>(<span class="st">&quot;|-&quot;</span>, <span class="kw">str_replace_na</span>(x), <span class="st">&quot;-|&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;|-abc-|&quot; &quot;|-NA-|&quot;</code></pre>
+</section>
+<section id="combining-strings-3" class="slide level2">
+<h2>Combining strings</h2>
+<p>Objects of length 0 are silently dropped. This is particularly useful in conjunction with <code>if</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">name &lt;-<span class="st"> &quot;Hadley&quot;</span>
+time_of_day &lt;-<span class="st"> &quot;morning&quot;</span>
+birthday &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+
+<span class="kw">str_c</span>(
+  <span class="st">&quot;Good &quot;</span>, time_of_day, <span class="st">&quot; &quot;</span>, name,
+  <span class="cf">if</span> (birthday) <span class="st">&quot; and HAPPY BIRTHDAY&quot;</span>,
+  <span class="st">&quot;.&quot;</span>
+)</code></pre></div>
+<pre><code>## [1] &quot;Good morning Hadley.&quot;</code></pre>
+</section>
+<section id="combining-strings-4" class="slide level2">
+<h2>Combining strings</h2>
+<p>To collapse a vector of strings into a single string, use <code>collapse</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_c</span>(<span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>), <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;x, y, z&quot;</code></pre>
+</section>
+<section id="subsetting-strings" class="slide level2">
+<h2>Subsetting strings</h2>
+<p>You can extract parts of a string using <code>str_sub()</code>. As well as the string, <code>str_sub()</code> takes <code>start</code> and <code>end</code> arguments which give the (inclusive) position of the substring:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Apple&quot;</span>, <span class="st">&quot;Banana&quot;</span>, <span class="st">&quot;Pear&quot;</span>)
+<span class="kw">str_sub</span>(x, <span class="dv">1</span>, <span class="dv">3</span>)</code></pre></div>
+<pre><code>## [1] &quot;App&quot; &quot;Ban&quot; &quot;Pea&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># negative numbers count backwards from end</span>
+<span class="kw">str_sub</span>(x, <span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] &quot;ple&quot; &quot;ana&quot; &quot;ear&quot;</code></pre>
+</section>
+<section id="combining-strings-5" class="slide level2">
+<h2>Combining strings</h2>
+<p>Note that <code>str_sub()</code> won’t fail if the string is too short: it will just return as much as possible:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_sub</span>(<span class="st">&quot;a&quot;</span>, <span class="dv">1</span>, <span class="dv">5</span>)</code></pre></div>
+<pre><code>## [1] &quot;a&quot;</code></pre>
+<p>You can also use the assignment form of <code>str_sub()</code> to modify strings:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_sub</span>(x, <span class="dv">1</span>, <span class="dv">1</span>) &lt;-<span class="st"> </span><span class="kw">str_to_lower</span>(<span class="kw">str_sub</span>(x, <span class="dv">1</span>, <span class="dv">1</span>))
+x</code></pre></div>
+<pre><code>## [1] &quot;apple&quot;  &quot;banana&quot; &quot;pear&quot;</code></pre>
+</section>
+<section id="locales" class="slide level2">
+<h2>Locales</h2>
+<p>If you work outside of US English a lot, check out the book’s section on setting locales.</p>
+</section>
+<section id="exercise" class="slide level2">
+<h2>Exercise</h2>
+<ol type="1">
+<li>Write a function that turns (e.g.) a vector <code>c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)</code> into the string <code>a, b, and c</code>. Think carefully about what it should do if given a vector of length 0, 1, or 2.</li>
+</ol>
+</section>
+<section id="matching-patterns-with-regular-expressions" class="slide level2">
+<h2>Matching patterns with regular expressions</h2>
+<ul>
+<li>Regexps are a very terse language that allow you to describe patterns in strings.</li>
+<li>Learning them will take more time than we have today</li>
+<li>Study up on your own; they take a little while to get your head around, but once you understand them, you’ll find them extremely useful.</li>
+</ul>
+</section>
+<section id="detect-matches" class="slide level2">
+<h2>Detect matches</h2>
+<p>To determine if a character vector matches a pattern, use <code>str_detect()</code>. It returns a logical vector the same length as the input:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;apple&quot;</span>, <span class="st">&quot;banana&quot;</span>, <span class="st">&quot;pear&quot;</span>)
+<span class="kw">str_detect</span>(x, <span class="st">&quot;e&quot;</span>)</code></pre></div>
+<pre><code>## [1]  TRUE FALSE  TRUE</code></pre>
+</section>
+<section id="detect-matches-1" class="slide level2">
+<h2>Detect matches</h2>
+<p>Remember that when you use a logical vector in a numeric context, <code>FALSE</code> becomes 0 and <code>TRUE</code> becomes 1. That makes <code>sum()</code> and <code>mean()</code> useful if you want to answer questions about matches across a larger vector:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># How many common words start with t?</span>
+<span class="kw">sum</span>(<span class="kw">str_detect</span>(words, <span class="st">&quot;^t&quot;</span>))</code></pre></div>
+<pre><code>## [1] 65</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># What proportion of common words end with a vowel?</span>
+<span class="kw">mean</span>(<span class="kw">str_detect</span>(words, <span class="st">&quot;[aeiou]$&quot;</span>))</code></pre></div>
+<pre><code>## [1] 0.2765306</code></pre>
+</section>
+<section id="detect-matches-2" class="slide level2">
+<h2>Detect matches</h2>
+<p>When you have complex logical conditions (e.g. match a or b but not c unless d) it’s often easier to combine multiple <code>str_detect()</code> calls with logical operators, rather than trying to create a single regular expression. For example, here are two ways to find all words that don’t contain any vowels:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Find all words containing at least one vowel, and negate</span>
+no_vowels_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="op">!</span><span class="kw">str_detect</span>(words, <span class="st">&quot;[aeiou]&quot;</span>)
+<span class="co"># Find all words consisting only of consonants (non-vowels)</span>
+no_vowels_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">str_detect</span>(words, <span class="st">&quot;^[^aeiou]+$&quot;</span>)
+<span class="kw">identical</span>(no_vowels_<span class="dv">1</span>, no_vowels_<span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+</section>
+<section id="detect-matches-3" class="slide level2">
+<h2>Detect matches</h2>
+<p>A common use of <code>str_detect()</code> is to select the elements that match a pattern. You can do this with logical subsetting, or the convenient <code>str_subset()</code> wrapper:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">words[<span class="kw">str_detect</span>(words, <span class="st">&quot;x$&quot;</span>)]</code></pre></div>
+<pre><code>## [1] &quot;box&quot; &quot;sex&quot; &quot;six&quot; &quot;tax&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_subset</span>(words, <span class="st">&quot;x$&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;box&quot; &quot;sex&quot; &quot;six&quot; &quot;tax&quot;</code></pre>
+</section>
+<section id="detect-matches-4" class="slide level2">
+<h2>Detect matches</h2>
+<p>Typically, however, your strings will be one column of a data frame, and you’ll want to use filter instead:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">word =</span> words, 
+  <span class="dt">i =</span> <span class="kw">seq_along</span>(word)
+)
+df <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(words, <span class="st">&quot;x$&quot;</span>))</code></pre></div>
+<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   word      i
+##   &lt;chr&gt; &lt;int&gt;
+## 1 box     108
+## 2 sex     747
+## 3 six     772
+## 4 tax     841</code></pre>
+</section>
+<section id="replacing-matches" class="slide level2">
+<h2>Replacing matches</h2>
+<p><code>str_replace()</code> and <code>str_replace_all()</code> allow you to replace matches with new strings. The simplest use is to replace a pattern with a fixed string:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;apple&quot;</span>, <span class="st">&quot;pear&quot;</span>, <span class="st">&quot;banana&quot;</span>)
+<span class="kw">str_replace</span>(x, <span class="st">&quot;[aeiou]&quot;</span>, <span class="st">&quot;-&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;-pple&quot;  &quot;p-ar&quot;   &quot;b-nana&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_replace_all</span>(x, <span class="st">&quot;[aeiou]&quot;</span>, <span class="st">&quot;-&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;-ppl-&quot;  &quot;p--r&quot;   &quot;b-n-n-&quot;</code></pre>
+</section>
+<section id="replacing-matches-1" class="slide level2">
+<h2>Replacing matches</h2>
+<p>With <code>str_replace_all()</code> you can perform multiple replacements by supplying a named vector:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;1 house&quot;</span>, <span class="st">&quot;2 cars&quot;</span>, <span class="st">&quot;3 people&quot;</span>)
+<span class="kw">str_replace_all</span>(x, <span class="kw">c</span>(<span class="st">&quot;1&quot;</span> =<span class="st"> &quot;one&quot;</span>, <span class="st">&quot;2&quot;</span> =<span class="st"> &quot;two&quot;</span>, <span class="st">&quot;3&quot;</span> =<span class="st"> &quot;three&quot;</span>))</code></pre></div>
+<pre><code>## [1] &quot;one house&quot;    &quot;two cars&quot;     &quot;three people&quot;</code></pre>
+</section>
+<section id="replacing-matches-2" class="slide level2">
+<h2>Replacing matches</h2>
+<p>Instead of replacing with a fixed string you can use backreferences to insert components of the match. In the following code, I flip the order of the second and third words.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sentences <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">str_replace</span>(<span class="st">&quot;([^ ]+) ([^ ]+) ([^ ]+)&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">1 </span><span class="ch">\\</span><span class="st">3 </span><span class="ch">\\</span><span class="st">2&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">head</span>(<span class="dv">5</span>)</code></pre></div>
+<pre><code>## [1] &quot;The canoe birch slid on the smooth planks.&quot; 
+## [2] &quot;Glue sheet the to the dark blue background.&quot;
+## [3] &quot;It&#39;s to easy tell the depth of a well.&quot;     
+## [4] &quot;These a days chicken leg is a rare dish.&quot;   
+## [5] &quot;Rice often is served in round bowls.&quot;</code></pre>
+</section>
+<section id="splitting" class="slide level2">
+<h2>Splitting</h2>
+<p>Use <code>str_split()</code> to split a string up into pieces. For example, we could split sentences into words:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sentences <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">head</span>(<span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">str_split</span>(<span class="st">&quot; &quot;</span>)</code></pre></div>
+<pre><code>## [[1]]
+## [1] &quot;The&quot;     &quot;birch&quot;   &quot;canoe&quot;   &quot;slid&quot;    &quot;on&quot;      &quot;the&quot;     &quot;smooth&quot; 
+## [8] &quot;planks.&quot;
+## 
+## [[2]]
+## [1] &quot;Glue&quot;        &quot;the&quot;         &quot;sheet&quot;       &quot;to&quot;          &quot;the&quot;        
+## [6] &quot;dark&quot;        &quot;blue&quot;        &quot;background.&quot;
+## 
+## [[3]]
+## [1] &quot;It&#39;s&quot;  &quot;easy&quot;  &quot;to&quot;    &quot;tell&quot;  &quot;the&quot;   &quot;depth&quot; &quot;of&quot;    &quot;a&quot;     &quot;well.&quot;
+## 
+## [[4]]
+## [1] &quot;These&quot;   &quot;days&quot;    &quot;a&quot;       &quot;chicken&quot; &quot;leg&quot;     &quot;is&quot;      &quot;a&quot;      
+## [8] &quot;rare&quot;    &quot;dish.&quot;  
+## 
+## [[5]]
+## [1] &quot;Rice&quot;   &quot;is&quot;     &quot;often&quot;  &quot;served&quot; &quot;in&quot;     &quot;round&quot;  &quot;bowls.&quot;</code></pre>
+</section>
+<section id="splitting-1" class="slide level2">
+<h2>Splitting</h2>
+<p>Because each component might contain a different number of pieces, this returns a list. If you’re working with a length-1 vector, the easiest thing is to just extract the first element of the list:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="st">&quot;a|b|c|d&quot;</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">str_split</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">|&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>.[[<span class="dv">1</span>]]</code></pre></div>
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;</code></pre>
+</section>
+<section id="splitting-2" class="slide level2">
+<h2>Splitting</h2>
+<p>Otherwise, like the other stringr functions that return a list, you can use <code>simplify = TRUE</code> to return a matrix:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sentences <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">head</span>(<span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">str_split</span>(<span class="st">&quot; &quot;</span>, <span class="dt">simplify =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>##      [,1]    [,2]    [,3]    [,4]      [,5]  [,6]    [,7]    
+## [1,] &quot;The&quot;   &quot;birch&quot; &quot;canoe&quot; &quot;slid&quot;    &quot;on&quot;  &quot;the&quot;   &quot;smooth&quot;
+## [2,] &quot;Glue&quot;  &quot;the&quot;   &quot;sheet&quot; &quot;to&quot;      &quot;the&quot; &quot;dark&quot;  &quot;blue&quot;  
+## [3,] &quot;It&#39;s&quot;  &quot;easy&quot;  &quot;to&quot;    &quot;tell&quot;    &quot;the&quot; &quot;depth&quot; &quot;of&quot;    
+## [4,] &quot;These&quot; &quot;days&quot;  &quot;a&quot;     &quot;chicken&quot; &quot;leg&quot; &quot;is&quot;    &quot;a&quot;     
+## [5,] &quot;Rice&quot;  &quot;is&quot;    &quot;often&quot; &quot;served&quot;  &quot;in&quot;  &quot;round&quot; &quot;bowls.&quot;
+##      [,8]          [,9]   
+## [1,] &quot;planks.&quot;     &quot;&quot;     
+## [2,] &quot;background.&quot; &quot;&quot;     
+## [3,] &quot;a&quot;           &quot;well.&quot;
+## [4,] &quot;rare&quot;        &quot;dish.&quot;
+## [5,] &quot;&quot;            &quot;&quot;</code></pre>
+</section>
+<section id="splitting-3" class="slide level2">
+<h2>Splitting</h2>
+<p>You can also request a maximum number of pieces:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fields &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Name: Hadley&quot;</span>, <span class="st">&quot;Country: NZ&quot;</span>, <span class="st">&quot;Age: 35&quot;</span>)
+fields <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">str_split</span>(<span class="st">&quot;: &quot;</span>, <span class="dt">n =</span> <span class="dv">2</span>, <span class="dt">simplify =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>##      [,1]      [,2]    
+## [1,] &quot;Name&quot;    &quot;Hadley&quot;
+## [2,] &quot;Country&quot; &quot;NZ&quot;    
+## [3,] &quot;Age&quot;     &quot;35&quot;</code></pre>
+</section>
+<section id="splitting-4" class="slide level2">
+<h2>Splitting</h2>
+<p>Instead of splitting up strings by patterns, you can also split up by character, line, sentence and word <code>boundary()</code>s:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> &quot;This is a sentence.  This is another sentence.&quot;</span>
+<span class="kw">str_view_all</span>(x, <span class="kw">boundary</span>(<span class="st">&quot;word&quot;</span>))</code></pre></div>
+<div id="htmlwidget-3c5b377dcbc22fd35fae" style="width:960px;height:auto;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3c5b377dcbc22fd35fae">{"x":{"html":"<ul>\n  <li><span class='match'>This<\/span> <span class='match'>is<\/span> <span class='match'>a<\/span> <span class='match'>sentence<\/span>.  <span class='match'>This<\/span> <span class='match'>is<\/span> <span class='match'>another<\/span> <span class='match'>sentence<\/span>.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_split</span>(x, <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]]</code></pre></div>
+<pre><code>## [1] &quot;This&quot;      &quot;is&quot;        &quot;a&quot;         &quot;sentence.&quot; &quot;&quot;          &quot;This&quot;     
+## [7] &quot;is&quot;        &quot;another&quot;   &quot;sentence.&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str_split</span>(x, <span class="kw">boundary</span>(<span class="st">&quot;word&quot;</span>))[[<span class="dv">1</span>]]</code></pre></div>
+<pre><code>## [1] &quot;This&quot;     &quot;is&quot;       &quot;a&quot;        &quot;sentence&quot; &quot;This&quot;     &quot;is&quot;      
+## [7] &quot;another&quot;  &quot;sentence&quot;</code></pre>
+</section>
+<section id="exercises" class="slide level2">
+<h2>Exercises</h2>
+<ol type="1">
+<li>Split up a string like <code>&quot;apples, pears, and bananas&quot;</code> into individual components.</li>
+</ol>
+</section>
+<section id="find-matches" class="slide level2">
+<h2>Find matches</h2>
+<p><code>str_locate()</code> and <code>str_locate_all()</code> give you the starting and ending positions of each match. These are particularly useful when none of the other functions does exactly what you want. You can use <code>str_locate()</code> to find the matching pattern, <code>str_sub()</code> to extract and/or modify them.</p>
+</section>
+<section id="other-types-of-patterns" class="slide level2">
+<h2>Other types of patterns</h2>
+<p>When you use a pattern that’s a string, it’s automatically wrapped into a call to <code>regex()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># The regular call:</span>
+<span class="kw">str_view</span>(fruit, <span class="st">&quot;nana&quot;</span>)
+<span class="co"># Is shorthand for</span>
+<span class="kw">str_view</span>(fruit, <span class="kw">regex</span>(<span class="st">&quot;nana&quot;</span>))</code></pre></div>
+</section>
+<section id="other-uses-of-regular-expressions" class="slide level2">
+<h2>Other uses of regular expressions</h2>
+<p>There are two useful function in base R that also use regular expressions:</p>
+<ul>
+<li><p><code>apropos()</code> searches all objects available from the global environment. This is useful if you can’t quite remember the name of the function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">apropos</span>(<span class="st">&quot;replace&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;%+replace%&quot;       &quot;replace&quot;          &quot;replace_na&quot;      
+## [4] &quot;setReplaceMethod&quot; &quot;str_replace&quot;      &quot;str_replace_all&quot; 
+## [7] &quot;str_replace_na&quot;   &quot;theme_replace&quot;</code></pre></li>
+</ul>
+</section>
+<section id="other-uses-of-regular-expressions-1" class="slide level2">
+<h2>Other uses of regular expressions</h2>
+<ul>
+<li><p><code>dir()</code> lists all the files in a directory. The <code>pattern</code> argument takes a regular expression and only returns file names that match the pattern. For example, you can find all the R Markdown files in the current directory with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">dir</span>(<span class="dt">pattern =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.Rmd$&quot;</span>))</code></pre></div>
+<pre><code>## [1] &quot;part1_intro.Rmd&quot;                 &quot;part2_dplyr.Rmd&quot;                
+## [3] &quot;part3_tidyr.Rmd&quot;                 &quot;part4_strings_dates_factors.Rmd&quot;
+## [5] &quot;part5_data_analysis.Rmd&quot;         &quot;part6_ggplot_intro.Rmd&quot;</code></pre></li>
+</ul>
+</section>
+<section id="dates-and-times" class="slide level2">
+<h2>Dates and times</h2>
+<p>The key tidyverse tool is the <strong>lubridate</strong> package. Must be loaded separately. We will also need nycflights13 for practice data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(nycflights13)</code></pre></div>
+<pre><code>## Warning: package &#39;nycflights13&#39; was built under R version 3.4.4</code></pre>
+</section>
+<section id="creating-datetimes" class="slide level2">
+<h2>Creating date/times</h2>
+<p>There are three types of date/time data that refer to an instant in time:</p>
+<ul>
+<li><p>A <strong>date</strong>. Tibbles print this as <code>&lt;date&gt;</code>.</p></li>
+<li><p>A <strong>time</strong> within a day. Tibbles print this as <code>&lt;time&gt;</code>.</p></li>
+<li><p>A <strong>date-time</strong> is a date plus a time: it uniquely identifies an instant in time (typically to the nearest second). Tibbles print this as <code>&lt;dttm&gt;</code>. Elsewhere in R these are called POSIXct, but I don’t think that’s a very useful name.</p></li>
+</ul>
+</section>
+<section id="today" class="slide level2">
+<h2>Today</h2>
+<p>To get the current date or date-time you can use <code>today()</code> or <code>now()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">today</span>()</code></pre></div>
+<pre><code>## [1] &quot;2018-07-18&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">now</span>()</code></pre></div>
+<pre><code>## [1] &quot;2018-07-18 04:15:04 GMT&quot;</code></pre>
+</section>
+<section id="datetimes-from-strings" class="slide level2">
+<h2>Datetimes from strings</h2>
+<p>Use the helpers provided by lubridate. They automatically work out the format once you specify the order of the component. To use them, identify the order in which year, month, and day appear in your dates, then arrange “y”, “m”, and “d” in the same order.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ymd</span>(<span class="st">&quot;2017-01-31&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-31&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdy</span>(<span class="st">&quot;January 31st, 2017&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-31&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dmy</span>(<span class="st">&quot;31-Jan-2017&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-31&quot;</code></pre>
+</section>
+<section id="can-also-pass-an-unquoted-number" class="slide level2">
+<h2>Can also pass an unquoted number</h2>
+<p>These functions also take unquoted numbers. This is the most concise way to create a single date/time object, as you might need when filtering date/time data. <code>ymd()</code> is short and unambiguous:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ymd</span>(<span class="dv">20170131</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-31&quot;</code></pre>
+</section>
+<section id="create-date-times-not-just-dates" class="slide level2">
+<h2>Create date-times, not just dates</h2>
+<p><code>ymd()</code> and friends create dates. To create a date-time, add an underscore and one or more of “h”, “m”, and “s” to the name of the parsing function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ymd_hms</span>(<span class="st">&quot;2017-01-31 20:11:59&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-31 20:11:59 UTC&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mdy_hm</span>(<span class="st">&quot;01/31/2017 08:01&quot;</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-31 08:01:00 UTC&quot;</code></pre>
+</section>
+<section id="from-individual-components" class="slide level2">
+<h2>From individual components</h2>
+<p>Instead of a single string, sometimes you’ll have the individual components of the date-time spread across multiple columns. This is what we have in the flights data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(year, month, day, hour, minute)</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 5
+##     year month   day  hour minute
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1  2013     1     1    5.    15.
+##  2  2013     1     1    5.    29.
+##  3  2013     1     1    5.    40.
+##  4  2013     1     1    5.    45.
+##  5  2013     1     1    6.     0.
+##  6  2013     1     1    5.    58.
+##  7  2013     1     1    6.     0.
+##  8  2013     1     1    6.     0.
+##  9  2013     1     1    6.     0.
+## 10  2013     1     1    6.     0.
+## # ... with 336,766 more rows</code></pre>
+</section>
+<section id="from-individual-components-1" class="slide level2">
+<h2>From individual components</h2>
+<p>To create a date/time from this sort of input, use <code>make_date()</code> for dates, or <code>make_datetime()</code> for date-times:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(year, month, day, hour, minute) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">departure =</span> <span class="kw">make_datetime</span>(year, month, day, hour, minute))</code></pre></div>
+<pre><code>## # A tibble: 336,776 x 6
+##     year month   day  hour minute departure          
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dttm&gt;             
+##  1  2013     1     1    5.    15. 2013-01-01 05:15:00
+##  2  2013     1     1    5.    29. 2013-01-01 05:29:00
+##  3  2013     1     1    5.    40. 2013-01-01 05:40:00
+##  4  2013     1     1    5.    45. 2013-01-01 05:45:00
+##  5  2013     1     1    6.     0. 2013-01-01 06:00:00
+##  6  2013     1     1    5.    58. 2013-01-01 05:58:00
+##  7  2013     1     1    6.     0. 2013-01-01 06:00:00
+##  8  2013     1     1    6.     0. 2013-01-01 06:00:00
+##  9  2013     1     1    6.     0. 2013-01-01 06:00:00
+## 10  2013     1     1    6.     0. 2013-01-01 06:00:00
+## # ... with 336,766 more rows</code></pre>
+</section>
+<section id="from-other-types" class="slide level2">
+<h2>From other types</h2>
+<p>You may want to switch between a date-time and a date. That’s the job of <code>as_datetime()</code> and <code>as_date()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as_datetime</span>(<span class="kw">today</span>())</code></pre></div>
+<pre><code>## [1] &quot;2018-07-18 UTC&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as_date</span>(<span class="kw">now</span>())</code></pre></div>
+<pre><code>## [1] &quot;2018-07-18&quot;</code></pre>
+</section>
+<section id="getting-components" class="slide level2">
+<h2>Getting components</h2>
+<p>You can pull out individual parts of the date with the accessor functions <code>year()</code>, <code>month()</code>, <code>mday()</code> (day of the month), <code>yday()</code> (day of the year), <code>wday()</code> (day of the week), <code>hour()</code>, <code>minute()</code>, and <code>second()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">datetime &lt;-<span class="st"> </span><span class="kw">ymd_hms</span>(<span class="st">&quot;2016-07-08 12:34:56&quot;</span>)
+
+<span class="kw">year</span>(datetime)</code></pre></div>
+<pre><code>## [1] 2016</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">month</span>(datetime)</code></pre></div>
+<pre><code>## [1] 7</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mday</span>(datetime)</code></pre></div>
+<pre><code>## [1] 8</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">yday</span>(datetime)</code></pre></div>
+<pre><code>## [1] 190</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">wday</span>(datetime)</code></pre></div>
+<pre><code>## [1] 6</code></pre>
+</section>
+<section id="getting-components-1" class="slide level2">
+<h2>Getting components</h2>
+<p>For <code>month()</code> and <code>wday()</code> you can set <code>label = TRUE</code> to return the abbreviated name of the month or day of the week. Set <code>abbr = FALSE</code> to return the full name.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">month</span>(datetime, <span class="dt">label =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## [1] Jul
+## 12 Levels: Jan &lt; Feb &lt; Mar &lt; Apr &lt; May &lt; Jun &lt; Jul &lt; Aug &lt; Sep &lt; ... &lt; Dec</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">wday</span>(datetime, <span class="dt">label =</span> <span class="ot">TRUE</span>, <span class="dt">abbr =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## [1] Friday
+## 7 Levels: Sunday &lt; Monday &lt; Tuesday &lt; Wednesday &lt; Thursday &lt; ... &lt; Saturday</code></pre>
+</section>
+<section id="time-spans" class="slide level2">
+<h2>Time spans</h2>
+<p>Next you’ll learn about how arithmetic with dates works, including subtraction, addition, and division. Along the way, you’ll learn about three important classes that represent time spans:</p>
+<ul>
+<li><strong>durations</strong>, which represent an exact number of seconds.</li>
+<li><strong>periods</strong>, which represent human units like weeks and months.</li>
+<li><strong>intervals</strong>, which represent a starting and ending point.</li>
+</ul>
+</section>
+<section id="durations" class="slide level2">
+<h2>Durations</h2>
+<p>In R, when you subtract two dates, you get a difftime object:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># How old is Hadley?</span>
+h_age &lt;-<span class="st"> </span><span class="kw">today</span>() <span class="op">-</span><span class="st"> </span><span class="kw">ymd</span>(<span class="dv">19791014</span>)
+h_age</code></pre></div>
+<pre><code>## Time difference of 14157 days</code></pre>
+</section>
+<section id="durations-1" class="slide level2">
+<h2>Durations</h2>
+<p>A difftime class object records a time span of seconds, minutes, hours, days, or weeks. This ambiguity can make difftimes a little painful to work with, so lubridate provides an alternative which always uses seconds: the <strong>duration</strong>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as.duration</span>(h_age)</code></pre></div>
+<pre><code>## [1] &quot;1223164800s (~38.76 years)&quot;</code></pre>
+</section>
+<section id="durations-2" class="slide level2">
+<h2>Durations</h2>
+<p>Durations come with a bunch of convenient constructors:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dseconds</span>(<span class="dv">15</span>)</code></pre></div>
+<pre><code>## [1] &quot;15s&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dminutes</span>(<span class="dv">10</span>)</code></pre></div>
+<pre><code>## [1] &quot;600s (~10 minutes)&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dhours</span>(<span class="kw">c</span>(<span class="dv">12</span>, <span class="dv">24</span>))</code></pre></div>
+<pre><code>## [1] &quot;43200s (~12 hours)&quot; &quot;86400s (~1 days)&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ddays</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">5</span>)</code></pre></div>
+<pre><code>## [1] &quot;0s&quot;                &quot;86400s (~1 days)&quot;  &quot;172800s (~2 days)&quot;
+## [4] &quot;259200s (~3 days)&quot; &quot;345600s (~4 days)&quot; &quot;432000s (~5 days)&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dweeks</span>(<span class="dv">3</span>)</code></pre></div>
+<pre><code>## [1] &quot;1814400s (~3 weeks)&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dyears</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] &quot;31536000s (~52.14 weeks)&quot;</code></pre>
+</section>
+<section id="durations-3" class="slide level2">
+<h2>Durations</h2>
+<p>Durations always record the time span in seconds. Larger units are created by converting minutes, hours, days, weeks, and years to seconds at the standard rate (60 seconds in a minute, 60 minutes in an hour, 24 hours in day, 7 days in a week, 365 days in a year).</p>
+<p>You can add and multiply durations:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">dyears</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] &quot;63072000s (~2 years)&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dyears</span>(<span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="kw">dweeks</span>(<span class="dv">12</span>) <span class="op">+</span><span class="st"> </span><span class="kw">dhours</span>(<span class="dv">15</span>)</code></pre></div>
+<pre><code>## [1] &quot;38847600s (~1.23 years)&quot;</code></pre>
+</section>
+<section id="durations-4" class="slide level2">
+<h2>Durations</h2>
+<p>You can add and subtract durations to and from days:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tomorrow &lt;-<span class="st"> </span><span class="kw">today</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ddays</span>(<span class="dv">1</span>)
+last_year &lt;-<span class="st"> </span><span class="kw">today</span>() <span class="op">-</span><span class="st"> </span><span class="kw">dyears</span>(<span class="dv">1</span>)</code></pre></div>
+</section>
+<section id="durations-5" class="slide level2">
+<h2>Durations</h2>
+<p>However, because durations represent an exact number of seconds, sometimes you might get an unexpected result:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">one_pm &lt;-<span class="st"> </span><span class="kw">ymd_hms</span>(<span class="st">&quot;2016-03-12 13:00:00&quot;</span>, <span class="dt">tz =</span> <span class="st">&quot;America/New_York&quot;</span>)
+
+one_pm</code></pre></div>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## [1] &quot;2016-03-12 13:00:00 EST&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">one_pm <span class="op">+</span><span class="st"> </span><span class="kw">ddays</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;
+
+## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## [1] &quot;2016-03-13 14:00:00 EDT&quot;</code></pre>
+<p>Why is one day after 1pm on March 12, 2pm on March 13?! If you look carefully at the date you might also notice that the time zones have changed. Because of DST, March 12 only has 23 hours, so if add a full days worth of seconds we end up with a different time.</p>
+</section>
+<section id="periods" class="slide level2">
+<h2>Periods</h2>
+<p>To solve this problem, lubridate provides <strong>periods</strong>. Periods are time spans but don’t have a fixed length in seconds, instead they work with “human” times, like days and months. That allows them work in a more intuitive way:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">one_pm</code></pre></div>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## [1] &quot;2016-03-12 13:00:00 EST&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">one_pm <span class="op">+</span><span class="st"> </span><span class="kw">days</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## Warning in as.POSIXlt.POSIXct(date): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXct.POSIXlt(object): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(new): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXct.POSIXlt(new): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## [1] &quot;2016-03-13 13:00:00 EDT&quot;</code></pre>
+</section>
+<section id="periods-1" class="slide level2">
+<h2>Periods</h2>
+<p>Like durations, periods can be created with a number of friendly constructor functions.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">seconds</span>(<span class="dv">15</span>)</code></pre></div>
+<pre><code>## [1] &quot;15S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">minutes</span>(<span class="dv">10</span>)</code></pre></div>
+<pre><code>## [1] &quot;10M 0S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hours</span>(<span class="kw">c</span>(<span class="dv">12</span>, <span class="dv">24</span>))</code></pre></div>
+<pre><code>## [1] &quot;12H 0M 0S&quot; &quot;24H 0M 0S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">days</span>(<span class="dv">7</span>)</code></pre></div>
+<pre><code>## [1] &quot;7d 0H 0M 0S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">months</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>)</code></pre></div>
+<pre><code>## [1] &quot;1m 0d 0H 0M 0S&quot; &quot;2m 0d 0H 0M 0S&quot; &quot;3m 0d 0H 0M 0S&quot; &quot;4m 0d 0H 0M 0S&quot;
+## [5] &quot;5m 0d 0H 0M 0S&quot; &quot;6m 0d 0H 0M 0S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">weeks</span>(<span class="dv">3</span>)</code></pre></div>
+<pre><code>## [1] &quot;21d 0H 0M 0S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">years</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] &quot;1y 0m 0d 0H 0M 0S&quot;</code></pre>
+</section>
+<section id="periods-2" class="slide level2">
+<h2>Periods</h2>
+<p>You can add and multiply periods:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">10</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">months</span>(<span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="kw">days</span>(<span class="dv">1</span>))</code></pre></div>
+<pre><code>## [1] &quot;60m 10d 0H 0M 0S&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">days</span>(<span class="dv">50</span>) <span class="op">+</span><span class="st"> </span><span class="kw">hours</span>(<span class="dv">25</span>) <span class="op">+</span><span class="st"> </span><span class="kw">minutes</span>(<span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] &quot;50d 25H 2M 0S&quot;</code></pre>
+</section>
+<section id="periods-3" class="slide level2">
+<h2>Periods</h2>
+<p>And of course, add them to dates. Compared to durations, periods are more likely to do what you expect:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># A leap year</span>
+<span class="kw">ymd</span>(<span class="st">&quot;2016-01-01&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">dyears</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] &quot;2016-12-31&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ymd</span>(<span class="st">&quot;2016-01-01&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">years</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## [1] &quot;2017-01-01&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Daylight Savings Time</span>
+one_pm <span class="op">+</span><span class="st"> </span><span class="kw">ddays</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## [1] &quot;2016-03-13 14:00:00 EDT&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">one_pm <span class="op">+</span><span class="st"> </span><span class="kw">days</span>(<span class="dv">1</span>)</code></pre></div>
+<pre><code>## Warning in as.POSIXlt.POSIXct(date): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXct.POSIXlt(object): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(new): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXct.POSIXlt(new): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz): unknown timezone &#39;zone/tz/2018c.1.0/
+## zoneinfo/America/Chicago&#39;</code></pre>
+<pre><code>## [1] &quot;2016-03-13 13:00:00 EDT&quot;</code></pre>
+</section>
+<section id="working-with-factorsforcats" class="slide level2">
+<h2>Working with factors:<code>forcats</code></h2>
+<p>In R, factors are used to work with categorical variables, variables that have a fixed and known set of possible values. They are also useful when you want to display character vectors in a non-alphabetical order.</p>
+</section>
+<section id="prerequisites" class="slide level2">
+<h2>Prerequisites</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(forcats)</code></pre></div>
+</section>
+<section id="creating-factors" class="slide level2">
+<h2>Creating factors</h2>
+<p>Imagine that you have a variable that records month:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Dec&quot;</span>, <span class="st">&quot;Apr&quot;</span>, <span class="st">&quot;Jan&quot;</span>, <span class="st">&quot;Mar&quot;</span>)</code></pre></div>
+</section>
+<section id="creating-factors-1" class="slide level2">
+<h2>Creating factors</h2>
+<p>To create a factor you must start by creating a list of the valid <strong>levels</strong>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">month_levels &lt;-<span class="st"> </span><span class="kw">c</span>(
+  <span class="st">&quot;Jan&quot;</span>, <span class="st">&quot;Feb&quot;</span>, <span class="st">&quot;Mar&quot;</span>, <span class="st">&quot;Apr&quot;</span>, <span class="st">&quot;May&quot;</span>, <span class="st">&quot;Jun&quot;</span>, 
+  <span class="st">&quot;Jul&quot;</span>, <span class="st">&quot;Aug&quot;</span>, <span class="st">&quot;Sep&quot;</span>, <span class="st">&quot;Oct&quot;</span>, <span class="st">&quot;Nov&quot;</span>, <span class="st">&quot;Dec&quot;</span>
+)</code></pre></div>
+</section>
+<section id="creating-factors-2" class="slide level2">
+<h2>Creating factors</h2>
+<p>Now you can create a factor:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y1 &lt;-<span class="st"> </span><span class="kw">factor</span>(x1, <span class="dt">levels =</span> month_levels)
+y1</code></pre></div>
+<pre><code>## [1] Dec Apr Jan Mar
+## Levels: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sort</span>(y1)</code></pre></div>
+<pre><code>## [1] Jan Mar Apr Dec
+## Levels: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec</code></pre>
+</section>
+<section id="creating-factors-3" class="slide level2">
+<h2>Creating factors</h2>
+<p>If you omit the levels, they’ll be taken from the data in alphabetical order:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">factor</span>(x1)</code></pre></div>
+<pre><code>## [1] Dec Apr Jan Mar
+## Levels: Apr Dec Jan Mar</code></pre>
+</section>
+<section id="example-data-general-social-survey" class="slide level2">
+<h2>Example data: General Social Survey</h2>
+<p>For the rest of this chapter, we’re going to focus on <code>forcats::gss_cat</code>. It’s a sample of data from the <a href="http://gss.norc.org">General Social Survey</a>, which is a long-running US survey conducted by the independent research organization NORC at the University of Chicago. The survey has thousands of questions, so in <code>gss_cat</code> I’ve selected a handful that will illustrate some common challenges you’ll encounter when working with factors.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat</code></pre></div>
+<pre><code>## # A tibble: 21,483 x 9
+##     year marital         age race  rincome  partyid  relig  denom  tvhours
+##    &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;    &lt;fct&gt;    &lt;fct&gt;  &lt;fct&gt;    &lt;int&gt;
+##  1  2000 Never married    26 White $8000 t… Ind,nea… Prote… South…      12
+##  2  2000 Divorced         48 White $8000 t… Not str… Prote… Bapti…      NA
+##  3  2000 Widowed          67 White Not app… Indepen… Prote… No de…       2
+##  4  2000 Never married    39 White Not app… Ind,nea… Ortho… Not a…       4
+##  5  2000 Divorced         25 White Not app… Not str… None   Not a…       1
+##  6  2000 Married          25 White $20000 … Strong … Prote… South…      NA
+##  7  2000 Never married    36 White $25000 … Not str… Chris… Not a…       3
+##  8  2000 Divorced         44 White $7000 t… Ind,nea… Prote… Luthe…      NA
+##  9  2000 Married          44 White $25000 … Not str… Prote… Other        0
+## 10  2000 Married          47 White $25000 … Strong … Prote… South…       3
+## # ... with 21,473 more rows</code></pre>
+<p>(Remember, since this dataset is provided by a package, you can get more information about the variables with <code>?gss_cat</code>.)</p>
+</section>
+<section id="example-data-general-social-survey-1" class="slide level2">
+<h2>Example data: General Social Survey</h2>
+<p>When factors are stored in a tibble, you can’t see their levels so easily. One way to see them is with <code>count()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>(race)</code></pre></div>
+<pre><code>## # A tibble: 3 x 2
+##   race      n
+##   &lt;fct&gt; &lt;int&gt;
+## 1 Other  1959
+## 2 Black  3129
+## 3 White 16395</code></pre>
+</section>
+<section id="example-data-general-social-survey-2" class="slide level2">
+<h2>Example data: General Social Survey</h2>
+<p>Or with a bar chart:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gss_cat, <span class="kw">aes</span>(race)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>()</code></pre></div>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-58-1.png" width="384" /></p>
+</section>
+<section id="example-data-general-social-survey-3" class="slide level2">
+<h2>Example data: General Social Survey</h2>
+<p>By default, ggplot2 will drop levels that don’t have any values. You can force them to display with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gss_cat, <span class="kw">aes</span>(race)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">drop =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-59-1.png" width="384" /></p>
+</section>
+<section id="example-data-general-social-survey-4" class="slide level2">
+<h2>Example data: General Social Survey</h2>
+<p>These levels represent valid values that simply did not occur in this dataset. Unfortunately, dplyr doesn’t yet have a <code>drop</code> option, but it will in the future.</p>
+</section>
+<section id="exercise-1" class="slide level2">
+<h2>Exercise</h2>
+<ol type="1">
+<li>What is the most common <code>relig</code> in this survey? What’s the most common <code>partyid</code>?</li>
+</ol>
+</section>
+<section id="modifying-factor-order" class="slide level2">
+<h2>Modifying factor order</h2>
+<p>It’s often useful to change the order of the factor levels in a visualisation. For example, imagine you want to explore the average number of hours spent watching TV per day across religions:</p>
+</section>
+<section id="modifying-factor-order-1" class="slide level2">
+<h2>Modifying factor order</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">relig_summary &lt;-<span class="st"> </span>gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(relig) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">age =</span> <span class="kw">mean</span>(age, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+    <span class="dt">tvhours =</span> <span class="kw">mean</span>(tvhours, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+    <span class="dt">n =</span> <span class="kw">n</span>()
+  )
+
+<span class="kw">ggplot</span>(relig_summary, <span class="kw">aes</span>(tvhours, relig)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</code></pre></div>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-60-1.png" width="384" /></p>
+</section>
+<section id="modifying-factor-order-2" class="slide level2">
+<h2>Modifying factor order</h2>
+<p>It is difficult to interpret this plot because there’s no overall pattern. We can improve it by reordering the levels of <code>relig</code> using <code>fct_reorder()</code>. <code>fct_reorder()</code> takes three arguments:</p>
+<ul>
+<li><code>f</code>, the factor whose levels you want to modify.</li>
+<li><code>x</code>, a numeric vector that you want to use to reorder the levels.</li>
+<li>Optionally, <code>fun</code>, a function that’s used if there are multiple values of <code>x</code> for each value of <code>f</code>. The default value is <code>median</code>.</li>
+</ul>
+</section>
+<section id="modifying-factor-order-3" class="slide level2">
+<h2>Modifying factor order</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(relig_summary, <span class="kw">aes</span>(tvhours, <span class="kw">fct_reorder</span>(relig, tvhours))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>()</code></pre></div>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-61-1.png" width="384" /></p>
+</section>
+<section id="modifying-factor-order-4" class="slide level2">
+<h2>Modifying factor order</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rincome_summary &lt;-<span class="st"> </span>gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(rincome) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarise</span>(
+    <span class="dt">age =</span> <span class="kw">mean</span>(age, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+    <span class="dt">tvhours =</span> <span class="kw">mean</span>(tvhours, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+    <span class="dt">n =</span> <span class="kw">n</span>()
+  )
+
+<span class="kw">ggplot</span>(rincome_summary, <span class="kw">aes</span>(age, <span class="kw">fct_reorder</span>(rincome, age))) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</code></pre></div>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-62-1.png" width="384" /></p>
+</section>
+<section id="modifying-factor-order-5" class="slide level2">
+<h2>Modifying factor order</h2>
+<p>Another type of reordering is useful when you are colouring the lines on a plot. <code>fct_reorder2()</code> reorders the factor by the <code>y</code> values associated with the largest <code>x</code> values. This makes the plot easier to read because the line colours line up with the legend.</p>
+</section>
+<section id="modifying-factor-order-6" class="slide level2">
+<h2>Modifying factor order</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">by_age &lt;-<span class="st"> </span>gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(age)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(age, marital) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n))
+
+<span class="kw">ggplot</span>(by_age, <span class="kw">aes</span>(age, prop, <span class="dt">colour =</span> marital)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-63-1.png" width="50%" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(by_age, <span class="kw">aes</span>(age, prop, <span class="dt">colour =</span> <span class="kw">fct_reorder2</span>(marital, age, prop))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">colour =</span> <span class="st">&quot;marital&quot;</span>)</code></pre></div>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-63-2.png" width="50%" /></p>
+</section>
+<section id="modifying-factor-order-7" class="slide level2">
+<h2>Modifying factor order</h2>
+<p>Finally, for bar plots, you can use <code>fct_infreq()</code> to order levels in increasing frequency: this is the simplest type of reordering because it doesn’t need any extra variables. You may want to combine with <code>fct_rev()</code>.</p>
+</section>
+<section id="modifying-factor-order-8" class="slide level2">
+<h2>Modifying factor order</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">marital =</span> marital <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">fct_infreq</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">fct_rev</span>()) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(marital)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_bar</span>()</code></pre></div>
+<p><img src="part4_strings_dates_factors_files/figure-revealjs/unnamed-chunk-64-1.png" width="384" /></p>
+</section>
+<section id="exercises-1" class="slide level2">
+<h2>Exercises</h2>
+<ol type="1">
+<li><p>There are some suspiciously high numbers in <code>tvhours</code>. Is the mean a good summary?</p></li>
+<li><p>For each factor in <code>gss_cat</code> identify whether the order of the levels is arbitrary or principled.</p></li>
+<li><p>Why did moving “Not applicable” to the front of the levels move it to the bottom of the plot?</p></li>
+</ol>
+</section>
+<section id="modifying-factor-levels" class="slide level2">
+<h2>Modifying factor levels</h2>
+<p>More powerful than changing the orders of the levels is changing their values. This allows you to clarify labels for publication, and collapse levels for high-level displays. The most general and powerful tool is <code>fct_recode()</code>. It allows you to recode, or change, the value of each level. For example, take the <code>gss_cat$partyid</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(partyid)</code></pre></div>
+<pre><code>## # A tibble: 10 x 2
+##    partyid                n
+##    &lt;fct&gt;              &lt;int&gt;
+##  1 No answer            154
+##  2 Don&#39;t know             1
+##  3 Other party          393
+##  4 Strong republican   2314
+##  5 Not str republican  3032
+##  6 Ind,near rep        1791
+##  7 Independent         4119
+##  8 Ind,near dem        2499
+##  9 Not str democrat    3690
+## 10 Strong democrat     3490</code></pre>
+</section>
+<section id="modifying-factor-order-9" class="slide level2">
+<h2>Modifying factor order</h2>
+<p>The levels are terse and inconsistent. Let’s tweak them to be longer and use a parallel construction.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">partyid =</span> <span class="kw">fct_recode</span>(partyid,
+    <span class="st">&quot;Republican, strong&quot;</span>    =<span class="st"> &quot;Strong republican&quot;</span>,
+    <span class="st">&quot;Republican, weak&quot;</span>      =<span class="st"> &quot;Not str republican&quot;</span>,
+    <span class="st">&quot;Independent, near rep&quot;</span> =<span class="st"> &quot;Ind,near rep&quot;</span>,
+    <span class="st">&quot;Independent, near dem&quot;</span> =<span class="st"> &quot;Ind,near dem&quot;</span>,
+    <span class="st">&quot;Democrat, weak&quot;</span>        =<span class="st"> &quot;Not str democrat&quot;</span>,
+    <span class="st">&quot;Democrat, strong&quot;</span>      =<span class="st"> &quot;Strong democrat&quot;</span>
+  )) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>(partyid)</code></pre></div>
+<pre><code>## # A tibble: 10 x 2
+##    partyid                   n
+##    &lt;fct&gt;                 &lt;int&gt;
+##  1 No answer               154
+##  2 Don&#39;t know                1
+##  3 Other party             393
+##  4 Republican, strong     2314
+##  5 Republican, weak       3032
+##  6 Independent, near rep  1791
+##  7 Independent            4119
+##  8 Independent, near dem  2499
+##  9 Democrat, weak         3690
+## 10 Democrat, strong       3490</code></pre>
+</section>
+<section id="modifying-factor-levels-1" class="slide level2">
+<h2>Modifying factor levels</h2>
+<p><code>fct_recode()</code> will leave levels that aren’t explicitly mentioned as is, and will warn you if you accidentally refer to a level that doesn’t exist.</p>
+</section>
+<section id="modifying-factor-order-10" class="slide level2">
+<h2>Modifying factor order</h2>
+<p>To combine groups, you can assign multiple old levels to the same new level:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">partyid =</span> <span class="kw">fct_recode</span>(partyid,
+    <span class="st">&quot;Republican, strong&quot;</span>    =<span class="st"> &quot;Strong republican&quot;</span>,
+    <span class="st">&quot;Republican, weak&quot;</span>      =<span class="st"> &quot;Not str republican&quot;</span>,
+    <span class="st">&quot;Independent, near rep&quot;</span> =<span class="st"> &quot;Ind,near rep&quot;</span>,
+    <span class="st">&quot;Independent, near dem&quot;</span> =<span class="st"> &quot;Ind,near dem&quot;</span>,
+    <span class="st">&quot;Democrat, weak&quot;</span>        =<span class="st"> &quot;Not str democrat&quot;</span>,
+    <span class="st">&quot;Democrat, strong&quot;</span>      =<span class="st"> &quot;Strong democrat&quot;</span>,
+    <span class="st">&quot;Other&quot;</span>                 =<span class="st"> &quot;No answer&quot;</span>,
+    <span class="st">&quot;Other&quot;</span>                 =<span class="st"> &quot;Don&#39;t know&quot;</span>,
+    <span class="st">&quot;Other&quot;</span>                 =<span class="st"> &quot;Other party&quot;</span>
+  )) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>(partyid)</code></pre></div>
+<pre><code>## # A tibble: 8 x 2
+##   partyid                   n
+##   &lt;fct&gt;                 &lt;int&gt;
+## 1 Other                   548
+## 2 Republican, strong     2314
+## 3 Republican, weak       3032
+## 4 Independent, near rep  1791
+## 5 Independent            4119
+## 6 Independent, near dem  2499
+## 7 Democrat, weak         3690
+## 8 Democrat, strong       3490</code></pre>
+<p>You must use this technique with care: if you group together categories that are truly different you will end up with misleading results.</p>
+</section>
+<section id="modifying-factor-levels-2" class="slide level2">
+<h2>Modifying factor levels</h2>
+<p>If you want to collapse a lot of levels, <code>fct_collapse()</code> is a useful variant of <code>fct_recode()</code>. For each new variable, you can provide a vector of old levels:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">partyid =</span> <span class="kw">fct_collapse</span>(partyid,
+    <span class="dt">other =</span> <span class="kw">c</span>(<span class="st">&quot;No answer&quot;</span>, <span class="st">&quot;Don&#39;t know&quot;</span>, <span class="st">&quot;Other party&quot;</span>),
+    <span class="dt">rep =</span> <span class="kw">c</span>(<span class="st">&quot;Strong republican&quot;</span>, <span class="st">&quot;Not str republican&quot;</span>),
+    <span class="dt">ind =</span> <span class="kw">c</span>(<span class="st">&quot;Ind,near rep&quot;</span>, <span class="st">&quot;Independent&quot;</span>, <span class="st">&quot;Ind,near dem&quot;</span>),
+    <span class="dt">dem =</span> <span class="kw">c</span>(<span class="st">&quot;Not str democrat&quot;</span>, <span class="st">&quot;Strong democrat&quot;</span>)
+  )) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>(partyid)</code></pre></div>
+<pre><code>## # A tibble: 4 x 2
+##   partyid     n
+##   &lt;fct&gt;   &lt;int&gt;
+## 1 other     548
+## 2 rep      5346
+## 3 ind      8409
+## 4 dem      7180</code></pre>
+</section>
+<section id="modifying-factor-levels-3" class="slide level2">
+<h2>Modifying factor levels</h2>
+<p>Sometimes you just want to lump together all the small groups to make a plot or table simpler. That’s the job of <code>fct_lump()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">relig =</span> <span class="kw">fct_lump</span>(relig)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>(relig)</code></pre></div>
+<pre><code>## # A tibble: 2 x 2
+##   relig          n
+##   &lt;fct&gt;      &lt;int&gt;
+## 1 Protestant 10846
+## 2 Other      10637</code></pre>
+<p>The default behaviour is to progressively lump together the smallest groups, ensuring that the aggregate is still the smallest group. In this case it’s not very helpful: it is true that the majority of Americans in this survey are Protestant, but we’ve probably over collapsed.</p>
+<p>Instead, we can use the <code>n</code> parameter to specify how many groups (excluding other) we want to keep:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gss_cat <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">relig =</span> <span class="kw">fct_lump</span>(relig, <span class="dt">n =</span> <span class="dv">10</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">count</span>(relig, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">print</span>(<span class="dt">n =</span> <span class="ot">Inf</span>)</code></pre></div>
+<pre><code>## # A tibble: 10 x 2
+##    relig                       n
+##    &lt;fct&gt;                   &lt;int&gt;
+##  1 Protestant              10846
+##  2 Catholic                 5124
+##  3 None                     3523
+##  4 Christian                 689
+##  5 Other                     458
+##  6 Jewish                    388
+##  7 Buddhism                  147
+##  8 Inter-nondenominational   109
+##  9 Moslem/islam              104
+## 10 Orthodox-christian         95</code></pre>
+</section>
+    </div>
+  </div>
+
+  <script src="part4_strings_dates_factors_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="part4_strings_dates_factors_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

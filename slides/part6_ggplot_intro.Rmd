@@ -573,4 +573,19 @@ ggplot(data = <DATA>) +
   <FACET_FUNCTION>
 ```
 
+# Final thoughts
 
+## tidyverse really is the cutting edge of R
+
+- These are the R tools professional data scientists are using
+- Their power and ease of use is continually growing
+- tidyverse does much more than you can keep in your working memory. Before you spend a long time bashing your head into an arduous cleaning or wrangling task, look for tidyverse solutions
+
+## Follow #tidytuesday on twitter
+
+- Each week, a new messy dataset and tidying task
+- Check out others' work 
+
+## Stay active with the R User Group 
+
+- Email me to join the list: cskovron@northwestern.edu

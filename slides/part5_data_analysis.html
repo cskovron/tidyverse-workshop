@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="dcterms.date" content="2018-07-17" />
+  <meta name="dcterms.date" content="2018-07-18" />
   <title>Introduction to the tidyverse: Data analysis with infer and broom</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -484,7 +484,7 @@ document.getElementsByTagName('head')[0].appendChild(style);
     <h1 class="title">Introduction to the tidyverse: Data analysis with <code>infer</code> and <code>broom</code></h1>
     <h2 class="author"><div style="white-space: pre-line;">Christopher Skovron
 Northwestern University</div></h2>
-    <h3 class="date">July 17, 2018</h3>
+    <h3 class="date">July 18, 2018</h3>
 </section>
 
 <section id="the-workflow-modeling" class="slide level2">
@@ -494,7 +494,11 @@ Northwestern University</div></h2>
 <section id="how-do-i-do-tidy-data-analysis" class="slide level2">
 <h2>How do I do tidy data analysis?</h2>
 <p>Everything we’ve seen so far has been relatively complete. The final part of the tidyverse that’s under the most development is modeling.</p>
-<p><strong>Note</strong>: The <code>type</code> argument in <code>generate()</code> is automatically filled based on the entries for <code>specify()</code> and <code>hypothesize()</code>. It can be removed throughout the examples that follow. It is left in to reiterate the type of generation process being performed.</p>
+<p>Two packages that help so far</p>
+<ul>
+<li>infer, for tidy hypothesis tests</li>
+<li>broom, to tidy regression output</li>
+</ul>
 </section>
 <section id="data-preparation" class="slide level2">
 <h2>Data preparation</h2>
@@ -929,7 +933,6 @@ lmfit</code></pre></div>
 ##   alternative
 ## 1   two.sided</code></pre>
 </section>
-<section><section id="broom-and-dplyr" class="titleslide slide level1"><h1>broom and dplyr</h1></section></section>
     </div>
   </div>
 

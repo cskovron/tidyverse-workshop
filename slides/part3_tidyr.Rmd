@@ -15,10 +15,9 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
-setwd('~/Dropbox/tidyverse-workshop/')
-```
 
+## Materials
+https://github.com/cskovron/tidyverse-workshop
 
 
 ## So what's a tibble, anyway?
@@ -151,23 +150,23 @@ When you run `read_csv()` it prints out a column specification that gives the na
 ## First line defaults to colnames, but you can change that 
     
     
-1.  The data might not have column names. You can use `col_names = FALSE` to
+The data might not have column names. You can use `col_names = FALSE` to
     tell `read_csv()` not to treat the first row as headings, and instead
     label them sequentially from `X1` to `Xn`:
     
-    ```{r}
+```{r}
     read_csv("1,2,3\n4,5,6", col_names = FALSE)
-    ```
+```
     
 ## First line defaults to colnames, but you can change that 
 
     
-    Alternatively you can pass `col_names` a character vector which will be
+Alternatively you can pass `col_names` a character vector which will be
     used as the column names:
     
-    ```{r}
+```{r}
     read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
-    ```
+```
 
 ## You might need to fix NAs. 
 
@@ -232,6 +231,8 @@ parse_factor(c("apple", "banana", "bananana"), levels = fruit)
 
 You pick between three parsers depending on whether you want a date (the number of days since 1970-01-01), a date-time (the number of seconds since midnight 1970-01-01), or a time (the number of seconds since midnight). When called without any additional arguments:
 
+## Dates, date-times, and times 
+
 *   `parse_datetime()` expects an ISO8601 date-time. ISO8601 is an
     international standard in which the components of a date are
     organised from biggest to smallest: year, month, day, hour, minute, 
@@ -263,11 +264,6 @@ You pick between three parsers depending on whether you want a date (the number 
     parse_time("20:10:01")
     ```
  
-## Dates, date-times, and times 
-    
-    Base R doesn't have a great built in class for time data, so we use 
-    the one provided in the hms package.
-
 
 ## Other types of data
 
@@ -529,10 +525,6 @@ table3 %>%
 ## Unite
 
 `unite()` is the inverse of `separate()`: it combines multiple columns into a single column. You'll need it much less frequently than `separate()`, but it's still a useful tool to have in your back pocket.
-
-```{r tidy-unite, echo = FALSE, out.width = "75%", fig.cap = "Uniting `table5` makes it tidy"}
-knitr::include_graphics("images/tidy-18.png")
-```
 
 
 ## Unite
