@@ -20,1403 +20,1615 @@ setwd('~/Dropbox/tidyverse-workshop/')
 ```
 
 
+## Work with strings: `stringr`
 
+## Goals
 
-## So what's a tibble, anyway?
-
-Throughout this book we work with "tibbles" instead of R's traditional `data.frame`. Tibbles _are_ data frames, but they tweak some older behaviours to make life a little easier. R is an old language, and some things that were useful 10 or 20 years ago now get in your way. It's difficult to change base R without breaking existing code, so most innovation occurs in packages. Here we will describe the __tibble__ package, which provides opinionated data frames that make working in the tidyverse a little easier. In most places, I'll use the term tibble and data frame interchangeably; when I want to draw particular attention to R's built-in data frame, I'll call them `data.frame`s. 
-
-If this chapter leaves you wanting to learn more about tibbles, you might enjoy `vignette("tibble")`.
-
-In this chapter we'll explore the __tibble__ package, part of the core tidyverse.
+- Introduce you to how `stringr` works
+- Brief introduction to regular expressions
 
 ```{r setup, message = FALSE}
 library(tidyverse)
+library(stringr)
 ```
 
-## Creating tibbles 
+## String basics
 
-Almost all of the functions that you'll use in this book produce tibbles, as tibbles are one of the unifying features of the tidyverse. Most other R packages use regular data frames, so you might want to coerce a data frame to a tibble. You can do that with `as_tibble()`:
+You can create strings with either single quotes or double quotes. Unlike other languages, there is no difference in behaviour. I recommend always using `"`, unless you want to create a string that contains multiple `"`.
 
 ```{r}
-as_tibble(iris)
+string1 <- "This is a string"
+string2 <- 'If I want to include a "quote" inside a string, I use single quotes'
 ```
 
-You can create a new tibble from individual vectors with `tibble()`. `tibble()` will automatically recycle inputs of length 1, and allows you to refer to variables that you just created, as shown below.
+
+## String basics
+
+If you forget to close a quote, you'll see `+`, the continuation character:
+
+```
+> "This is a string without a closing quote
++ 
++ 
++ HELP I'M STUCK
+```
+
+If this happen to you, press Escape and try again!
+
+## String basics
+
+To include a literal single or double quote in a string you can use `\` to "escape" it:
 
 ```{r}
-tibble(
-  x = 1:5, 
-  y = 1, 
-  z = x ^ 2 + y
-)
+double_quote <- "\"" # or '"'
+single_quote <- '\'' # or "'"
 ```
 
-If you're already familiar with `data.frame()`, note that `tibble()` does much less: it never changes the type of the inputs (e.g. it never converts strings to factors!), it never changes the names of variables, and it never creates row names.
+That means if you want to include a literal backslash, you'll need to double it up: `"\\"`.
 
-It's possible for a tibble to have column names that are not valid R variable names, aka __non-syntactic__ names. For example, they might not start with a letter, or they might contain unusual characters like a space. To refer to these variables, you need to surround them with backticks, `` ` ``:
+## String basics
+
+
+Beware that the printed representation of a string is not the same as string itself, because the printed representation shows the escapes. To see the raw contents of the string, use `writeLines()`:
 
 ```{r}
-tb <- tibble(
-  `:)` = "smile", 
-  ` ` = "space",
-  `2000` = "number"
-)
-tb
+x <- c("\"", "\\")
+x
+writeLines(x)
 ```
 
-You'll also need the backticks when working with these variables in other packages, like ggplot2, dplyr, and tidyr.
+## String basics
 
-Another way to create a tibble is with `tribble()`, short for **tr**ansposed tibble.  `tribble()` is customised for data entry in code: column headings are defined by formulas (i.e. they start with `~`), and entries are separated by commas. This makes it possible to lay out small amounts of data in easy to read form.
+There are a handful of other special characters. The most common are `"\n"`, newline, and `"\t"`, tab, but you can see the complete list by requesting help on `"`: `?'"'`, or `?"'"`. You'll also sometimes see strings like `"\u00b5"`, this is a way of writing non-English characters that works on all platforms:
 
 ```{r}
-tribble(
-  ~x, ~y, ~z,
-  #--|--|----
-  "a", 2, 3.6,
-  "b", 1, 8.5
-)
-```
-
-I often add a comment (the line starting with `#`), to make it really clear where the header is.
-
-## Tibbles vs. data.frame
-
-There are two main differences in the usage of a tibble vs. a classic `data.frame`: printing and subsetting.
-
-### Printing
-
-Tibbles have a refined print method that shows only the first 10 rows, and all the columns that fit on screen. This makes it much easier to work with large data. In addition to its name, each column reports its type, a nice feature borrowed from `str()`:
-
-```{r}
-tibble(
-  a = lubridate::now() + runif(1e3) * 86400,
-  b = lubridate::today() + runif(1e3) * 30,
-  c = 1:1e3,
-  d = runif(1e3),
-  e = sample(letters, 1e3, replace = TRUE)
-)
-```
-
-Tibbles are designed so that you don't accidentally overwhelm your console when you print large data frames. But sometimes you need more output than the default display. There are a few options that can help.
-
-First, you can explicitly `print()` the data frame and control the number of rows (`n`) and the `width` of the display. `width = Inf` will display all columns:
-
-```{r, eval = FALSE}
-nycflights13::flights %>% 
-  print(n = 10, width = Inf)
-```
-
-You can also control the default print behaviour by setting options:
-
-* `options(tibble.print_max = n, tibble.print_min = m)`: if more than `m`
-  rows, print only `n` rows. Use `options(dplyr.print_min = Inf)` to always
-  show all rows.
-
-* Use `options(tibble.width = Inf)` to always print all columns, regardless
-  of the width of the screen.
-
-You can see a complete list of options by looking at the package help with `package?tibble`.
-
-A final option is to use RStudio's built-in data viewer to get a scrollable view of the complete dataset. This is also often useful at the end of a long chain of manipulations.
-
-```{r, eval = FALSE}
-nycflights13::flights %>% 
-  View()
-```
-
-### Subsetting
-
-So far all the tools you've learned have worked with complete data frames. If you want to pull out a single variable, you need some new tools, `$` and `[[`. `[[` can extract by name or position; `$` only extracts by name but is a little less typing.
-
-```{r}
-df <- tibble(
-  x = runif(5),
-  y = rnorm(5)
-)
-
-# Extract by name
-df$x
-df[["x"]]
-
-# Extract by position
-df[[1]]
-```
-
-To use these in a pipe, you'll need to use the special placeholder `.`:
-
-```{r}
-df %>% .$x
-df %>% .[["x"]]
-```
-
-Compared to a `data.frame`, tibbles are more strict: they never do partial matching, and they will generate a warning if the column you are trying to access does not exist.
-
-## Interacting with older code
-
-Some older functions don't work with tibbles. If you encounter one of these functions, use `as.data.frame()` to turn a tibble back to a `data.frame`:
-
-```{r}
-class(as.data.frame(tb))
-```
-
-The main reason that some older functions don't work with tibble is the `[` function.  We don't use `[` much in this book because `dplyr::filter()` and `dplyr::select()` allow you to solve the same problems with clearer code (but you will learn a little about it in [vector subsetting](#vector-subsetting)). With base R data frames, `[` sometimes returns a data frame, and sometimes returns a vector. With tibbles, `[` always returns another tibble.
-
-## Exercises
-
-1.  How can you tell if an object is a tibble? (Hint: try printing `mtcars`,
-    which is a regular data frame). 
-
-1.  Compare and contrast the following operations on a `data.frame` and 
-    equivalent tibble. What is different? Why might the default data frame
-    behaviours cause you frustration?
-    
-    ```{r, eval = FALSE}
-    df <- data.frame(abc = 1, xyz = "a")
-    df$x
-    df[, "xyz"]
-    df[, c("abc", "xyz")]
-    ```
-
-1.  If you have the name of a variable stored in an object, e.g. `var <- "mpg"`,
-    how can you extract the reference variable from a tibble?
-
-1.  Practice referring to non-syntactic names in the following data frame by:
-
-    1.  Extracting the variable called `1`.
-
-    1.  Plotting a scatterplot of `1` vs `2`.
-
-    1.  Creating a new column called `3` which is `2` divided by `1`.
-        
-    1.  Renaming the columns to `one`, `two` and `three`. 
-    
-    ```{r}
-    annoying <- tibble(
-      `1` = 1:10,
-      `2` = `1` * 2 + rnorm(length(`1`))
-    )
-    ```
-
-1.  What does `tibble::enframe()` do? When might you use it?
-
-1.  What option controls how many additional column names are printed
-    at the footer of a tibble?
-
-    
-    
-    # Data import
-
-## Introduction
-
-Working with data provided by R packages is a great way to learn the tools of data science, but at some point you want to stop learning and start working with your own data. In this chapter, you'll learn how to read plain-text rectangular files into R. Here, we'll only scratch the surface of data import, but many of the principles will translate to other forms of data. We'll finish with a few pointers to packages that are useful for other types of data.
-
-### Prerequisites
-
-In this chapter, you'll learn how to load flat files in R with the __readr__ package, which is part of the core tidyverse.
-
-```{r setup, message = FALSE}
-library(tidyverse)
-```
-
-## Getting started
-
-Most of readr's functions are concerned with turning flat files into data frames:
-
-* `read_csv()` reads comma delimited files, `read_csv2()` reads semicolon
-  separated files (common in countries where `,` is used as the decimal place),
-  `read_tsv()` reads tab delimited files, and `read_delim()` reads in files
-  with any delimiter.
-
-* `read_fwf()` reads fixed width files. You can specify fields either by their
-  widths with `fwf_widths()` or their position with `fwf_positions()`.
-  `read_table()` reads a common variation of fixed width files where columns
-  are separated by white space.
-
-* `read_log()` reads Apache style log files. (But also check out
-  [webreadr](https://github.com/Ironholds/webreadr) which is built on top
-  of `read_log()` and provides many more helpful tools.)
-
-These functions all have similar syntax: once you've mastered one, you can use the others with ease. For the rest of this chapter we'll focus on `read_csv()`. Not only are csv files one of the most common forms of data storage, but once you understand `read_csv()`, you can easily apply your knowledge to all the other functions in readr.
-
-The first argument to `read_csv()` is the most important: it's the path to the file to read.
-
-```{r, message = TRUE}
-heights <- read_csv("data/heights.csv")
-```
-
-When you run `read_csv()` it prints out a column specification that gives the name and type of each column. That's an important part of readr, which we'll come back to in [parsing a file].
-
-You can also supply an inline csv file. This is useful for experimenting with readr and for creating reproducible examples to share with others:
-
-```{r}
-read_csv("a,b,c
-1,2,3
-4,5,6")
-```
-
-In both cases `read_csv()` uses the first line of the data for the column names, which is a very common convention. There are two cases where you might want to tweak this behaviour:
-
-1.  Sometimes there are a few lines of metadata at the top of the file. You can
-    use `skip = n` to skip the first `n` lines; or use `comment = "#"` to drop
-    all lines that start with (e.g.) `#`.
-    
-    ```{r}
-    read_csv("The first line of metadata
-      The second line of metadata
-      x,y,z
-      1,2,3", skip = 2)
-    
-    read_csv("# A comment I want to skip
-      x,y,z
-      1,2,3", comment = "#")
-    ```
-    
-1.  The data might not have column names. You can use `col_names = FALSE` to
-    tell `read_csv()` not to treat the first row as headings, and instead
-    label them sequentially from `X1` to `Xn`:
-    
-    ```{r}
-    read_csv("1,2,3\n4,5,6", col_names = FALSE)
-    ```
-    
-    (`"\n"` is a convenient shortcut for adding a new line. You'll learn more
-    about it and other types of string escape in [string basics].)
-    
-    Alternatively you can pass `col_names` a character vector which will be
-    used as the column names:
-    
-    ```{r}
-    read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
-    ```
-
-Another option that commonly needs tweaking is `na`: this specifies the value (or values) that are used to represent missing values in your file:
-
-```{r}
-read_csv("a,b,c\n1,2,.", na = ".")
-```
-
-This is all you need to know to read ~75% of CSV files that you'll encounter in practice. You can also easily adapt what you've learned to read tab separated files with `read_tsv()` and fixed width files with `read_fwf()`. To read in more challenging files, you'll need to learn more about how readr parses each column, turning them into R vectors.
-
-### Compared to base R
-
-If you've used R before, you might wonder why we're not using `read.csv()`. There are a few good reasons to favour readr functions over the base equivalents:
-
-* They are typically much faster (~10x) than their base equivalents.
-  Long running jobs have a progress bar, so you can see what's happening. 
-  If you're looking for raw speed, try `data.table::fread()`. It doesn't fit 
-  quite so well into the tidyverse, but it can be quite a bit faster.
-
-* They produce tibbles, they don't convert character vectors to factors,
-  use row names, or munge the column names. These are common sources of
-  frustration with the base R functions.
-
-* They are more reproducible. Base R functions inherit some behaviour from
-  your operating system and environment variables, so import code that works 
-  on your computer might not work on someone else's.
-
-### Exercises
-
-1.  What function would you use to read a file where fields were separated with  
-    "|"?
-    
-1.  Apart from `file`, `skip`, and `comment`, what other arguments do
-    `read_csv()` and `read_tsv()` have in common?
-    
-1.  What are the most important arguments to `read_fwf()`?
-   
-1.  Sometimes strings in a CSV file contain commas. To prevent them from
-    causing problems they need to be surrounded by a quoting character, like
-    `"` or `'`. By convention, `read_csv()` assumes that the quoting
-    character will be `"`, and if you want to change it you'll need to
-    use `read_delim()` instead. What arguments do you need to specify
-    to read the following text into a data frame?
-    
-    ```{r, eval = FALSE}
-    "x,y\n1,'a,b'"
-    ```
-    
-1.  Identify what is wrong with each of the following inline CSV files. 
-    What happens when you run the code?
-    
-    ```{r, eval = FALSE}
-    read_csv("a,b\n1,2,3\n4,5,6")
-    read_csv("a,b,c\n1,2\n1,2,3,4")
-    read_csv("a,b\n\"1")
-    read_csv("a,b\n1,2\na,b")
-    read_csv("a;b\n1;3")
-    ```
-
-## Parsing a vector
-
-Before we get into the details of how readr reads files from disk, we need to take a little detour to talk about the `parse_*()` functions. These functions take a character vector and return a more specialised vector like a logical, integer, or date:
-
-```{r}
-str(parse_logical(c("TRUE", "FALSE", "NA")))
-str(parse_integer(c("1", "2", "3")))
-str(parse_date(c("2010-01-01", "1979-10-14")))
-```
-
-These functions are useful in their own right, but are also an important building block for readr. Once you've learned how the individual parsers work in this section, we'll circle back and see how they fit together to parse a complete file in the next section.
-
-Like all functions in the tidyverse, the `parse_*()` functions are uniform: the first argument is a character vector to parse, and the `na` argument specifies which strings should be treated as missing:
-
-```{r}
-parse_integer(c("1", "231", ".", "456"), na = ".")
-```
-
-If parsing fails, you'll get a warning:
-
-```{r}
-x <- parse_integer(c("123", "345", "abc", "123.45"))
-```
-
-And the failures will be missing in the output:
-
-```{r}
+x <- "\u00b5"
 x
 ```
 
-If there are many parsing failures, you'll need to use `problems()` to get the complete set. This returns a tibble, which you can then manipulate with dplyr.
+## String basics
+
+
+Multiple strings are often stored in a character vector, which you can create with `c()`:
 
 ```{r}
-problems(x)
+c("one", "two", "three")
 ```
 
-Using parsers is mostly a matter of understanding what's available and how they deal with different types of input. There are eight particularly important parsers:
+## String length
 
-1.  `parse_logical()` and `parse_integer()` parse logicals and integers
-    respectively. There's basically nothing that can go wrong with these
-    parsers so I won't describe them here further.
+Base R contains many functions to work with strings but we'll avoid them because they can be inconsistent, which makes them hard to remember. Instead we'll use functions from stringr. These have more intuitive names, and all start with `str_`. For example, `str_length()` tells you the number of characters in a string:
+
+```{r}
+str_length(c("a", "R for data science", NA))
+```
+
+## Combining strings
+
+To combine two or more strings, use `str_c()`:
+
+```{r}
+str_c("x", "y")
+str_c("x", "y", "z")
+```
+
+## Combining strings
+
+Use the `sep` argument to control how they're separated:
+
+```{r}
+str_c("x", "y", sep = ", ")
+```
+
+## Combining strings
+
+Like most other functions in R, missing values are contagious. If you want them to print as `"NA"`, use `str_replace_na()`:
+
+```{r}
+x <- c("abc", NA)
+str_c("|-", x, "-|")
+str_c("|-", str_replace_na(x), "-|")
+```
+
+## Combining strings
+
+Objects of length 0 are silently dropped. This is particularly useful in conjunction with `if`:
+
+```{r}
+name <- "Hadley"
+time_of_day <- "morning"
+birthday <- FALSE
+
+str_c(
+  "Good ", time_of_day, " ", name,
+  if (birthday) " and HAPPY BIRTHDAY",
+  "."
+)
+```
+
+## Combining strings
+
+To collapse a vector of strings into a single string, use `collapse`:
+
+```{r}
+str_c(c("x", "y", "z"), collapse = ", ")
+```
+
+## Subsetting strings
+
+You can extract parts of a string using `str_sub()`. As well as the string, `str_sub()` takes `start` and `end` arguments which give the (inclusive) position of the substring:
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 3)
+# negative numbers count backwards from end
+str_sub(x, -3, -1)
+```
+
+## Combining strings
+
+Note that `str_sub()` won't fail if the string is too short: it will just return as much as possible:
+
+```{r}
+str_sub("a", 1, 5)
+```
+
+You can also use the assignment form of `str_sub()` to modify strings:
+
+```{r}
+str_sub(x, 1, 1) <- str_to_lower(str_sub(x, 1, 1))
+x
+```
+
+## Locales
+
+If you work outside of US English a lot, check out the book's section on setting locales. 
+
+## Exercise
+
+1.  Write a function that turns (e.g.) a vector `c("a", "b", "c")` into 
+    the string `a, b, and c`. Think carefully about what it should do if
+    given a vector of length 0, 1, or 2.
     
-1.  `parse_double()` is a strict numeric parser, and `parse_number()` 
-    is a flexible numeric parser. These are more complicated than you might
-    expect because different parts of the world write numbers in different
-    ways.
+
+## Matching patterns with regular expressions
+
+- Regexps are a very terse language that allow you to describe patterns in strings.
+- Learning them will take more time than we have today
+- Quick fly by of basic useful ones, then study up on hour own 
+They take a little while to get your head around, but once you understand them, you'll find them extremely useful. 
+
+
+## Basic matches
+
+The simplest patterns match exact strings:
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "an")
+```
+
+## Basic matches
+The next step up in complexity is `.`, which matches any character (except a newline):
+
+```{r}
+str_view(x, ".a.")
+```
+
+## Escapes
+Need to escape the period. In stringr, use `\\` to escape
+
+```{r}
+# To create the regular expression, we need \\
+dot <- "\\."
+
+# But the expression itself only contains one:
+writeLines(dot)
+
+# And this tells R to look for an explicit .
+str_view(c("abc", "a.c", "bef"), "a\\.c")
+```
+
+
+## Escaping a backslash
+
+You need four backslashes to match one!
+
+```{r}
+x <- "a\\b"
+writeLines(x)
+
+str_view(x, "\\\\")
+```
+
+
+#### Exercises
+
+1.  Explain why each of these strings don't match a `\`: `"\"`, `"\\"`, `"\\\"`.
+
+1.  How would you match the sequence `"'\`?
+
+1.  What patterns will the regular expression `\..\..\..` match? 
+    How would you represent it as a string?
+
+### Anchors
+
+By default, regular expressions will match any part of a string. It's often useful to _anchor_ the regular expression so that it matches from the start or end of the string. You can use:
+
+* `^` to match the start of the string.
+* `$` to match the end of the string.
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "^a")
+str_view(x, "a$")
+```
+
+To remember which is which, try this mnemonic which I learned from [Evan Misshula](https://twitter.com/emisshula/status/323863393167613953): if you begin with power (`^`), you end up with money (`$`).
+
+To force a regular expression to only match a complete string, anchor it with both `^` and `$`:
+
+```{r}
+x <- c("apple pie", "apple", "apple cake")
+str_view(x, "apple")
+str_view(x, "^apple$")
+```
+
+You can also match the boundary between words with `\b`. I don't often use this in R, but I will sometimes use it when I'm doing a search in RStudio when I want to find the name of a function that's a component of other functions. For example, I'll search for `\bsum\b` to avoid matching `summarise`, `summary`, `rowsum` and so on.
+
+#### Exercises
+
+1.  How would you match the literal string `"$^$"`?
+
+1.  Given the corpus of common words in `stringr::words`, create regular
+    expressions that find all words that:
     
-1.  `parse_character()` seems so simple that it shouldn't be necessary. But
-    one complication makes it quite important: character encodings.
+    1. Start with "y".
+    1. End with "x"
+    1. Are exactly three letters long. (Don't cheat by using `str_length()`!)
+    1. Have seven letters or more.
 
-1.  `parse_factor()` create factors, the data structure that R uses to represent
-    categorical variables with fixed and known values.
+    Since this list is long, you might want to use the `match` argument to
+    `str_view()` to show only the matching or non-matching words.
 
-1.  `parse_datetime()`, `parse_date()`, and `parse_time()` allow you to
-    parse various date & time specifications. These are the most complicated
-    because there are so many different ways of writing dates.
+### Character classes and alternatives
 
-The following sections describe these parsers in more detail.
+There are a number of special patterns that match more than one character. You've already seen `.`, which matches any character apart from a newline. There are four other useful tools:
 
-### Numbers
+* `\d`: matches any digit.
+* `\s`: matches any whitespace (e.g. space, tab, newline).
+* `[abc]`: matches a, b, or c.
+* `[^abc]`: matches anything except a, b, or c.
 
-It seems like it should be straightforward to parse a number, but three problems make it tricky:
+Remember, to create a regular expression containing `\d` or `\s`, you'll need to escape the `\` for the string, so you'll type `"\\d"` or `"\\s"`.
 
-1. People write numbers differently in different parts of the world.
-   For example, some countries use `.` in between the integer and fractional 
-   parts of a real number, while others use `,`.
-   
-1. Numbers are often surrounded by other characters that provide some
-   context, like "$1000" or "10%".
-
-1. Numbers often contain "grouping" characters to make them easier to read, 
-   like "1,000,000", and these grouping characters vary around the world.
-
-To address the first problem, readr has the notion of a "locale", an object that specifies parsing options that differ from place to place. When parsing numbers, the most important option is the character you use for the decimal mark. You can override the default value of `.` by creating a new locale and setting the `decimal_mark` argument:
+You can use _alternation_ to pick between one or more alternative patterns. For example, `abc|d..f` will match either '"abc"', or `"deaf"`. Note that the precedence for `|` is low, so that `abc|xyz` matches `abc` or `xyz` not `abcyz` or `abxyz`. Like with mathematical expressions, if precedence ever gets confusing, use parentheses to make it clear what you want:
 
 ```{r}
-parse_double("1.23")
-parse_double("1,23", locale = locale(decimal_mark = ","))
+str_view(c("grey", "gray"), "gr(e|a)y")
 ```
 
-readr's default locale is US-centric, because generally R is US-centric (i.e. the documentation of base R is written in American English). An alternative approach would be to try and guess the defaults from your operating system. This is hard to do well, and, more importantly, makes your code fragile: even if it works on your computer, it might fail when you email it to a colleague in another country.
+#### Exercises
 
-`parse_number()` addresses the second problem: it ignores non-numeric characters before and after the number. This is particularly useful for currencies and percentages, but also works to extract numbers embedded in text.
+1.  Create regular expressions to find all words that:
 
-```{r}
-parse_number("$100")
-parse_number("20%")
-parse_number("It cost $123.45")
-```
+    1. Start with a vowel.
 
-The final problem is addressed by the combination of `parse_number()` and the locale as `parse_number()` will ignore the "grouping mark":
+    1. That only contain consonants. (Hint: thinking about matching 
+       "not"-vowels.)
 
-```{r}
-# Used in America
-parse_number("$123,456,789")
-
-# Used in many parts of Europe
-parse_number("123.456.789", locale = locale(grouping_mark = "."))
-
-# Used in Switzerland
-parse_number("123'456'789", locale = locale(grouping_mark = "'"))
-```
-
-### Strings {#readr-strings}
-
-It seems like `parse_character()` should be really simple --- it could just return its input. Unfortunately life isn't so simple, as there are multiple ways to represent the same string. To understand what's going on, we need to dive into the details of how computers represent strings. In R, we can get at the underlying representation of a string using `charToRaw()`:
-
-```{r}
-charToRaw("Hadley")
-```
-
-Each hexadecimal number represents a byte of information: `48` is H, `61` is a, and so on. The mapping from hexadecimal number to character is called the encoding, and in this case the encoding is called ASCII. ASCII does a great job of representing English characters, because it's the __American__ Standard Code for Information Interchange.
-
-Things get more complicated for languages other than English. In the early days of computing there were many competing standards for encoding non-English characters, and to correctly interpret a string you needed to know both the values and the encoding. For example, two common encodings are Latin1 (aka ISO-8859-1, used for Western European languages) and Latin2 (aka ISO-8859-2, used for Eastern European languages). In Latin1, the byte `b1` is "±", but in Latin2, it's "ą"! Fortunately, today there is one standard that is supported almost everywhere: UTF-8. UTF-8 can encode just about every character used by humans today, as well as many extra symbols (like emoji!).
-
-readr uses UTF-8 everywhere: it assumes your data is UTF-8 encoded when you read it, and always uses it when writing. This is a good default, but will fail for data produced by older systems that don't understand UTF-8. If this happens to you, your strings will look weird when you print them. Sometimes just one or two characters might be messed up; other times you'll get complete gibberish. For example:
-
-```{r}
-x1 <- "El Ni\xf1o was particularly bad this year"
-x2 <- "\x82\xb1\x82\xf1\x82\xc9\x82\xbf\x82\xcd"
-
-x1
-x2
-```
-
-To fix the problem you need to specify the encoding in `parse_character()`:
-
-```{r}
-parse_character(x1, locale = locale(encoding = "Latin1"))
-parse_character(x2, locale = locale(encoding = "Shift-JIS"))
-```
-
-How do you find the correct encoding? If you're lucky, it'll be included somewhere in the data documentation. Unfortunately, that's rarely the case, so readr provides  `guess_encoding()` to help you figure it out. It's not foolproof, and it works better when you have lots of text (unlike here), but it's a reasonable place to start. Expect to try a few different encodings before you find the right one.
-
-```{r}
-guess_encoding(charToRaw(x1))
-guess_encoding(charToRaw(x2))
-```
-
-The first argument to `guess_encoding()` can either be a path to a file, or, as in this case, a raw vector (useful if the strings are already in R).
-
-Encodings are a rich and complex topic, and I've only scratched the surface here. If you'd like to learn more I'd recommend reading the detailed explanation at <http://kunststube.net/encoding/>.
-
-### Factors {#readr-factors}
-
-R uses factors to represent categorical variables that have a known set of possible values. Give `parse_factor()` a vector of known `levels` to generate a warning whenever an unexpected value is present:
-
-```{r}
-fruit <- c("apple", "banana")
-parse_factor(c("apple", "banana", "bananana"), levels = fruit)
-```
-
-But if you have many problematic entries, it's often easier to leave as character vectors and then use the tools you'll learn about in [strings] and [factors] to clean them up.
-
-### Dates, date-times, and times {#readr-datetimes}
-
-You pick between three parsers depending on whether you want a date (the number of days since 1970-01-01), a date-time (the number of seconds since midnight 1970-01-01), or a time (the number of seconds since midnight). When called without any additional arguments:
-
-*   `parse_datetime()` expects an ISO8601 date-time. ISO8601 is an
-    international standard in which the components of a date are
-    organised from biggest to smallest: year, month, day, hour, minute, 
-    second.
+    1. End with `ed`, but not with `eed`.
     
-    ```{r}
-    parse_datetime("2010-10-01T2010")
-    # If time is omitted, it will be set to midnight
-    parse_datetime("20101010")
-    ```
+    1. End with `ing` or `ise`.
     
-    This is the most important date/time standard, and if you work with
-    dates and times frequently, I recommend reading
-    <https://en.wikipedia.org/wiki/ISO_8601>
-    
-*   `parse_date()` expects a four digit year, a `-` or `/`, the month, a `-` 
-    or `/`, then the day:
-    
-    ```{r}
-    parse_date("2010-10-01")
-    ```
+1.  Empirically verify the rule "i before e except after c".
 
-*   `parse_time()` expects the hour, `:`, minutes, optionally `:` and seconds, 
-    and an optional am/pm specifier:
-  
-    ```{r}
-    library(hms)
-    parse_time("01:10 am")
-    parse_time("20:10:01")
-    ```
-    
-    Base R doesn't have a great built in class for time data, so we use 
-    the one provided in the hms package.
+1.  Is "q" always followed by a "u"?
 
-If these defaults don't work for your data you can supply your own date-time `format`, built up of the following pieces:
+1.  Write a regular expression that matches a word if it's probably written
+    in British English, not American English.
 
-Year
-: `%Y` (4 digits). 
-: `%y` (2 digits); 00-69 -> 2000-2069, 70-99 -> 1970-1999.
+1.  Create a regular expression that will match telephone numbers as commonly
+    written in your country.
 
-Month
-: `%m` (2 digits).
-: `%b` (abbreviated name, like "Jan").
-: `%B` (full name, "January").
+### Repetition
 
-Day
-: `%d` (2 digits).
-: `%e` (optional leading space).
+The next step up in power involves controlling how many times a pattern matches:
 
-Time
-: `%H` 0-23 hour.
-: `%I` 0-12, must be used with `%p`.
-: `%p` AM/PM indicator.
-: `%M` minutes.
-: `%S` integer seconds.
-: `%OS` real seconds. 
-: `%Z` Time zone (as name, e.g. `America/Chicago`). Beware of abbreviations:
-  if you're American, note that "EST" is a Canadian time zone that does not
-  have daylight savings time. It is _not_ Eastern Standard Time! We'll
-  come back to this [time zones].
-: `%z` (as offset from UTC, e.g. `+0800`). 
-
-Non-digits
-: `%.` skips one non-digit character.
-: `%*` skips any number of non-digits.
-
-The best way to figure out the correct format is to create a few examples in a character vector, and test with one of the parsing functions. For example:
+* `?`: 0 or 1
+* `+`: 1 or more
+* `*`: 0 or more
 
 ```{r}
-parse_date("01/02/15", "%m/%d/%y")
-parse_date("01/02/15", "%d/%m/%y")
-parse_date("01/02/15", "%y/%m/%d")
+x <- "1888 is the longest year in Roman numerals: MDCCCLXXXVIII"
+str_view(x, "CC?")
+str_view(x, "CC+")
+str_view(x, 'C[LX]+')
 ```
 
-If you're using `%b` or `%B` with non-English month names, you'll need to set the  `lang` argument to `locale()`. See the list of built-in languages in `date_names_langs()`, or if your language is not already included, create your own with `date_names()`.
+Note that the precedence of these operators is high, so you can write: `colou?r` to match either American or British spellings. That means most uses will need parentheses, like `bana(na)+`.
+
+You can also specify the number of matches precisely:
+
+* `{n}`: exactly n
+* `{n,}`: n or more
+* `{,m}`: at most m
+* `{n,m}`: between n and m
 
 ```{r}
-parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
+str_view(x, "C{2}")
+str_view(x, "C{2,}")
+str_view(x, "C{2,3}")
 ```
+
+By default these matches are "greedy": they will match the longest string possible. You can make them "lazy", matching the shortest string possible by putting a `?` after them. This is an advanced feature of regular expressions, but it's useful to know that it exists:
+
+```{r}
+str_view(x, 'C{2,3}?')
+str_view(x, 'C[LX]+?')
+```
+
+#### Exercises
+
+1.  Describe the equivalents of `?`, `+`, `*` in `{m,n}` form.
+
+1.  Describe in words what these regular expressions match:
+    (read carefully to see if I'm using a regular expression or a string
+    that defines a regular expression.)
+
+    1. `^.*$`
+    1. `"\\{.+\\}"`
+    1. `\d{4}-\d{2}-\d{2}`
+    1. `"\\\\{4}"`
+
+1.  Create regular expressions to find all words that:
+
+    1. Start with three consonants.
+    1. Have three or more vowels in a row.
+    1. Have two or more vowel-consonant pairs in a row.
+
+1.  Solve the beginner regexp crosswords at
+    <https://regexcrossword.com/challenges/beginner>.
+
+### Grouping and backreferences
+
+Earlier, you learned about parentheses as a way to disambiguate complex expressions. They also define "groups" that you can refer to with _backreferences_, like `\1`, `\2` etc. For example, the following regular expression finds all fruits that have a repeated pair of letters.
+
+```{r}
+str_view(fruit, "(..)\\1", match = TRUE)
+```
+
+(Shortly, you'll also see how they're useful in conjunction with `str_match()`.)
+
+#### Exercises
+
+1.  Describe, in words, what these expressions will match:
+
+    1. `(.)\1\1`
+    1. `"(.)(.)\\2\\1"`
+    1. `(..)\1`
+    1. `"(.).\\1.\\1"`
+    1. `"(.)(.)(.).*\\3\\2\\1"`
+
+1.  Construct regular expressions to match words that:
+
+    1. Start and end with the same character.
+    
+    1. Contain a repeated pair of letters
+       (e.g. "church" contains "ch" repeated twice.)
+    
+    1. Contain one letter repeated in at least three places
+       (e.g. "eleven" contains three "e"s.)
+
+## Tools
+
+Now that you've learned the basics of regular expressions, it's time to learn how to apply them to real problems. In this section you'll learn a wide array of stringr functions that let you:
+
+* Determine which strings match a pattern.
+* Find the positions of matches.
+* Extract the content of matches.
+* Replace matches with new values.
+* Split a string based on a match.
+
+A word of caution before we continue: because regular expressions are so powerful, it's easy to try and solve every problem with a single regular expression. In the words of Jamie Zawinski:
+
+> Some people, when confronted with a problem, think “I know, I’ll use regular
+> expressions.” Now they have two problems. 
+
+As a cautionary tale, check out this regular expression that checks if a email address is valid:
+
+```
+(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]
+)+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:
+\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(
+?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ 
+\t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\0
+31]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\
+](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+
+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:
+(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z
+|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)
+?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\
+r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[
+ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)
+?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t]
+)*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[
+ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*
+)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]
+)+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)
+*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+
+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r
+\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:
+\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t
+]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031
+]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](
+?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?
+:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?
+:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*)|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?
+:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?
+[ \t]))*"(?:(?:\r\n)?[ \t])*)*:(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()<>@,;:\\".\[\] 
+\000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|
+\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>
+@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"
+(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t]
+)*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\
+".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?
+:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[
+\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-
+\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(
+?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;
+:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([
+^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\"
+.\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\
+]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\
+[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\
+r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] 
+\000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]
+|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \0
+00-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\
+.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,
+;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?
+:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*
+(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".
+\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[
+^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]
+]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*)(?:,\s*(
+?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\
+".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(
+?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[
+\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t
+])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t
+])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?
+:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|
+\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:
+[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\
+]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)
+?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["
+()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)
+?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>
+@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[
+ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,
+;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t]
+)*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\
+".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?
+(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".
+\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:
+\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\[
+"()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])
+*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])
++|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\
+.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z
+|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(
+?:\r\n)?[ \t])*))*)?;\s*)
+```
+
+This is a somewhat pathological example (because email addresses are actually suprisingly complex), but is used in real code. See the stackoverflow discussion at <http://stackoverflow.com/a/201378> for more details. 
+
+Don't forget that you're in a programming language and you have other tools at your disposal. Instead of creating one complex regular expression, it's often easier to write a series of simpler regexps. If you get stuck trying to create a single regexp that solves your problem, take a step back and think if you could break the problem down into smaller pieces, solving each challenge before moving onto the next one.
+
+### Detect matches
+
+To determine if a character vector matches a pattern, use `str_detect()`. It returns a logical vector the same length as the input:
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_detect(x, "e")
+```
+
+Remember that when you use a logical vector in a numeric context, `FALSE` becomes 0 and `TRUE` becomes 1. That makes `sum()` and `mean()` useful if you want to answer questions about matches across a larger vector:
+
+```{r}
+# How many common words start with t?
+sum(str_detect(words, "^t"))
+# What proportion of common words end with a vowel?
+mean(str_detect(words, "[aeiou]$"))
+```
+
+When you have complex logical conditions (e.g. match a or b but not c unless d) it's often easier to combine multiple `str_detect()` calls with logical operators, rather than trying to create a single regular expression. For example, here are two ways to find all words that don't contain any vowels:
+
+```{r}
+# Find all words containing at least one vowel, and negate
+no_vowels_1 <- !str_detect(words, "[aeiou]")
+# Find all words consisting only of consonants (non-vowels)
+no_vowels_2 <- str_detect(words, "^[^aeiou]+$")
+identical(no_vowels_1, no_vowels_2)
+```
+
+The results are identical, but I think the first approach is significantly easier to understand. If your regular expression gets overly complicated, try breaking it up into smaller pieces, giving each piece a name, and then combining the pieces with logical operations.
+
+A common use of `str_detect()` is to select the elements that match a pattern. You can do this with logical subsetting, or the convenient `str_subset()` wrapper:
+
+```{r}
+words[str_detect(words, "x$")]
+str_subset(words, "x$")
+```
+
+Typically, however, your strings will be one column of a data frame, and you'll want to use filter instead:
+
+```{r}
+df <- tibble(
+  word = words, 
+  i = seq_along(word)
+)
+df %>% 
+  filter(str_detect(words, "x$"))
+```
+
+
+A variation on `str_detect()` is `str_count()`: rather than a simple yes or no, it tells you how many matches there are in a string:
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_count(x, "a")
+
+# On average, how many vowels per word?
+mean(str_count(words, "[aeiou]"))
+```
+
+It's natural to use `str_count()` with `mutate()`:
+
+```{r}
+df %>% 
+  mutate(
+    vowels = str_count(word, "[aeiou]"),
+    consonants = str_count(word, "[^aeiou]")
+  )
+```
+
+Note that matches never overlap. For example, in `"abababa"`, how many times will the pattern `"aba"` match? Regular expressions say two, not three:
+
+```{r}
+str_count("abababa", "aba")
+str_view_all("abababa", "aba")
+```
+
+Note the use of `str_view_all()`. As you'll shortly learn, many stringr functions come in pairs: one function works with a single match, and the other works with all matches. The second function will have the suffix `_all`.
 
 ### Exercises
 
-1.  What are the most important arguments to `locale()`? 
-
-1.  What happens if you try and set `decimal_mark` and `grouping_mark` 
-    to the same character? What happens to the default value of 
-    `grouping_mark` when you set `decimal_mark` to ","? What happens
-    to the default value of `decimal_mark` when you set the `grouping_mark`
-    to "."?
-
-1.  I didn't discuss the `date_format` and `time_format` options to
-    `locale()`. What do they do? Construct an example that shows when 
-    they might be useful.
-
-1.  If you live outside the US, create a new locale object that encapsulates 
-    the settings for the types of file you read most commonly.
+1.  For each of the following challenges, try solving it by using both a single
+    regular expression, and a combination of multiple `str_detect()` calls.
     
-1.  What's the difference between `read_csv()` and `read_csv2()`?
+    1.  Find all words that start or end with `x`.
     
-1.  What are the most common encodings used in Europe? What are the
-    most common encodings used in Asia? Do some googling to find out.
-
-1.  Generate the correct format string to parse each of the following 
-    dates and times:
+    1.  Find all words that start with a vowel and end with a consonant.
     
-    ```{r}
-    d1 <- "January 1, 2010"
-    d2 <- "2015-Mar-07"
-    d3 <- "06-Jun-2017"
-    d4 <- c("August 19 (2015)", "July 1 (2015)")
-    d5 <- "12/30/14" # Dec 30, 2014
-    t1 <- "1705"
-    t2 <- "11:15:10.12 PM"
-    ```
+    1.  Are there any words that contain at least one of each different
+        vowel?
 
-## Parsing a file
+1.  What word has the highest number of vowels? What word has the highest
+    proportion of vowels? (Hint: what is the denominator?)
 
-Now that you've learned how to parse an individual vector, it's time to return to the beginning and explore how readr parses a file. There are two new things that you'll learn about in this section:
+### Extract matches
 
-1. How readr automatically guesses the type of each column.
-1. How to override the default specification.
-
-### Strategy
-
-readr uses a heuristic to figure out the type of each column: it reads the first 1000 rows and uses some (moderately conservative) heuristics to figure out the type of each column. You can emulate this process with a character vector using `guess_parser()`, which returns readr's best guess, and `parse_guess()` which uses that guess to parse the column:
+To extract the actual text of a match, use `str_extract()`. To show that off, we're going to need a more complicated example. I'm going to use the [Harvard sentences](https://en.wikipedia.org/wiki/Harvard_sentences), which were designed to test VOIP systems, but are also useful for practicing regexps. These are provided in `stringr::sentences`:
 
 ```{r}
-guess_parser("2010-10-01")
-guess_parser("15:01")
-guess_parser(c("TRUE", "FALSE"))
-guess_parser(c("1", "5", "9"))
-guess_parser(c("12,352,561"))
-
-str(parse_guess("2010-10-10"))
+length(sentences)
+head(sentences)
 ```
 
-The heuristic tries each of the following types, stopping when it finds a match:
-
-* logical: contains only "F", "T", "FALSE", or "TRUE".
-* integer: contains only numeric characters (and `-`).
-* double: contains only valid doubles (including numbers like `4.5e-5`).
-* number: contains valid doubles with the grouping mark inside.
-* time: matches the default `time_format`.
-* date: matches the default `date_format`.
-* date-time: any ISO8601 date.
-
-If none of these rules apply, then the column will stay as a vector of strings.
-
-### Problems
-
-These defaults don't always work for larger files. There are two basic problems:
-
-1.  The first thousand rows might be a special case, and readr guesses
-    a type that is not sufficiently general. For example, you might have 
-    a column of doubles that only contains integers in the first 1000 rows. 
-
-1.  The column might contain a lot of missing values. If the first 1000
-    rows contain only `NA`s, readr will guess that it's a character 
-    vector, whereas you probably want to parse it as something more
-    specific.
-
-readr contains a challenging CSV that illustrates both of these problems:
+Imagine we want to find all sentences that contain a colour. We first create a vector of colour names, and then turn it into a single regular expression:
 
 ```{r}
-challenge <- read_csv(readr_example("challenge.csv"))
+colours <- c("red", "orange", "yellow", "green", "blue", "purple")
+colour_match <- str_c(colours, collapse = "|")
+colour_match
 ```
 
-(Note the use of `readr_example()` which finds the path to one of the files included with the package)
-
-There are two printed outputs: the column specification generated by looking at the first 1000 rows, and the first five parsing failures. It's always a good idea to explicitly pull out the `problems()`, so you can explore them in more depth:
+Now we can select the sentences that contain a colour, and then extract the colour to figure out which one it is:
 
 ```{r}
-problems(challenge)
+has_colour <- str_subset(sentences, colour_match)
+matches <- str_extract(has_colour, colour_match)
+head(matches)
 ```
 
-A good strategy is to work column by column until there are no problems remaining. Here we can see that there are a lot of parsing problems with the `x` column - there are trailing characters after the integer value. That suggests we need to use a double parser instead.
+Note that `str_extract()` only extracts the first match. We can see that most easily by first selecting all the sentences that have more than 1 match:
 
-To fix the call, start by copying and pasting the column specification into your original call:
+```{r}
+more <- sentences[str_count(sentences, colour_match) > 1]
+str_view_all(more, colour_match)
+
+str_extract(more, colour_match)
+```
+
+This is a common pattern for stringr functions, because working with a single match allows you to use much simpler data structures. To get all matches, use `str_extract_all()`. It returns a list:
+
+```{r}
+str_extract_all(more, colour_match)
+```
+
+You'll learn more about lists in [lists](#lists) and [iteration].
+
+If you use `simplify = TRUE`, `str_extract_all()` will return a matrix with short matches expanded to the same length as the longest:
+
+```{r}
+str_extract_all(more, colour_match, simplify = TRUE)
+
+x <- c("a", "a b", "a b c")
+str_extract_all(x, "[a-z]", simplify = TRUE)
+```
+
+#### Exercises
+
+1.  In the previous example, you might have noticed that the regular
+    expression matched "flickered", which is not a colour. Modify the 
+    regex to fix the problem.
+
+1.  From the Harvard sentences data, extract:
+
+    1. The first word from each sentence.
+    1. All words ending in `ing`.
+    1. All plurals.
+
+### Grouped matches
+
+Earlier in this chapter we talked about the use of parentheses for clarifying precedence and for backreferences when matching. You can also use parentheses to extract parts of a complex match. For example, imagine we want to extract nouns from the sentences. As a heuristic, we'll look for any word that comes after "a" or "the". Defining a "word" in a regular expression is a little tricky, so here I use a simple approximation: a sequence of at least one character that isn't a space.
+
+```{r}
+noun <- "(a|the) ([^ ]+)"
+
+has_noun <- sentences %>%
+  str_subset(noun) %>%
+  head(10)
+has_noun %>% 
+  str_extract(noun)
+```
+
+`str_extract()` gives us the complete match; `str_match()` gives each individual component. Instead of a character vector, it returns a matrix, with one column for the complete match followed by one column for each group:
+
+```{r}
+has_noun %>% 
+  str_match(noun)
+```
+
+(Unsurprisingly, our heuristic for detecting nouns is poor, and also picks up adjectives like smooth and parked.)
+
+If your data is in a tibble, it's often easier to use `tidyr::extract()`. It works like `str_match()` but requires you to name the matches, which are then placed in new columns:
+
+```{r}
+tibble(sentence = sentences) %>% 
+  tidyr::extract(
+    sentence, c("article", "noun"), "(a|the) ([^ ]+)", 
+    remove = FALSE
+  )
+```
+
+Like `str_extract()`, if you want all matches for each string, you'll need `str_match_all()`.
+
+#### Exercises
+
+1. Find all words that come after a "number" like "one", "two", "three" etc.
+   Pull out both the number and the word.
+
+1. Find all contractions. Separate out the pieces before and after the 
+   apostrophe.
+
+### Replacing matches
+
+`str_replace()` and `str_replace_all()` allow you to replace matches with new strings. The simplest use is to replace a pattern with a fixed string:
+
+```{r}
+x <- c("apple", "pear", "banana")
+str_replace(x, "[aeiou]", "-")
+str_replace_all(x, "[aeiou]", "-")
+```
+
+With `str_replace_all()` you can perform multiple replacements by supplying a named vector:
+
+```{r}
+x <- c("1 house", "2 cars", "3 people")
+str_replace_all(x, c("1" = "one", "2" = "two", "3" = "three"))
+```
+
+Instead of replacing with a fixed string you can use backreferences to insert components of the match. In the following code, I flip the order of the second and third words.
+
+```{r}
+sentences %>% 
+  str_replace("([^ ]+) ([^ ]+) ([^ ]+)", "\\1 \\3 \\2") %>% 
+  head(5)
+```
+
+#### Exercises
+
+1.   Replace all forward slashes in a string with backslashes.
+
+1.   Implement a simple version of `str_to_lower()` using `replace_all()`.
+
+1.   Switch the first and last letters in `words`. Which of those strings
+     are still words?
+
+### Splitting
+
+Use `str_split()` to split a string up into pieces. For example, we could split sentences into words:
+
+```{r}
+sentences %>%
+  head(5) %>% 
+  str_split(" ")
+```
+
+Because each component might contain a different number of pieces, this returns a list. If you're working with a length-1 vector, the easiest thing is to just extract the first element of the list:
+
+```{r}
+"a|b|c|d" %>% 
+  str_split("\\|") %>% 
+  .[[1]]
+```
+
+Otherwise, like the other stringr functions that return a list, you can use `simplify = TRUE` to return a matrix:
+
+```{r}
+sentences %>%
+  head(5) %>% 
+  str_split(" ", simplify = TRUE)
+```
+
+You can also request a maximum number of pieces:
+
+```{r}
+fields <- c("Name: Hadley", "Country: NZ", "Age: 35")
+fields %>% str_split(": ", n = 2, simplify = TRUE)
+```
+
+Instead of splitting up strings by patterns, you can also split up by character, line, sentence and word `boundary()`s:
+
+```{r}
+x <- "This is a sentence.  This is another sentence."
+str_view_all(x, boundary("word"))
+
+str_split(x, " ")[[1]]
+str_split(x, boundary("word"))[[1]]
+```
+
+#### Exercises
+
+1.  Split up a string like `"apples, pears, and bananas"` into individual
+    components.
+    
+1.  Why is it better to split up by `boundary("word")` than `" "`?
+
+1.  What does splitting with an empty string (`""`) do? Experiment, and
+    then read the documentation.
+
+### Find matches
+
+`str_locate()` and `str_locate_all()` give you the starting and ending positions of each match. These are particularly useful when none of the other functions does exactly what you want. You can use `str_locate()` to find the matching pattern, `str_sub()` to extract and/or modify them.
+
+## Other types of pattern
+
+When you use a pattern that's a string, it's automatically wrapped into a call to `regex()`:
 
 ```{r, eval = FALSE}
-challenge <- read_csv(
-  readr_example("challenge.csv"), 
-  col_types = cols(
-    x = col_integer(),
-    y = col_character()
-  )
-)
+# The regular call:
+str_view(fruit, "nana")
+# Is shorthand for
+str_view(fruit, regex("nana"))
 ```
 
-Then you can tweak the type of the `x` column:
+You can use the other arguments of `regex()` to control details of the match:
 
-```{r}
-challenge <- read_csv(
-  readr_example("challenge.csv"), 
-  col_types = cols(
-    x = col_double(),
-    y = col_character()
-  )
-)
-```
-
-That fixes the first problem, but if we look at the last few rows, you'll see that they're dates stored in a character vector:
-
-```{r}
-tail(challenge)
-```
-
-You can fix that by specifying that `y` is a date column:
-
-```{r}
-challenge <- read_csv(
-  readr_example("challenge.csv"), 
-  col_types = cols(
-    x = col_double(),
-    y = col_date()
-  )
-)
-tail(challenge)
-```
-
-Every `parse_xyz()` function has a corresponding `col_xyz()` function. You use `parse_xyz()` when the data is in a character vector in R already; you use `col_xyz()` when you want to tell readr how to load the data.
-
-I highly recommend always supplying `col_types`, building up from the print-out provided by readr. This ensures that you have a consistent and reproducible data import script. If you rely on the default guesses and your data changes, readr will continue to read it in. If you want to be really strict, use `stop_for_problems()`: that will throw an error and stop your script if there are any parsing problems.
-
-### Other strategies
-
-There are a few other general strategies to help you parse files:
-
-*   In the previous example, we just got unlucky: if we look at just
-    one more row than the default, we can correctly parse in one shot:
-   
+*   `ignore_case = TRUE` allows characters to match either their uppercase or 
+    lowercase forms. This always uses the current locale.
+    
     ```{r}
-    challenge2 <- read_csv(readr_example("challenge.csv"), guess_max = 1001)
-    challenge2
+    bananas <- c("banana", "Banana", "BANANA")
+    str_view(bananas, "banana")
+    str_view(bananas, regex("banana", ignore_case = TRUE))
+    ```
+    
+*   `multiline = TRUE` allows `^` and `$` to match the start and end of each
+    line rather than the start and end of the complete string.
+    
+    ```{r}
+    x <- "Line 1\nLine 2\nLine 3"
+    str_extract_all(x, "^Line")[[1]]
+    str_extract_all(x, regex("^Line", multiline = TRUE))[[1]]
+    ```
+    
+*   `comments = TRUE` allows you to use comments and white space to make 
+    complex regular expressions more understandable. Spaces are ignored, as is 
+    everything after `#`. To match a literal space, you'll need to escape it: 
+    `"\\ "`.
+    
+    ```{r}
+    phone <- regex("
+      \\(?     # optional opening parens
+      (\\d{3}) # area code
+      [)- ]?   # optional closing parens, dash, or space
+      (\\d{3}) # another three numbers
+      [ -]?    # optional space or dash
+      (\\d{3}) # three more numbers
+      ", comments = TRUE)
+    
+    str_match("514-791-8141", phone)
     ```
 
-*   Sometimes it's easier to diagnose problems if you just read in all
-    the columns as character vectors:
-   
+*   `dotall = TRUE` allows `.` to match everything, including `\n`.
+
+There are three other functions you can use instead of `regex()`:
+
+*   `fixed()`: matches exactly the specified sequence of bytes. It ignores
+    all special regular expressions and operates at a very low level. 
+    This allows you to avoid complex escaping and can be much faster than 
+    regular expressions. The following microbenchmark shows that it's about
+    3x faster for a simple example.
+  
     ```{r}
-    challenge2 <- read_csv(readr_example("challenge.csv"), 
-      col_types = cols(.default = col_character())
+    microbenchmark::microbenchmark(
+      fixed = str_detect(sentences, fixed("the")),
+      regex = str_detect(sentences, "the"),
+      times = 20
     )
     ```
     
-    This is particularly useful in conjunction with `type_convert()`,
-    which applies the parsing heuristics to the character columns in a data
-    frame.
-
-    ```{r}
-    df <- tribble(
-      ~x,  ~y,
-      "1", "1.21",
-      "2", "2.32",
-      "3", "4.56"
-    )
-    df
-    
-    # Note the column types
-    type_convert(df)
-    ```
-    
-*   If you're reading a very large file, you might want to set `n_max` to
-    a smallish number like 10,000 or 100,000. That will accelerate your 
-    iterations while you eliminate common problems.
-
-*   If you're having major parsing problems, sometimes it's easier
-    to just read into a character vector of lines with `read_lines()`,
-    or even a character vector of length 1 with `read_file()`. Then you
-    can use the string parsing skills you'll learn later to parse
-    more exotic formats.
-
-## Writing to a file
-
-readr also comes with two useful functions for writing data back to disk: `write_csv()` and `write_tsv()`. Both functions increase the chances of the output file being read back in correctly by:
-
-* Always encoding strings in UTF-8.
-  
-* Saving dates and date-times in ISO8601 format so they are easily
-  parsed elsewhere.
-
-If you want to export a csv file to Excel, use `write_excel_csv()` --- this writes a special character (a "byte order mark") at the start of the file which tells Excel that you're using the UTF-8 encoding.
-
-The most important arguments are `x` (the data frame to save), and `path` (the location to save it). You can also specify how missing values are written with `na`, and if you want to `append` to an existing file.
-
-```{r, eval = FALSE}
-write_csv(challenge, "challenge.csv")
-```
-
-Note that the type information is lost when you save to csv:
-
-```{r, warning = FALSE}
-challenge
-write_csv(challenge, "challenge-2.csv")
-read_csv("challenge-2.csv")
-```
-
-This makes CSVs a little unreliable for caching interim results---you need to recreate the column specification every time you load in. There are two alternatives:
-
-1.  `write_rds()` and `read_rds()` are uniform wrappers around the base 
-    functions `readRDS()` and `saveRDS()`. These store data in R's custom 
-    binary format called RDS:
+    Beware using `fixed()` with non-English data. It is problematic because 
+    there are often multiple ways of representing the same character. For 
+    example, there are two ways to define "á": either as a single character or 
+    as an "a" plus an accent:
     
     ```{r}
-    write_rds(challenge, "challenge.rds")
-    read_rds("challenge.rds")
+    a1 <- "\u00e1"
+    a2 <- "a\u0301"
+    c(a1, a2)
+    a1 == a2
     ```
-  
-1.  The feather package implements a fast binary file format that can
-    be shared across programming languages:
+
+    They render identically, but because they're defined differently, 
+    `fixed()` doesn't find a match. Instead, you can use `coll()`, defined
+    next, to respect human character comparison rules:
+
+    ```{r}
+    str_detect(a1, fixed(a2))
+    str_detect(a1, coll(a2))
+    ```
     
-    ```{r, eval = FALSE}
-    library(feather)
-    write_feather(challenge, "challenge.feather")
-    read_feather("challenge.feather")
-    #> # A tibble: 2,000 x 2
-    #>       x      y
-    #>   <dbl> <date>
-    #> 1   404   <NA>
-    #> 2  4172   <NA>
-    #> 3  3004   <NA>
-    #> 4   787   <NA>
-    #> 5    37   <NA>
-    #> 6  2332   <NA>
-    #> # ... with 1,994 more rows
+*   `coll()`: compare strings using standard **coll**ation rules. This is 
+    useful for doing case insensitive matching. Note that `coll()` takes a
+    `locale` parameter that controls which rules are used for comparing
+    characters. Unfortunately different parts of the world use different rules!
+
+    ```{r}
+    # That means you also need to be aware of the difference
+    # when doing case insensitive matches:
+    i <- c("I", "İ", "i", "ı")
+    i
+    
+    str_subset(i, coll("i", ignore_case = TRUE))
+    str_subset(i, coll("i", ignore_case = TRUE, locale = "tr"))
+    ```
+    
+    Both `fixed()` and `regex()` have `ignore_case` arguments, but they
+    do not allow you to pick the locale: they always use the default locale.
+    You can see what that is with the following code; more on stringi
+    later.
+    
+    ```{r}
+    stringi::stri_locale_info()
+    ```
+    
+    The downside of `coll()` is speed; because the rules for recognising which
+    characters are the same are complicated, `coll()` is relatively slow
+    compared to `regex()` and `fixed()`.
+
+*   As you saw with `str_split()` you can use `boundary()` to match boundaries.
+    You can also use it with the other functions: 
+    
+    ```{r}
+    x <- "This is a sentence."
+    str_view_all(x, boundary("word"))
+    str_extract_all(x, boundary("word"))
     ```
 
-Feather tends to be faster than RDS and is usable outside of R. RDS supports list-columns (which you'll learn about in [many models]); feather currently does not.
+### Exercises
 
-```{r, include = FALSE}
-file.remove("challenge-2.csv")
-file.remove("challenge.rds")
-```
+1.  How would you find all strings containing `\` with `regex()` vs.
+    with `fixed()`?
 
-## Other types of data
+1.  What are the five most common words in `sentences`?
 
-To get other types of data into R, we recommend starting with the tidyverse packages listed below. They're certainly not perfect, but they are a good place to start. For rectangular data:
+## Other uses of regular expressions
 
-* __haven__ reads SPSS, Stata, and SAS files.
+There are two useful function in base R that also use regular expressions:
 
-* __readxl__ reads excel files (both `.xls` and `.xlsx`).
+*   `apropos()` searches all objects available from the global environment. This
+    is useful if you can't quite remember the name of the function.
+    
+    ```{r}
+    apropos("replace")
+    ```
+    
+*   `dir()` lists all the files in a directory. The `pattern` argument takes
+    a regular expression and only returns file names that match the pattern.
+    For example, you can find all the R Markdown files in the current
+    directory with:
+    
+    ```{r}
+    head(dir(pattern = "\\.Rmd$"))
+    ```
+    
+    (If you're more comfortable with "globs" like `*.Rmd`, you can convert
+    them to regular expressions with `glob2rx()`):
 
-* __DBI__, along with a database specific backend (e.g. __RMySQL__, 
-  __RSQLite__, __RPostgreSQL__ etc) allows you to run SQL queries against a 
-  database and return a data frame.
+## stringi
 
-For hierarchical data: use __jsonlite__ (by Jeroen Ooms) for json, and __xml2__ for XML. Jenny Bryan has some excellent worked examples at <https://jennybc.github.io/purrr-tutorial/>.
+stringr is built on top of the __stringi__ package. stringr is useful when you're learning because it exposes a minimal set of functions, which have been carefully picked to handle the most common string manipulation functions. stringi, on the other hand, is designed to be comprehensive. It contains almost every function you might ever need: stringi has `r length(getNamespaceExports("stringi"))` functions to stringr's `r length(getNamespaceExports("stringr"))`.
 
-For other file types, try the [R data import/export manual](https://cran.r-project.org/doc/manuals/r-release/R-data.html) and the [__rio__](https://github.com/leeper/rio) package.
+If you find yourself struggling to do something in stringr, it's worth taking a look at stringi. The packages work very similarly, so you should be able to translate your stringr knowledge in a natural way. The main difference is the prefix: `str_` vs. `stri_`.
 
-  # Tidy data
+### Exercises
 
-## Introduction
+1.  Find the stringi functions that:
 
-> "Happy families are all alike; every unhappy family is unhappy in its
-> own way." --– Leo Tolstoy
+    1. Count the number of words.
+    1. Find duplicated strings.
+    1. Generate random text.
 
-> "Tidy datasets are all alike, but every messy dataset is messy in its
-> own way." --– Hadley Wickham
+1.  How do you control the language that `stri_sort()` uses for 
+    sorting?
+    
+    
+    
+    
+## Dates and times
 
-In this chapter, you will learn a consistent way to organise your data in R, an organisation called __tidy data__. Getting your data into this format requires some upfront work, but that work pays off in the long term. Once you have tidy data and the tidy tools provided by packages in the tidyverse, you will spend much less time munging data from one representation to another, allowing you to spend more time on the analytic questions at hand.
-
-This chapter will give you a practical introduction to tidy data and the accompanying tools in the __tidyr__ package. If you'd like to learn more about the underlying theory, you might enjoy the *Tidy Data* paper published in the Journal of Statistical Software, <http://www.jstatsoft.org/v59/i10/paper>.
-
-### Prerequisites
-
-In this chapter we'll focus on tidyr, a package that provides a bunch of tools to help tidy up your messy datasets. tidyr is a member of the core tidyverse.
+The key tidyverse tool is the __lubridate__ package. Must be loaded separately. We will also need nycflights13 for practice data.
 
 ```{r setup, message = FALSE}
 library(tidyverse)
+
+library(lubridate)
+library(nycflights13)
 ```
 
-## Tidy data
+## Creating date/times
 
-You can represent the same underlying data in multiple ways. The example below shows the same data organised in four different ways. Each dataset shows the same values of four variables *country*, *year*, *population*, and *cases*, but each dataset organises the values in a different way.
+There are three types of date/time data that refer to an instant in time:
 
-```{r}
-table1
-table2
-table3
+* A __date__. Tibbles print this as `<date>`.
 
-# Spread across two tibbles
-table4a  # cases
-table4b  # population
-```
+* A __time__ within a day. Tibbles print this as `<time>`.
 
-These are all representations of the same underlying data, but they are not equally easy to use. One dataset, the tidy dataset, will be much easier to work with inside the tidyverse. 
-
-There are three interrelated rules which make a dataset tidy:
-
-1.  Each variable must have its own column.
-1.  Each observation must have its own row.
-1.  Each value must have its own cell.
-
-Figure \@ref(fig:tidy-structure) shows the rules visually.
-
-```{r tidy-structure, echo = FALSE, out.width = "100%", fig.cap = "Following three rules makes a dataset tidy: variables are in columns, observations are in rows, and values are in cells."}
-knitr::include_graphics("images/tidy-1.png")
-```
-
-These three rules are interrelated because it's impossible to only satisfy two of the three. That interrelationship leads to an even simpler set of practical instructions:
-
-1.  Put each dataset in a tibble.
-1.  Put each variable in a column.
-
-In this example, only `table1` is tidy. It's the only representation where each column is a variable.
-
-Why ensure that your data is tidy? There are two main advantages:
-
-1.  There's a general advantage to picking one consistent way of storing
-    data. If you have a consistent data structure, it's easier to learn the
-    tools that work with it because they have an underlying uniformity.
-    
-1.  There's a specific advantage to placing variables in columns because
-    it allows R's vectorised nature to shine. As you learned in
-    [mutate](#mutate-funs) and [summary functions](#summary-funs), most 
-    built-in R functions work with vectors of values. That makes transforming 
-    tidy data feel particularly natural.
-
-dplyr, ggplot2, and all the other packages in the tidyverse are designed to work with tidy data. Here are a couple of small examples showing how you might work with `table1`.
-
-```{r, out.width = "50%"}
-# Compute rate per 10,000
-table1 %>% 
-  mutate(rate = cases / population * 10000)
-
-# Compute cases per year
-table1 %>% 
-  count(year, wt = cases)
-
-# Visualise changes over time
-library(ggplot2)
-ggplot(table1, aes(year, cases)) + 
-  geom_line(aes(group = country), colour = "grey50") + 
-  geom_point(aes(colour = country))
-```
-
-### Exercises
-
-1.  Using prose, describe how the variables and observations are organised in
-    each of the sample tables.
-
-1.  Compute the `rate` for `table2`, and `table4a` + `table4b`. 
-    You will need to perform four operations:
-
-    1.  Extract the number of TB cases per country per year.
-    1.  Extract the matching population per country per year.
-    1.  Divide cases by population, and multiply by 10000.
-    1.  Store back in the appropriate place.
-    
-    Which representation is easiest to work with? Which is hardest? Why?
-
-1.  Recreate the plot showing change in cases over time using `table2`
-    instead of `table1`. What do you need to do first?
-
-## Spreading and gathering
-
-The principles of tidy data seem so obvious that you might wonder if you'll ever encounter a dataset that isn't tidy. Unfortunately, however, most data that you will encounter will be untidy. There are two main reasons:
-
-1.  Most people aren't familiar with the principles of tidy data, and it's hard
-    to derive them yourself unless you spend a _lot_ of time working with data.
-    
-1.  Data is often organised to facilitate some use other than analysis. For 
-    example, data is often organised to make entry as easy as possible.
-    
-This means for most real analyses, you'll need to do some tidying. The first step is always to figure out what the variables and observations are. Sometimes this is easy; other times you'll need to consult with the people who originally generated the data. 
-The second step is to resolve one of two common problems:
-
-1. One variable might be spread across multiple columns.
-
-1. One observation might be scattered across multiple rows.
-
-Typically a dataset will only suffer from one of these problems; it'll only suffer from both if you're really unlucky! To fix these problems, you'll need the two most important functions in tidyr: `gather()` and `spread()`.
-
-### Gathering
-
-A common problem is a dataset where some of the column names are not names of variables, but _values_ of a variable. Take `table4a`: the column names `1999` and `2000` represent values of the `year` variable, and each row represents two observations, not one.
-
-```{r}
-table4a
-```
-
-To tidy a dataset like this, we need to __gather__ those columns into a new pair of variables. To describe that operation we need three parameters:
-
-* The set of columns that represent values, not variables. In this example, 
-  those are the columns `1999` and `2000`.
-
-* The name of the variable whose values form the column names. I call that
-  the `key`, and here it is `year`.
-
-* The name of the variable whose values are spread over the cells. I call 
-  that `value`, and here it's the number of `cases`.
+* A __date-time__ is a date plus a time: it uniquely identifies an
+  instant in time (typically to the nearest second). Tibbles print this
+  as `<dttm>`. Elsewhere in R these are called POSIXct, but I don't think
+  that's a very useful name.
   
-Together those parameters generate the call to `gather()`:
+## Today
+To get the current date or date-time you can use `today()` or `now()`:
 
 ```{r}
-table4a %>% 
-  gather(`1999`, `2000`, key = "year", value = "cases")
+today()
+now()
 ```
 
-The columns to gather are specified with `dplyr::select()` style notation. Here there are only two columns, so we list them individually. Note that "1999" and "2000" are non-syntactic names (because they don't start with a letter) so we have to surround them in backticks. To refresh your memory of the other ways to select columns, see [select](#select).
 
-```{r tidy-gather, echo = FALSE, out.width = "100%", fig.cap = "Gathering `table4` into a tidy form."}
-knitr::include_graphics("images/tidy-9.png")
-```
+## Datetimes from strings
 
-In the final result, the gathered columns are dropped, and we get new `key` and `value` columns. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure \@ref(fig:tidy-gather). We can use `gather()` to tidy `table4b` in a similar fashion. The only difference is the variable stored in the cell values:
+Use the helpers provided by lubridate. They automatically work out the format once you specify the order of the component. To use them, identify the order in which year, month, and day appear in your dates, then arrange "y", "m", and "d" in the same order. 
 
 ```{r}
-table4b %>% 
-  gather(`1999`, `2000`, key = "year", value = "population")
+ymd("2017-01-31")
+mdy("January 31st, 2017")
+dmy("31-Jan-2017")
 ```
 
-To combine the tidied versions of `table4a` and `table4b` into a single tibble, we need to use `dplyr::left_join()`, which you'll learn about in [relational data].
+## Can also pass an unquoted number
+These functions also take unquoted numbers. This is the most concise way to create a single date/time object, as you might need when filtering date/time data. `ymd()` is short and unambiguous:
 
 ```{r}
-tidy4a <- table4a %>% 
-  gather(`1999`, `2000`, key = "year", value = "cases")
-tidy4b <- table4b %>% 
-  gather(`1999`, `2000`, key = "year", value = "population")
-left_join(tidy4a, tidy4b)
+ymd(20170131)
 ```
 
-### Spreading
-
-Spreading is the opposite of gathering. You use it when an observation is scattered across multiple rows. For example, take `table2`: an observation is a country in a year, but each observation is spread across two rows.
+## Create date-times, not just dates
+`ymd()` and friends create dates. To create a date-time, add an underscore and one or more of "h", "m", and "s" to the name of the parsing function:
 
 ```{r}
-table2
+ymd_hms("2017-01-31 20:11:59")
+mdy_hm("01/31/2017 08:01")
 ```
 
-To tidy this up, we first analyse the representation in similar way to `gather()`. This time, however, we only need two parameters:
+## From individual components
 
-* The column that contains variable names, the `key` column. Here, it's 
-  `type`.
-
-* The column that contains values forms multiple variables, the `value`
-  column. Here it's `count`.
-
-Once we've figured that out, we can use `spread()`, as shown programmatically below, and visually in Figure \@ref(fig:tidy-spread).
+Instead of a single string, sometimes you'll have the individual components of the date-time spread across multiple columns. This is what we have in the flights data:
 
 ```{r}
-spread(table2, key = type, value = count)
+flights %>% 
+  select(year, month, day, hour, minute)
 ```
 
-```{r tidy-spread, echo = FALSE, out.width = "100%", fig.cap = "Spreading `table2` makes it tidy"}
-knitr::include_graphics("images/tidy-8.png")
+
+## From individual components
+
+To create a date/time from this sort of input, use `make_date()` for dates, or `make_datetime()` for date-times:
+
+```{r}
+flights %>% 
+  select(year, month, day, hour, minute) %>% 
+  mutate(departure = make_datetime(year, month, day, hour, minute))
 ```
 
-As you might have guessed from the common `key` and `value` arguments, `spread()` and `gather()` are complements. `gather()` makes wide tables narrower and longer; `spread()` makes long tables shorter and wider.
+## From other types
+
+You may want to switch between a date-time and a date. That's the job of `as_datetime()` and `as_date()`:
+
+```{r}
+as_datetime(today())
+as_date(now())
+```
+
+
+## Getting components
+
+You can pull out individual parts of the date with the accessor functions `year()`, `month()`, `mday()` (day of the month), `yday()` (day of the year), `wday()` (day of the week), `hour()`, `minute()`, and `second()`. 
+
+```{r}
+datetime <- ymd_hms("2016-07-08 12:34:56")
+
+year(datetime)
+month(datetime)
+mday(datetime)
+
+yday(datetime)
+wday(datetime)
+```
+
+
+## Getting components
+
+For `month()` and `wday()` you can set `label = TRUE` to return the abbreviated name of the month or day of the week. Set `abbr = FALSE` to return the full name.
+
+```{r}
+month(datetime, label = TRUE)
+wday(datetime, label = TRUE, abbr = FALSE)
+```
+
+
+
+## Time spans
+
+Next you'll learn about how arithmetic with dates works, including subtraction, addition, and division. Along the way, you'll learn about three important classes that represent time spans:
+
+* __durations__, which represent an exact number of seconds.
+* __periods__, which represent human units like weeks and months.
+* __intervals__, which represent a starting and ending point.
+
+### Durations
+
+In R, when you subtract two dates, you get a difftime object:
+
+```{r}
+# How old is Hadley?
+h_age <- today() - ymd(19791014)
+h_age
+```
+
+A difftime class object records a time span of seconds, minutes, hours, days, or weeks. This ambiguity can make difftimes a little painful to work with, so lubridate provides an alternative which always uses seconds: the __duration__.
+
+```{r}
+as.duration(h_age)
+```
+
+Durations come with a bunch of convenient constructors:
+
+```{r}
+dseconds(15)
+dminutes(10)
+dhours(c(12, 24))
+ddays(0:5)
+dweeks(3)
+dyears(1)
+```
+
+Durations always record the time span in seconds. Larger units are created by converting minutes, hours, days, weeks, and years to seconds at the standard rate (60 seconds in a minute, 60 minutes in an hour, 24 hours in day, 7 days in a week, 365 days in a year).
+
+You can add and multiply durations:
+
+```{r}
+2 * dyears(1)
+dyears(1) + dweeks(12) + dhours(15)
+```
+
+You can add and subtract durations to and from days:
+
+```{r}
+tomorrow <- today() + ddays(1)
+last_year <- today() - dyears(1)
+```
+
+However, because durations represent an exact number of seconds, sometimes you might get an unexpected result:
+
+```{r}
+one_pm <- ymd_hms("2016-03-12 13:00:00", tz = "America/New_York")
+
+one_pm
+one_pm + ddays(1)
+```
+
+Why is one day after 1pm on March 12, 2pm on March 13?! If you look carefully at the date you might also notice that the time zones have changed. Because of DST, March 12 only has 23 hours, so if add a full days worth of seconds we end up with a different time.
+
+### Periods
+
+To solve this problem, lubridate provides __periods__. Periods are time spans but don't have a fixed length in seconds, instead they work with "human" times, like days and months. That allows them work in a more intuitive way:
+
+```{r}
+one_pm
+one_pm + days(1)
+```
+
+Like durations, periods can be created with a number of friendly constructor functions. 
+
+```{r}
+seconds(15)
+minutes(10)
+hours(c(12, 24))
+days(7)
+months(1:6)
+weeks(3)
+years(1)
+```
+
+You can add and multiply periods:
+
+```{r}
+10 * (months(6) + days(1))
+days(50) + hours(25) + minutes(2)
+```
+
+And of course, add them to dates. Compared to durations, periods are more likely to do what you expect:
+
+```{r}
+# A leap year
+ymd("2016-01-01") + dyears(1)
+ymd("2016-01-01") + years(1)
+
+# Daylight Savings Time
+one_pm + ddays(1)
+one_pm + days(1)
+```
+
+Let's use periods to fix an oddity related to our flight dates. Some planes appear to have arrived at their destination _before_ they departed from New York City.
+
+```{r}
+flights_dt %>% 
+  filter(arr_time < dep_time) 
+```
+
+These are overnight flights. We used the same date information for both the departure and the arrival times, but these flights arrived on the following day. We can fix this by adding `days(1)` to the arrival time of each overnight flight.
+
+```{r}
+flights_dt <- flights_dt %>% 
+  mutate(
+    overnight = arr_time < dep_time,
+    arr_time = arr_time + days(overnight * 1),
+    sched_arr_time = sched_arr_time + days(overnight * 1)
+  )
+```
+
+Now all of our flights obey the laws of physics.
+
+```{r}
+flights_dt %>% 
+  filter(overnight, arr_time < dep_time) 
+```
+
+### Intervals
+
+It's obvious what `dyears(1) / ddays(365)` should return: one, because durations are always represented by a number of seconds, and a duration of a year is defined as 365 days worth of seconds.
+
+What should `years(1) / days(1)` return? Well, if the year was 2015 it should return 365, but if it was 2016, it should return 366! There's not quite enough information for lubridate to give a single clear answer. What it does instead is give an estimate, with a warning:
+
+```{r}
+years(1) / days(1)
+```
+
+If you want a more accurate measurement, you'll have to use an __interval__. An interval is a duration with a starting point: that makes it precise so you can determine exactly how long it is:
+
+```{r}
+next_year <- today() + years(1)
+(today() %--% next_year) / ddays(1)
+```
+
+To find out how many periods fall into an interval, you need to use integer division:
+
+```{r}
+(today() %--% next_year) %/% days(1)
+```
+
+### Summary
+
+How do you pick between duration, periods, and intervals? As always, pick the simplest data structure that solves your problem. If you only care about physical time, use a duration; if you need to add human times, use a period; if you need to figure out how long a span is in human units, use an interval.
+
+Figure \@ref(fig:dt-algebra) summarises permitted arithmetic operations between the different data types.
+
+```{r dt-algebra, echo = FALSE, fig.cap = "The allowed arithmetic operations between pairs of date/time classes."}
+knitr::include_graphics("diagrams/datetimes-arithmetic.png")
+```
 
 ### Exercises
 
-1.  Why are `gather()` and `spread()` not perfectly symmetrical?  
-    Carefully consider the following example:
-    
-    ```{r, eval = FALSE}
-    stocks <- tibble(
-      year   = c(2015, 2015, 2016, 2016),
-      half  = c(   1,    2,     1,    2),
-      return = c(1.88, 0.59, 0.92, 0.17)
-    )
-    stocks %>% 
-      spread(year, return) %>% 
-      gather("year", "return", `2015`:`2016`)
+1.  Why is there `months()` but no `dmonths()`?
+
+1.  Explain `days(overnight * 1)` to someone who has just started 
+    learning R. How does it work?
+
+1.  Create a vector of dates giving the first day of every month in 2015.
+    Create a vector of dates giving the first day of every month
+    in the _current_ year.
+
+1.  Write a function that given your birthday (as a date), returns 
+    how old you are in years.
+
+1.  Why can't `(today() %--% (today() + years(1)) / months(1)` work?
+
+## Time zones 
+
+Time zones are an enormously complicated topic because of their interaction with geopolitical entities. Fortunately we don't need to dig into all the details as they're not all important for data analysis, but there are a few challenges we'll need to tackle head on.
+
+The first challenge is that everyday names of time zones tend to be ambiguous. For example, if you're American you're probably familiar with EST, or Eastern Standard Time. However, both Australia and Canada also have EST! To avoid confusion, R uses the international standard IANA time zones. These use a consistent naming scheme "<area>/<location>", typically in the form "\<continent\>/\<city\>" (there are a few exceptions because not every country lies on a continent). Examples include "America/New_York", "Europe/Paris", and "Pacific/Auckland".
+
+You might wonder why the time zone uses a city, when typically you think of time zones as associated with a country or region within a country. This is because the IANA database has to record decades worth of time zone rules. In the course of decades, countries change names (or break apart) fairly frequently, but city names tend to stay the same. Another problem is that name needs to reflect not only to the current behaviour, but also the complete history. For example, there are time zones for both "America/New_York" and "America/Detroit". These cities both currently use Eastern Standard Time but in 1969-1972 Michigan (the state in which Detroit is located), did not follow DST, so it needs a different name. It's worth reading the raw time zone database (available at <http://www.iana.org/time-zones>) just to read some of these stories!
+
+You can find out what R thinks your current time zone is with `Sys.timezone()`:
+
+```{r}
+Sys.timezone()
+```
+
+(If R doesn't know, you'll get an `NA`.)
+
+And see the complete list of all time zone names with `OlsonNames()`:
+
+```{r}
+length(OlsonNames())
+head(OlsonNames())
+```
+
+In R, the time zone is an attribute of the date-time that only controls printing. For example, these three objects represent the same instant in time:
+
+```{r}
+(x1 <- ymd_hms("2015-06-01 12:00:00", tz = "America/New_York"))
+(x2 <- ymd_hms("2015-06-01 18:00:00", tz = "Europe/Copenhagen"))
+(x3 <- ymd_hms("2015-06-02 04:00:00", tz = "Pacific/Auckland"))
+```
+
+You can verify that they're the same time using subtraction:
+
+```{r}
+x1 - x2
+x1 - x3
+```
+
+Unless other specified, lubridate always uses UTC. UTC (Coordinated Universal Time) is the standard time zone used by the scientific community and roughly equivalent to its predecessor GMT (Greenwich Mean Time). It does not have DST, which makes a convenient representation for computation. Operations that combine date-times, like `c()`, will often drop the time zone. In that case, the date-times will display in your local time zone:
+
+```{r}
+x4 <- c(x1, x2, x3)
+x4
+```
+
+You can change the time zone in two ways:
+
+*   Keep the instant in time the same, and change how it's displayed.
+    Use this when the instant is correct, but you want a more natural
+    display.
+  
+    ```{r}
+    x4a <- with_tz(x4, tzone = "Australia/Lord_Howe")
+    x4a
+    x4a - x4
     ```
     
-    (Hint: look at the variable types and think about column _names_.)
-    
-    Both `spread()` and `gather()` have a `convert` argument. What does it 
-    do?
+    (This also illustrates another challenge of times zones: they're not
+    all integer hour offsets!)
 
-1.  Why does this code fail?
-
-    ```{r, error = TRUE}
-    table4a %>% 
-      gather(1999, 2000, key = "year", value = "cases")
-    ```
-
-1.  Why does spreading this tibble fail? How could you add a new column to fix
-    the problem?
+*   Change the underlying instant in time. Use this when you have an
+    instant that has been labelled with the incorrect time zone, and you
+    need to fix it.
 
     ```{r}
-    people <- tribble(
-      ~name,             ~key,    ~value,
-      #-----------------|--------|------
-      "Phillip Woods",   "age",       45,
-      "Phillip Woods",   "height",   186,
-      "Phillip Woods",   "age",       50,
-      "Jessica Cordero", "age",       37,
-      "Jessica Cordero", "height",   156
-    )
+    x4b <- force_tz(x4, tzone = "Australia/Lord_Howe")
+    x4b
+    x4b - x4
     ```
 
-1.  Tidy the simple tibble below. Do you need to spread or gather it?
-    What are the variables?
 
-    ```{r}
-    preg <- tribble(
-      ~pregnant, ~male, ~female,
-      "yes",     NA,    10,
-      "no",      20,    12
-    )
-    ```
 
-## Separating and uniting
+## Working with factors:`forcats`
 
-So far you've learned how to tidy `table2` and `table4`, but not `table3`. `table3` has a different problem: we have one column (`rate`) that contains two variables (`cases` and `population`). To fix this problem, we'll need the `separate()` function. You'll also learn about the complement of `separate()`: `unite()`, which you use if a single variable is spread across multiple columns.
+In R, factors are used to work with categorical variables, variables that have a fixed and known set of possible values. They are also useful when you want to display character vectors in a non-alphabetical order.
 
-### Separate
 
-`separate()` pulls apart one column into multiple columns, by splitting wherever a separator character appears. Take `table3`:
+### Prerequisites
+
+To work with factors, we'll use the __forcats__ package, which provides tools for dealing with **cat**egorical variables (and it's an anagram of factors!). It provides a wide range of helpers for working with factors. forcats is not part of the core tidyverse, so we need to load it explicitly.
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(forcats)
+```
+
+
+## Creating factors
+
+Imagine that you have a variable that records month:
 
 ```{r}
-table3
+x1 <- c("Dec", "Apr", "Jan", "Mar")
 ```
 
-The `rate` column contains both `cases` and `population` variables, and we need to split it into two variables. `separate()` takes the name of the column to separate, and the names of the columns to separate into, as shown in Figure \@ref(fig:tidy-separate) and the code below.
+## Creating factors
+
+To create a factor you must start by creating a list of the valid __levels__:
 
 ```{r}
-table3 %>% 
-  separate(rate, into = c("cases", "population"))
-```
-
-```{r tidy-separate, echo = FALSE, out.width = "75%", fig.cap = "Separating `table3` makes it tidy"}
-knitr::include_graphics("images/tidy-17.png")
-```
-
-By default, `separate()` will split values wherever it sees a non-alphanumeric character (i.e. a character that isn't a number or letter). For example, in the code above, `separate()` split the values of `rate` at the forward slash characters. If you wish to use a specific character to separate a column, you can pass the character to the `sep` argument of `separate()`. For example, we could rewrite the code above as:
-
-```{r eval = FALSE}
-table3 %>% 
-  separate(rate, into = c("cases", "population"), sep = "/")
-```
-
-(Formally, `sep` is a regular expression, which you'll learn more about in [strings].)
-
-Look carefully at the column types: you'll notice that `case` and `population` are character columns. This is the default behaviour in `separate()`: it leaves the type of the column as is. Here, however, it's not very useful as those really are numbers. We can ask `separate()` to try and convert to better types using `convert = TRUE`:
-
-```{r}
-table3 %>% 
-  separate(rate, into = c("cases", "population"), convert = TRUE)
-```
-
-You can also pass a vector of integers to `sep`. `separate()` will interpret the integers as positions to split at. Positive values start at 1 on the far-left of the strings; negative value start at -1 on the far-right of the strings. When using integers to separate strings, the length of `sep` should be one less than the number of names in `into`. 
-
-You can use this arrangement to separate the last two digits of each year. This make this data less tidy, but is useful in other cases, as you'll see in a little bit.
-
-```{r}
-table3 %>% 
-  separate(year, into = c("century", "year"), sep = 2)
-```
-
-### Unite
-
-`unite()` is the inverse of `separate()`: it combines multiple columns into a single column. You'll need it much less frequently than `separate()`, but it's still a useful tool to have in your back pocket.
-
-```{r tidy-unite, echo = FALSE, out.width = "75%", fig.cap = "Uniting `table5` makes it tidy"}
-knitr::include_graphics("images/tidy-18.png")
-```
-
-We can use `unite()` to rejoin the *century* and *year* columns that we created in the last example. That data is saved as `tidyr::table5`. `unite()` takes a data frame, the name of the new variable to create, and a set of columns to combine, again specified in `dplyr::select()` style:
-
-```{r}
-table5 %>% 
-  unite(new, century, year)
-```
-
-In this case we also need to use the `sep` argument. The default will place an underscore (`_`) between the values from different columns. Here we don't want any separator so we use `""`:
-
-```{r}
-table5 %>% 
-  unite(new, century, year, sep = "")
-```
-
-### Exercises
-
-1.  What do the `extra` and `fill` arguments do in `separate()`? 
-    Experiment with the various options for the following two toy datasets.
-    
-    ```{r, eval = FALSE}
-    tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
-      separate(x, c("one", "two", "three"))
-    
-    tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
-      separate(x, c("one", "two", "three"))
-    ```
-
-1.  Both `unite()` and `separate()` have a `remove` argument. What does it
-    do? Why would you set it to `FALSE`?
-
-1.  Compare and contrast `separate()` and `extract()`.  Why are there
-    three variations of separation (by position, by separator, and with
-    groups), but only one unite?
-
-## Missing values
-
-Changing the representation of a dataset brings up an important subtlety of missing values. Surprisingly, a value can be missing in one of two possible ways:
-
-* __Explicitly__, i.e. flagged with `NA`.
-* __Implicitly__, i.e. simply not present in the data.
-
-Let's illustrate this idea with a very simple data set:
-
-```{r}
-stocks <- tibble(
-  year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
-  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
-  return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+month_levels <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 )
 ```
 
-There are two missing values in this dataset:
+## Creating factors
 
-* The return for the fourth quarter of 2015 is explicitly missing, because
-  the cell where its value should be instead contains `NA`.
-  
-* The return for the first quarter of 2016 is implicitly missing, because it
-  simply does not appear in the dataset.
-  
-One way to think about the difference is with this Zen-like koan: An explicit missing value is the presence of an absence; an implicit missing value is the absence of a presence.
-
-The way that a dataset is represented can make implicit values explicit. For example, we can make the implicit missing value explicit by putting years in the columns:
+Now you can create a factor:
 
 ```{r}
-stocks %>% 
-  spread(year, return)
+y1 <- factor(x1, levels = month_levels)
+y1
+sort(y1)
 ```
 
-Because these explicit missing values may not be important in other representations of the data, you can set `na.rm = TRUE` in `gather()` to turn explicit missing values implicit:
+## Creating factors
+
+And any values not in the set will be silently converted to NA:
 
 ```{r}
-stocks %>% 
-  spread(year, return) %>% 
-  gather(year, return, `2015`:`2016`, na.rm = TRUE)
+y2 <- factor(x2, levels = month_levels)
+y2
 ```
 
-Another important tool for making missing values explicit in tidy data is `complete()`:
+## Creating factors
+
+If you omit the levels, they'll be taken from the data in alphabetical order:
 
 ```{r}
-stocks %>% 
-  complete(year, qtr)
+factor(x1)
 ```
 
-`complete()` takes a set of columns, and finds all unique combinations. It then ensures the original dataset contains all those values, filling in explicit `NA`s where necessary.
+## Creating factors
 
-There's one other important tool that you should know for working with missing values. Sometimes when a data source has primarily been used for data entry, missing values indicate that the previous value should be carried forward:
+
+If you ever need to access the set of valid levels directly, you can do so with `levels()`:
 
 ```{r}
-treatment <- tribble(
-  ~ person,           ~ treatment, ~response,
-  "Derrick Whitmore", 1,           7,
-  NA,                 2,           10,
-  NA,                 3,           9,
-  "Katherine Burke",  1,           4
-)
+levels(f2)
 ```
 
-You can fill in these missing values with `fill()`. It takes a set of columns where you want missing values to be replaced by the most recent non-missing value (sometimes called last observation carried forward).
+## Example data: General Social Survey
+
+For the rest of this chapter, we're going to focus on `forcats::gss_cat`. It's a sample of data from the [General Social Survey](http://gss.norc.org), which is a long-running US survey conducted by the independent research organization NORC at the University of Chicago. The survey has thousands of questions, so in `gss_cat` I've selected a handful that will illustrate some common challenges you'll encounter when working with factors.
 
 ```{r}
-treatment %>% 
-  fill(person)
+gss_cat
+```
+
+(Remember, since this dataset is provided by a package, you can get more information about the variables with `?gss_cat`.)
+## Example data: General Social Survey
+
+When factors are stored in a tibble, you can't see their levels so easily. One way to see them is with `count()`:
+
+```{r}
+gss_cat %>%
+  count(race)
+```
+## Example data: General Social Survey
+
+Or with a bar chart:
+
+```{r}
+ggplot(gss_cat, aes(race)) +
+  geom_bar()
+```
+## Example data: General Social Survey
+
+By default, ggplot2 will drop levels that don't have any values. You can force them to display with:
+
+```{r}
+ggplot(gss_cat, aes(race)) +
+  geom_bar() +
+  scale_x_discrete(drop = FALSE)
+```
+
+These levels represent valid values that simply did not occur in this dataset. Unfortunately, dplyr doesn't yet have a `drop` option, but it will in the future.
+
+### Exercise
+
+1.  What is the most common `relig` in this survey? What's the most
+    common `partyid`?
+
+## Modifying factor order
+
+It's often useful to change the order of the factor levels in a visualisation. For example, imagine you want to explore the average number of hours spent watching TV per day across religions:
+
+```{r}
+relig_summary <- gss_cat %>%
+  group_by(relig) %>%
+  summarise(
+    age = mean(age, na.rm = TRUE),
+    tvhours = mean(tvhours, na.rm = TRUE),
+    n = n()
+  )
+
+ggplot(relig_summary, aes(tvhours, relig)) + geom_point()
+```
+
+## Modifying factor order
+
+It is difficult to interpret this plot because there's no overall pattern. We can improve it by reordering the levels of `relig` using `fct_reorder()`. `fct_reorder()` takes three arguments:
+
+* `f`, the factor whose levels you want to modify.
+* `x`, a numeric vector that you want to use to reorder the levels.
+* Optionally, `fun`, a function that's used if there are multiple values of
+  `x` for each value of `f`. The default value is `median`.
+
+```{r}
+ggplot(relig_summary, aes(tvhours, fct_reorder(relig, tvhours))) +
+  geom_point()
+```
+
+## Modifying factor order
+
+```{r}
+rincome_summary <- gss_cat %>%
+  group_by(rincome) %>%
+  summarise(
+    age = mean(age, na.rm = TRUE),
+    tvhours = mean(tvhours, na.rm = TRUE),
+    n = n()
+  )
+
+ggplot(rincome_summary, aes(age, fct_reorder(rincome, age))) + geom_point()
+```
+
+
+## Modifying factor order
+
+Another type of reordering is useful when you are colouring the lines on a plot. `fct_reorder2()` reorders the factor by the `y` values associated with the largest `x` values. This makes the plot easier to read because the line colours line up with the legend.
+
+```{r, fig.align = "default", out.width = "50%", fig.width = 4}
+by_age <- gss_cat %>%
+  filter(!is.na(age)) %>%
+  group_by(age, marital) %>%
+  count() %>%
+  mutate(prop = n / sum(n))
+
+ggplot(by_age, aes(age, prop, colour = marital)) +
+  geom_line(na.rm = TRUE)
+
+ggplot(by_age, aes(age, prop, colour = fct_reorder2(marital, age, prop))) +
+  geom_line() +
+  labs(colour = "marital")
+```
+## Modifying factor order
+
+Finally, for bar plots, you can use `fct_infreq()` to order levels in increasing frequency: this is the simplest type of reordering because it doesn't need any extra variables. You may want to combine with `fct_rev()`.
+
+```{r}
+gss_cat %>%
+  mutate(marital = marital %>% fct_infreq() %>% fct_rev()) %>%
+  ggplot(aes(marital)) +
+    geom_bar()
 ```
 
 ### Exercises
 
-1.  Compare and contrast the `fill` arguments to `spread()` and `complete()`. 
+1.  There are some suspiciously high numbers in `tvhours`. Is the mean a good
+    summary?
 
-1.  What does the direction argument to `fill()` do?
+1.  For each factor in `gss_cat` identify whether the order of the levels is
+    arbitrary or principled.
 
-## Case Study
+1.  Why did moving "Not applicable" to the front of the levels move it to the
+    bottom of the plot?
 
-To finish off the chapter, let's pull together everything you've learned to tackle a realistic data tidying problem. The `tidyr::who` dataset contains tuberculosis (TB) cases broken down by year, country, age, gender, and diagnosis method. The data comes from the *2014 World Health Organization Global Tuberculosis Report*, available at <http://www.who.int/tb/country/data/download/en/>.
+## Modifying factor levels
 
-There's a wealth of epidemiological information in this dataset, but it's challenging to work with the data in the form that it's provided:
-
-```{r}
-who
-```
-
-This is a very typical real-life example dataset. It contains redundant columns, odd variable codes, and many missing values. In short, `who` is messy, and we'll need multiple steps to tidy it. Like dplyr, tidyr is designed so that each function does one thing well. That means in real-life situations you'll usually need to string together multiple verbs into a pipeline. 
-
-The best place to start is almost always to gather together the columns that are not variables. Let's have a look at what we've got: 
-
-* It looks like `country`, `iso2`, and `iso3` are three variables that 
-  redundantly specify the country.
-  
-* `year` is clearly also a variable.
-
-* We don't know what all the other columns are yet, but given the structure 
-  in the variable names (e.g. `new_sp_m014`, `new_ep_m014`, `new_ep_f014`) 
-  these are likely to be values, not variables.
-
-So we need to gather together all the columns from `new_sp_m014` to `newrel_f65`. We don't know what those values represent yet, so we'll give them the generic name `"key"`. We know the cells represent the count of cases, so we'll use the variable `cases`. There are a lot of missing values in the current representation, so for now we'll use `na.rm` just so we can focus on the values that are present.
+More powerful than changing the orders of the levels is changing their values. This allows you to clarify labels for publication, and collapse levels for high-level displays. The most general and powerful tool is `fct_recode()`. It allows you to recode, or change, the value of each level. For example, take the `gss_cat$partyid`:
 
 ```{r}
-who1 <- who %>% 
-  gather(new_sp_m014:newrel_f65, key = "key", value = "cases", na.rm = TRUE)
-who1
+gss_cat %>% count(partyid)
 ```
 
-We can get some hint of the structure of the values in the new `key` column by counting them:
+The levels are terse and inconsistent. Let's tweak them to be longer and use a parallel construction.
 
 ```{r}
-who1 %>% 
-  count(key)
+gss_cat %>%
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat"
+  )) %>%
+  count(partyid)
 ```
+## Modifying factor levels
 
-You might be able to parse this out by yourself with a little thought and some experimentation, but luckily we have the data dictionary handy. It tells us:
+`fct_recode()` will leave levels that aren't explicitly mentioned as is, and will warn you if you accidentally refer to a level that doesn't exist.
 
-1.  The first three letters of each column denote whether the column 
-    contains new or old cases of TB. In this dataset, each column contains 
-    new cases.
-
-1.  The next two letters describe the type of TB:
-    
-    *   `rel` stands for cases of relapse
-    *   `ep` stands for cases of extrapulmonary TB
-    *   `sn` stands for cases of pulmonary TB that could not be diagnosed by 
-        a pulmonary smear (smear negative)
-    *   `sp` stands for cases of pulmonary TB that could be diagnosed be 
-        a pulmonary smear (smear positive)
-
-3.  The sixth letter gives the sex of TB patients. The dataset groups 
-    cases by males (`m`) and females (`f`).
-
-4.  The remaining numbers gives the age group. The dataset groups cases into 
-    seven age groups:
-    
-    * `014` = 0 -- 14 years old
-    * `1524` = 15 -- 24 years old
-    * `2534` = 25 -- 34 years old
-    * `3544` = 35 -- 44 years old
-    * `4554` = 45 -- 54 years old
-    * `5564` = 55 -- 64 years old
-    * `65` = 65 or older
-
-We need to make a minor fix to the format of the column names: unfortunately the names are slightly inconsistent because instead of `new_rel` we have `newrel` (it's hard to spot this here but if you don't fix it we'll get errors in subsequent steps). You'll learn about `str_replace()` in [strings], but the basic idea is pretty simple: replace the characters "newrel" with "new_rel". This makes all variable names consistent.
+To combine groups, you can assign multiple old levels to the same new level:
 
 ```{r}
-who2 <- who1 %>% 
-  mutate(key = stringr::str_replace(key, "newrel", "new_rel"))
-who2
+gss_cat %>%
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat",
+    "Other"                 = "No answer",
+    "Other"                 = "Don't know",
+    "Other"                 = "Other party"
+  )) %>%
+  count(partyid)
 ```
 
-We can separate the values in each code with two passes of `separate()`. The first pass will split the codes at each underscore.
+You must use this technique with care: if you group together categories that are truly different you will end up with misleading results.
+
+## Modifying factor levels
+
+If you want to collapse a lot of levels, `fct_collapse()` is a useful variant of `fct_recode()`. For each new variable, you can provide a vector of old levels:
 
 ```{r}
-who3 <- who2 %>% 
-  separate(key, c("new", "type", "sexage"), sep = "_")
-who3
+gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+    other = c("No answer", "Don't know", "Other party"),
+    rep = c("Strong republican", "Not str republican"),
+    ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    dem = c("Not str democrat", "Strong democrat")
+  )) %>%
+  count(partyid)
 ```
 
-Then we might as well drop the `new` column because it's constant in this dataset. While we're dropping columns, let's also drop `iso2` and `iso3` since they're redundant.
+## Modifying factor levels
+
+Sometimes you just want to lump together all the small groups to make a plot or table simpler. That's the job of `fct_lump()`:
 
 ```{r}
-who3 %>% 
-  count(new)
-who4 <- who3 %>% 
-  select(-new, -iso2, -iso3)
+gss_cat %>%
+  mutate(relig = fct_lump(relig)) %>%
+  count(relig)
 ```
 
-Next we'll separate `sexage` into `sex` and `age` by splitting after the first character:
+The default behaviour is to progressively lump together the smallest groups, ensuring that the aggregate is still the smallest group. In this case it's not very helpful: it is true that the majority of Americans in this survey are Protestant, but we've probably over collapsed.
+
+Instead, we can use the `n` parameter to specify how many groups (excluding other) we want to keep:
 
 ```{r}
-who5 <- who4 %>% 
-  separate(sexage, c("sex", "age"), sep = 1)
-who5
+gss_cat %>%
+  mutate(relig = fct_lump(relig, n = 10)) %>%
+  count(relig, sort = TRUE) %>%
+  print(n = Inf)
 ```
-
-The `who` dataset is now tidy!
-
-I've shown you the code a piece at a time, assigning each interim result to a new variable. This typically isn't how you'd work interactively. Instead, you'd gradually build up a complex pipe:
-
-```{r, results = "hide"}
-who %>%
-  gather(code, value, new_sp_m014:newrel_f65, na.rm = TRUE) %>% 
-  mutate(code = stringr::str_replace(code, "newrel", "new_rel")) %>%
-  separate(code, c("new", "var", "sexage")) %>% 
-  select(-new, -iso2, -iso3) %>% 
-  separate(sexage, c("sex", "age"), sep = 1)
-```
-
-### Exercises
-
-1.  In this case study I set `na.rm = TRUE` just to make it easier to
-    check that we had the correct values. Is this reasonable? Think about
-    how missing values are represented in this dataset. Are there implicit
-    missing values? What's the difference between an `NA` and zero? 
-
-1.  What happens if you neglect the `mutate()` step?
-    (`mutate(key = stringr::str_replace(key, "newrel", "new_rel"))`)
-
-1.  I claimed that `iso2` and `iso3` were redundant with `country`. 
-    Confirm this claim.
-
-1.  For each country, year, and sex compute the total number of cases of 
-    TB. Make an informative visualisation of the data.
-
-## Non-tidy data
-
-Before we continue on to other topics, it's worth talking briefly about non-tidy data. Earlier in the chapter, I used the pejorative term "messy" to refer to non-tidy data. That's an oversimplification: there are lots of useful and well-founded data structures that are not tidy data. There are two main reasons to use other data structures:
-
-* Alternative representations may have substantial performance or space 
-  advantages.
-  
-* Specialised fields have evolved their own conventions for storing data
-  that may be quite different to the conventions of  tidy data.
-
-Either of these reasons means you'll need something other than a tibble (or data frame). If your data does fit naturally into a rectangular structure composed of observations and variables, I think tidy data should be your default choice. But there are good reasons to use other structures; tidy data is not the only way.
-
-If you'd like to learn more about non-tidy data, I'd highly recommend this thoughtful blog post by Jeff Leek: <http://simplystatistics.org/2016/02/17/non-tidy-data/>
-  
-    

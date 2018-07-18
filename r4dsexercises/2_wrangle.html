@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2018-07-16" />
+<meta name="date" content="2018-07-17" />
 
 <title>Exercises Part 2: wrangle with readr and tidyr</title>
 
@@ -91,6 +91,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -119,7 +122,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Exercises Part 2: wrangle with readr and tidyr</h1>
-<h4 class="date"><em>2018-07-16</em></h4>
+<h4 class="date"><em>2018-07-17</em></h4>
 
 </div>
 
@@ -163,6 +166,71 @@ read_csv(&quot;a,b,c\n1,2\n1,2,3,4&quot;)
 read_csv(&quot;a,b\n\&quot;1&quot;)
 read_csv(&quot;a,b\n1,2\na,b&quot;)
 read_csv(&quot;a;b\n1;3&quot;)</code></pre></li>
+</ol>
+</div>
+<div id="exercises-tidyr" class="section level3">
+<h3>Exercises: tidyr</h3>
+<ol style="list-style-type: decimal">
+<li><p>Using prose, describe how the variables and observations are organised in each of the sample tables.</p></li>
+<li><p>Compute the <code>rate</code> for <code>table2</code>, and <code>table4a</code> + <code>table4b</code>. You will need to perform four operations:</p>
+<ol style="list-style-type: decimal">
+<li>Extract the number of TB cases per country per year.</li>
+<li>Extract the matching population per country per year.</li>
+<li>Divide cases by population, and multiply by 10000.</li>
+<li>Store back in the appropriate place.</li>
+</ol>
+<p>Which representation is easiest to work with? Which is hardest? Why?</p></li>
+<li><p>Recreate the plot showing change in cases over time using <code>table2</code> instead of <code>table1</code>. What do you need to do first?</p></li>
+</ol>
+</div>
+<div id="exercises-tidyr-1" class="section level3">
+<h3>Exercises: tidyr</h3>
+<ol style="list-style-type: decimal">
+<li><p>Why are <code>gather()</code> and <code>spread()</code> not perfectly symmetrical?<br />
+Carefully consider the following example:</p>
+<pre class="r"><code>stocks &lt;- tibble(
+  year   = c(2015, 2015, 2016, 2016),
+  half  = c(   1,    2,     1,    2),
+  return = c(1.88, 0.59, 0.92, 0.17)
+)
+stocks %&gt;% 
+  spread(year, return) %&gt;% 
+  gather(&quot;year&quot;, &quot;return&quot;, `2015`:`2016`)</code></pre>
+<p>(Hint: look at the variable types and think about column <em>names</em>.)</p>
+<p>Both <code>spread()</code> and <code>gather()</code> have a <code>convert</code> argument. What does it do?</p></li>
+<li><p>Why does this code fail?</p>
+<pre class="r"><code>table4a %&gt;% 
+  gather(1999, 2000, key = &quot;year&quot;, value = &quot;cases&quot;)</code></pre>
+<pre><code>## Error in inds_combine(.vars, ind_list): Position must be between 0 and n</code></pre></li>
+<li><p>Why does spreading this tibble fail? How could you add a new column to fix the problem?</p>
+<pre class="r"><code>people &lt;- tribble(
+  ~name,             ~key,    ~value,
+  #-----------------|--------|------
+  &quot;Phillip Woods&quot;,   &quot;age&quot;,       45,
+  &quot;Phillip Woods&quot;,   &quot;height&quot;,   186,
+  &quot;Phillip Woods&quot;,   &quot;age&quot;,       50,
+  &quot;Jessica Cordero&quot;, &quot;age&quot;,       37,
+  &quot;Jessica Cordero&quot;, &quot;height&quot;,   156
+)</code></pre></li>
+<li><p>Tidy the simple tibble below. Do you need to spread or gather it? What are the variables?</p>
+<pre class="r"><code>preg &lt;- tribble(
+  ~pregnant, ~male, ~female,
+  &quot;yes&quot;,     NA,    10,
+  &quot;no&quot;,      20,    12
+)</code></pre></li>
+</ol>
+</div>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>What do the <code>extra</code> and <code>fill</code> arguments do in <code>separate()</code>? Experiment with the various options for the following two toy datasets.</p>
+<pre class="r"><code>tibble(x = c(&quot;a,b,c&quot;, &quot;d,e,f,g&quot;, &quot;h,i,j&quot;)) %&gt;% 
+  separate(x, c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;))
+
+tibble(x = c(&quot;a,b,c&quot;, &quot;d,e&quot;, &quot;f,g,i&quot;)) %&gt;% 
+  separate(x, c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;))</code></pre></li>
+<li><p>Both <code>unite()</code> and <code>separate()</code> have a <code>remove</code> argument. What does it do? Why would you set it to <code>FALSE</code>?</p></li>
+<li><p>Compare and contrast <code>separate()</code> and <code>extract()</code>. Why are there three variations of separation (by position, by separator, and with groups), but only one unite?</p></li>
 </ol>
 </div>
 </div>

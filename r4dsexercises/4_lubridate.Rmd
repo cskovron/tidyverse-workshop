@@ -1,0 +1,66 @@
+---
+title: "Exercises Part 4: Dates with lubridate"
+author: ""
+date: "`r Sys.Date()`"
+output: html_document
+params:
+    answers: TRUE
+---
+
+```{r, echo=FALSE, eval=TRUE}
+answers<-params$answers
+```
+
+```{r global_options, echo = FALSE, include = FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning = FALSE, message = FALSE,
+                      cache = FALSE, tidy = FALSE, size = "small")
+library(tidyverse)
+```
+
+### Exercises
+
+1.  What happens if you parse a string that contains invalid dates?
+
+    ```{r, eval = FALSE}
+    ymd(c("2010-10-10", "bananas"))
+    ```
+
+1.  What does the `tzone` argument to `today()` do? Why is it important?
+
+1.  Use the appropriate lubridate function to parse each of the following dates:
+
+    ```{r}
+    d1 <- "January 1, 2010"
+    d2 <- "2015-Mar-07"
+    d3 <- "06-Jun-2017"
+    d4 <- c("August 19 (2015)", "July 1 (2015)")
+    d5 <- "12/30/14" # Dec 30, 2014
+    ```
+    
+    
+
+### Exercises
+
+1.  How does the distribution of flight times within a day change over the 
+    course of the year?
+    
+1.  Compare `dep_time`, `sched_dep_time` and `dep_delay`. Are they consistent?
+    Explain your findings.
+
+1.  Compare `air_time` with the duration between the departure and arrival.
+    Explain your findings. (Hint: consider the location of the airport.)
+    
+1.  How does the average delay time change over the course of a day?
+    Should you use `dep_time` or `sched_dep_time`? Why?
+
+1.  On what day of the week should you leave if you want to minimise the
+    chance of a delay?
+
+1.  What makes the distribution of `diamonds$carat` and 
+    `flights$sched_dep_time` similar?
+
+1.  Confirm my hypothesis that the early departures of flights in minutes
+    20-30 and 50-60 are caused by scheduled flights that leave early. 
+    Hint: create a binary variable that tells you whether or not a flight 
+    was delayed.
+    
