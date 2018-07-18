@@ -64,3 +64,20 @@ library(tidyverse)
     Hint: create a binary variable that tells you whether or not a flight 
     was delayed.
     
+
+### Exercises
+
+1.  Why is there `months()` but no `dmonths()`?
+
+1.  Explain `days(overnight * 1)` to someone who has just started 
+    learning R. How does it work?
+
+1.  Create a vector of dates giving the first day of every month in 2015.
+    Create a vector of dates giving the first day of every month
+    in the _current_ year.
+
+1.  Write a function that given your birthday (as a date), returns 
+    how old you are in years.
+
+1.  Why can't `(today() %--% (today() + years(1)) / months(1)` work?
+ of all time zone names with `OlsonNames()`:

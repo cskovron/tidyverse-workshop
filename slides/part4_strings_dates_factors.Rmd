@@ -195,338 +195,11 @@ If you work outside of US English a lot, check out the book's section on setting
 
 - Regexps are a very terse language that allow you to describe patterns in strings.
 - Learning them will take more time than we have today
-- Quick fly by of basic useful ones, then study up on hour own 
-They take a little while to get your head around, but once you understand them, you'll find them extremely useful. 
+- Study up on your own; they take a little while to get your head around, but once you understand them, you'll find them extremely useful. 
 
 
-## Basic matches
 
-The simplest patterns match exact strings:
-
-```{r}
-x <- c("apple", "banana", "pear")
-str_view(x, "an")
-```
-
-## Basic matches
-The next step up in complexity is `.`, which matches any character (except a newline):
-
-```{r}
-str_view(x, ".a.")
-```
-
-## Escapes
-Need to escape the period. In stringr, use `\\` to escape
-
-```{r}
-# To create the regular expression, we need \\
-dot <- "\\."
-
-# But the expression itself only contains one:
-writeLines(dot)
-
-# And this tells R to look for an explicit .
-str_view(c("abc", "a.c", "bef"), "a\\.c")
-```
-
-
-## Escaping a backslash
-
-You need four backslashes to match one!
-
-```{r}
-x <- "a\\b"
-writeLines(x)
-
-str_view(x, "\\\\")
-```
-
-
-#### Exercises
-
-1.  Explain why each of these strings don't match a `\`: `"\"`, `"\\"`, `"\\\"`.
-
-1.  How would you match the sequence `"'\`?
-
-1.  What patterns will the regular expression `\..\..\..` match? 
-    How would you represent it as a string?
-
-### Anchors
-
-By default, regular expressions will match any part of a string. It's often useful to _anchor_ the regular expression so that it matches from the start or end of the string. You can use:
-
-* `^` to match the start of the string.
-* `$` to match the end of the string.
-
-```{r}
-x <- c("apple", "banana", "pear")
-str_view(x, "^a")
-str_view(x, "a$")
-```
-
-To remember which is which, try this mnemonic which I learned from [Evan Misshula](https://twitter.com/emisshula/status/323863393167613953): if you begin with power (`^`), you end up with money (`$`).
-
-To force a regular expression to only match a complete string, anchor it with both `^` and `$`:
-
-```{r}
-x <- c("apple pie", "apple", "apple cake")
-str_view(x, "apple")
-str_view(x, "^apple$")
-```
-
-You can also match the boundary between words with `\b`. I don't often use this in R, but I will sometimes use it when I'm doing a search in RStudio when I want to find the name of a function that's a component of other functions. For example, I'll search for `\bsum\b` to avoid matching `summarise`, `summary`, `rowsum` and so on.
-
-#### Exercises
-
-1.  How would you match the literal string `"$^$"`?
-
-1.  Given the corpus of common words in `stringr::words`, create regular
-    expressions that find all words that:
-    
-    1. Start with "y".
-    1. End with "x"
-    1. Are exactly three letters long. (Don't cheat by using `str_length()`!)
-    1. Have seven letters or more.
-
-    Since this list is long, you might want to use the `match` argument to
-    `str_view()` to show only the matching or non-matching words.
-
-### Character classes and alternatives
-
-There are a number of special patterns that match more than one character. You've already seen `.`, which matches any character apart from a newline. There are four other useful tools:
-
-* `\d`: matches any digit.
-* `\s`: matches any whitespace (e.g. space, tab, newline).
-* `[abc]`: matches a, b, or c.
-* `[^abc]`: matches anything except a, b, or c.
-
-Remember, to create a regular expression containing `\d` or `\s`, you'll need to escape the `\` for the string, so you'll type `"\\d"` or `"\\s"`.
-
-You can use _alternation_ to pick between one or more alternative patterns. For example, `abc|d..f` will match either '"abc"', or `"deaf"`. Note that the precedence for `|` is low, so that `abc|xyz` matches `abc` or `xyz` not `abcyz` or `abxyz`. Like with mathematical expressions, if precedence ever gets confusing, use parentheses to make it clear what you want:
-
-```{r}
-str_view(c("grey", "gray"), "gr(e|a)y")
-```
-
-#### Exercises
-
-1.  Create regular expressions to find all words that:
-
-    1. Start with a vowel.
-
-    1. That only contain consonants. (Hint: thinking about matching 
-       "not"-vowels.)
-
-    1. End with `ed`, but not with `eed`.
-    
-    1. End with `ing` or `ise`.
-    
-1.  Empirically verify the rule "i before e except after c".
-
-1.  Is "q" always followed by a "u"?
-
-1.  Write a regular expression that matches a word if it's probably written
-    in British English, not American English.
-
-1.  Create a regular expression that will match telephone numbers as commonly
-    written in your country.
-
-### Repetition
-
-The next step up in power involves controlling how many times a pattern matches:
-
-* `?`: 0 or 1
-* `+`: 1 or more
-* `*`: 0 or more
-
-```{r}
-x <- "1888 is the longest year in Roman numerals: MDCCCLXXXVIII"
-str_view(x, "CC?")
-str_view(x, "CC+")
-str_view(x, 'C[LX]+')
-```
-
-Note that the precedence of these operators is high, so you can write: `colou?r` to match either American or British spellings. That means most uses will need parentheses, like `bana(na)+`.
-
-You can also specify the number of matches precisely:
-
-* `{n}`: exactly n
-* `{n,}`: n or more
-* `{,m}`: at most m
-* `{n,m}`: between n and m
-
-```{r}
-str_view(x, "C{2}")
-str_view(x, "C{2,}")
-str_view(x, "C{2,3}")
-```
-
-By default these matches are "greedy": they will match the longest string possible. You can make them "lazy", matching the shortest string possible by putting a `?` after them. This is an advanced feature of regular expressions, but it's useful to know that it exists:
-
-```{r}
-str_view(x, 'C{2,3}?')
-str_view(x, 'C[LX]+?')
-```
-
-#### Exercises
-
-1.  Describe the equivalents of `?`, `+`, `*` in `{m,n}` form.
-
-1.  Describe in words what these regular expressions match:
-    (read carefully to see if I'm using a regular expression or a string
-    that defines a regular expression.)
-
-    1. `^.*$`
-    1. `"\\{.+\\}"`
-    1. `\d{4}-\d{2}-\d{2}`
-    1. `"\\\\{4}"`
-
-1.  Create regular expressions to find all words that:
-
-    1. Start with three consonants.
-    1. Have three or more vowels in a row.
-    1. Have two or more vowel-consonant pairs in a row.
-
-1.  Solve the beginner regexp crosswords at
-    <https://regexcrossword.com/challenges/beginner>.
-
-### Grouping and backreferences
-
-Earlier, you learned about parentheses as a way to disambiguate complex expressions. They also define "groups" that you can refer to with _backreferences_, like `\1`, `\2` etc. For example, the following regular expression finds all fruits that have a repeated pair of letters.
-
-```{r}
-str_view(fruit, "(..)\\1", match = TRUE)
-```
-
-(Shortly, you'll also see how they're useful in conjunction with `str_match()`.)
-
-#### Exercises
-
-1.  Describe, in words, what these expressions will match:
-
-    1. `(.)\1\1`
-    1. `"(.)(.)\\2\\1"`
-    1. `(..)\1`
-    1. `"(.).\\1.\\1"`
-    1. `"(.)(.)(.).*\\3\\2\\1"`
-
-1.  Construct regular expressions to match words that:
-
-    1. Start and end with the same character.
-    
-    1. Contain a repeated pair of letters
-       (e.g. "church" contains "ch" repeated twice.)
-    
-    1. Contain one letter repeated in at least three places
-       (e.g. "eleven" contains three "e"s.)
-
-## Tools
-
-Now that you've learned the basics of regular expressions, it's time to learn how to apply them to real problems. In this section you'll learn a wide array of stringr functions that let you:
-
-* Determine which strings match a pattern.
-* Find the positions of matches.
-* Extract the content of matches.
-* Replace matches with new values.
-* Split a string based on a match.
-
-A word of caution before we continue: because regular expressions are so powerful, it's easy to try and solve every problem with a single regular expression. In the words of Jamie Zawinski:
-
-> Some people, when confronted with a problem, think “I know, I’ll use regular
-> expressions.” Now they have two problems. 
-
-As a cautionary tale, check out this regular expression that checks if a email address is valid:
-
-```
-(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]
-)+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:
-\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(
-?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ 
-\t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\0
-31]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\
-](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+
-(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:
-(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z
-|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)
-?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\
-r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[
- \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)
-?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t]
-)*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[
- \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*
-)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]
-)+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)
-*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+
-|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r
-\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:
-\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t
-]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031
-]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](
-?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?
-:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?
-:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*)|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?
-:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?
-[ \t]))*"(?:(?:\r\n)?[ \t])*)*:(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()<>@,;:\\".\[\] 
-\000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|
-\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>
-@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"
-(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t]
-)*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\
-".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?
-:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[
-\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-
-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(
-?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;
-:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([
-^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\"
-.\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\
-]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\
-[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\
-r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] 
-\000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]
-|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \0
-00-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\
-.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,
-;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?
-:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*
-(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".
-\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[
-^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]
-]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*)(?:,\s*(
-?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\
-".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(
-?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[
-\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t
-])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t
-])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?
-:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|
-\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:
-[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\
-]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)
-?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["
-()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)
-?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>
-@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[
- \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,
-;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t]
-)*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\
-".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?
-(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".
-\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:
-\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\[
-"()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])
-*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])
-+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\
-.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z
-|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(
-?:\r\n)?[ \t])*))*)?;\s*)
-```
-
-This is a somewhat pathological example (because email addresses are actually suprisingly complex), but is used in real code. See the stackoverflow discussion at <http://stackoverflow.com/a/201378> for more details. 
-
-Don't forget that you're in a programming language and you have other tools at your disposal. Instead of creating one complex regular expression, it's often easier to write a series of simpler regexps. If you get stuck trying to create a single regexp that solves your problem, take a step back and think if you could break the problem down into smaller pieces, solving each challenge before moving onto the next one.
-
-### Detect matches
+## Detect matches
 
 To determine if a character vector matches a pattern, use `str_detect()`. It returns a logical vector the same length as the input:
 
@@ -534,6 +207,8 @@ To determine if a character vector matches a pattern, use `str_detect()`. It ret
 x <- c("apple", "banana", "pear")
 str_detect(x, "e")
 ```
+
+## Detect matches
 
 Remember that when you use a logical vector in a numeric context, `FALSE` becomes 0 and `TRUE` becomes 1. That makes `sum()` and `mean()` useful if you want to answer questions about matches across a larger vector:
 
@@ -543,6 +218,8 @@ sum(str_detect(words, "^t"))
 # What proportion of common words end with a vowel?
 mean(str_detect(words, "[aeiou]$"))
 ```
+
+## Detect matches
 
 When you have complex logical conditions (e.g. match a or b but not c unless d) it's often easier to combine multiple `str_detect()` calls with logical operators, rather than trying to create a single regular expression. For example, here are two ways to find all words that don't contain any vowels:
 
@@ -554,7 +231,7 @@ no_vowels_2 <- str_detect(words, "^[^aeiou]+$")
 identical(no_vowels_1, no_vowels_2)
 ```
 
-The results are identical, but I think the first approach is significantly easier to understand. If your regular expression gets overly complicated, try breaking it up into smaller pieces, giving each piece a name, and then combining the pieces with logical operations.
+## Detect matches
 
 A common use of `str_detect()` is to select the elements that match a pattern. You can do this with logical subsetting, or the convenient `str_subset()` wrapper:
 
@@ -562,6 +239,8 @@ A common use of `str_detect()` is to select the elements that match a pattern. Y
 words[str_detect(words, "x$")]
 str_subset(words, "x$")
 ```
+
+## Detect matches
 
 Typically, however, your strings will be one column of a data frame, and you'll want to use filter instead:
 
@@ -575,157 +254,8 @@ df %>%
 ```
 
 
-A variation on `str_detect()` is `str_count()`: rather than a simple yes or no, it tells you how many matches there are in a string:
 
-```{r}
-x <- c("apple", "banana", "pear")
-str_count(x, "a")
-
-# On average, how many vowels per word?
-mean(str_count(words, "[aeiou]"))
-```
-
-It's natural to use `str_count()` with `mutate()`:
-
-```{r}
-df %>% 
-  mutate(
-    vowels = str_count(word, "[aeiou]"),
-    consonants = str_count(word, "[^aeiou]")
-  )
-```
-
-Note that matches never overlap. For example, in `"abababa"`, how many times will the pattern `"aba"` match? Regular expressions say two, not three:
-
-```{r}
-str_count("abababa", "aba")
-str_view_all("abababa", "aba")
-```
-
-Note the use of `str_view_all()`. As you'll shortly learn, many stringr functions come in pairs: one function works with a single match, and the other works with all matches. The second function will have the suffix `_all`.
-
-### Exercises
-
-1.  For each of the following challenges, try solving it by using both a single
-    regular expression, and a combination of multiple `str_detect()` calls.
-    
-    1.  Find all words that start or end with `x`.
-    
-    1.  Find all words that start with a vowel and end with a consonant.
-    
-    1.  Are there any words that contain at least one of each different
-        vowel?
-
-1.  What word has the highest number of vowels? What word has the highest
-    proportion of vowels? (Hint: what is the denominator?)
-
-### Extract matches
-
-To extract the actual text of a match, use `str_extract()`. To show that off, we're going to need a more complicated example. I'm going to use the [Harvard sentences](https://en.wikipedia.org/wiki/Harvard_sentences), which were designed to test VOIP systems, but are also useful for practicing regexps. These are provided in `stringr::sentences`:
-
-```{r}
-length(sentences)
-head(sentences)
-```
-
-Imagine we want to find all sentences that contain a colour. We first create a vector of colour names, and then turn it into a single regular expression:
-
-```{r}
-colours <- c("red", "orange", "yellow", "green", "blue", "purple")
-colour_match <- str_c(colours, collapse = "|")
-colour_match
-```
-
-Now we can select the sentences that contain a colour, and then extract the colour to figure out which one it is:
-
-```{r}
-has_colour <- str_subset(sentences, colour_match)
-matches <- str_extract(has_colour, colour_match)
-head(matches)
-```
-
-Note that `str_extract()` only extracts the first match. We can see that most easily by first selecting all the sentences that have more than 1 match:
-
-```{r}
-more <- sentences[str_count(sentences, colour_match) > 1]
-str_view_all(more, colour_match)
-
-str_extract(more, colour_match)
-```
-
-This is a common pattern for stringr functions, because working with a single match allows you to use much simpler data structures. To get all matches, use `str_extract_all()`. It returns a list:
-
-```{r}
-str_extract_all(more, colour_match)
-```
-
-You'll learn more about lists in [lists](#lists) and [iteration].
-
-If you use `simplify = TRUE`, `str_extract_all()` will return a matrix with short matches expanded to the same length as the longest:
-
-```{r}
-str_extract_all(more, colour_match, simplify = TRUE)
-
-x <- c("a", "a b", "a b c")
-str_extract_all(x, "[a-z]", simplify = TRUE)
-```
-
-#### Exercises
-
-1.  In the previous example, you might have noticed that the regular
-    expression matched "flickered", which is not a colour. Modify the 
-    regex to fix the problem.
-
-1.  From the Harvard sentences data, extract:
-
-    1. The first word from each sentence.
-    1. All words ending in `ing`.
-    1. All plurals.
-
-### Grouped matches
-
-Earlier in this chapter we talked about the use of parentheses for clarifying precedence and for backreferences when matching. You can also use parentheses to extract parts of a complex match. For example, imagine we want to extract nouns from the sentences. As a heuristic, we'll look for any word that comes after "a" or "the". Defining a "word" in a regular expression is a little tricky, so here I use a simple approximation: a sequence of at least one character that isn't a space.
-
-```{r}
-noun <- "(a|the) ([^ ]+)"
-
-has_noun <- sentences %>%
-  str_subset(noun) %>%
-  head(10)
-has_noun %>% 
-  str_extract(noun)
-```
-
-`str_extract()` gives us the complete match; `str_match()` gives each individual component. Instead of a character vector, it returns a matrix, with one column for the complete match followed by one column for each group:
-
-```{r}
-has_noun %>% 
-  str_match(noun)
-```
-
-(Unsurprisingly, our heuristic for detecting nouns is poor, and also picks up adjectives like smooth and parked.)
-
-If your data is in a tibble, it's often easier to use `tidyr::extract()`. It works like `str_match()` but requires you to name the matches, which are then placed in new columns:
-
-```{r}
-tibble(sentence = sentences) %>% 
-  tidyr::extract(
-    sentence, c("article", "noun"), "(a|the) ([^ ]+)", 
-    remove = FALSE
-  )
-```
-
-Like `str_extract()`, if you want all matches for each string, you'll need `str_match_all()`.
-
-#### Exercises
-
-1. Find all words that come after a "number" like "one", "two", "three" etc.
-   Pull out both the number and the word.
-
-1. Find all contractions. Separate out the pieces before and after the 
-   apostrophe.
-
-### Replacing matches
+## Replacing matches
 
 `str_replace()` and `str_replace_all()` allow you to replace matches with new strings. The simplest use is to replace a pattern with a fixed string:
 
@@ -735,12 +265,18 @@ str_replace(x, "[aeiou]", "-")
 str_replace_all(x, "[aeiou]", "-")
 ```
 
+## Replacing matches
+
+
 With `str_replace_all()` you can perform multiple replacements by supplying a named vector:
 
 ```{r}
 x <- c("1 house", "2 cars", "3 people")
 str_replace_all(x, c("1" = "one", "2" = "two", "3" = "three"))
 ```
+
+## Replacing matches
+
 
 Instead of replacing with a fixed string you can use backreferences to insert components of the match. In the following code, I flip the order of the second and third words.
 
@@ -750,16 +286,9 @@ sentences %>%
   head(5)
 ```
 
-#### Exercises
 
-1.   Replace all forward slashes in a string with backslashes.
 
-1.   Implement a simple version of `str_to_lower()` using `replace_all()`.
-
-1.   Switch the first and last letters in `words`. Which of those strings
-     are still words?
-
-### Splitting
+## Splitting
 
 Use `str_split()` to split a string up into pieces. For example, we could split sentences into words:
 
@@ -769,6 +298,8 @@ sentences %>%
   str_split(" ")
 ```
 
+## Splitting
+
 Because each component might contain a different number of pieces, this returns a list. If you're working with a length-1 vector, the easiest thing is to just extract the first element of the list:
 
 ```{r}
@@ -776,6 +307,8 @@ Because each component might contain a different number of pieces, this returns 
   str_split("\\|") %>% 
   .[[1]]
 ```
+
+## Splitting
 
 Otherwise, like the other stringr functions that return a list, you can use `simplify = TRUE` to return a matrix:
 
@@ -785,12 +318,16 @@ sentences %>%
   str_split(" ", simplify = TRUE)
 ```
 
+## Splitting
+
 You can also request a maximum number of pieces:
 
 ```{r}
 fields <- c("Name: Hadley", "Country: NZ", "Age: 35")
 fields %>% str_split(": ", n = 2, simplify = TRUE)
 ```
+
+## Splitting
 
 Instead of splitting up strings by patterns, you can also split up by character, line, sentence and word `boundary()`s:
 
@@ -802,21 +339,16 @@ str_split(x, " ")[[1]]
 str_split(x, boundary("word"))[[1]]
 ```
 
-#### Exercises
+## Exercises
 
 1.  Split up a string like `"apples, pears, and bananas"` into individual
     components.
-    
-1.  Why is it better to split up by `boundary("word")` than `" "`?
 
-1.  What does splitting with an empty string (`""`) do? Experiment, and
-    then read the documentation.
-
-### Find matches
+## Find matches
 
 `str_locate()` and `str_locate_all()` give you the starting and ending positions of each match. These are particularly useful when none of the other functions does exactly what you want. You can use `str_locate()` to find the matching pattern, `str_sub()` to extract and/or modify them.
 
-## Other types of pattern
+## Other types of patterns
 
 When you use a pattern that's a string, it's automatically wrapped into a call to `regex()`:
 
@@ -941,12 +473,6 @@ There are three other functions you can use instead of `regex()`:
     str_extract_all(x, boundary("word"))
     ```
 
-### Exercises
-
-1.  How would you find all strings containing `\` with `regex()` vs.
-    with `fixed()`?
-
-1.  What are the five most common words in `sentences`?
 
 ## Other uses of regular expressions
 
@@ -970,23 +496,6 @@ There are two useful function in base R that also use regular expressions:
     
     (If you're more comfortable with "globs" like `*.Rmd`, you can convert
     them to regular expressions with `glob2rx()`):
-
-## stringi
-
-stringr is built on top of the __stringi__ package. stringr is useful when you're learning because it exposes a minimal set of functions, which have been carefully picked to handle the most common string manipulation functions. stringi, on the other hand, is designed to be comprehensive. It contains almost every function you might ever need: stringi has `r length(getNamespaceExports("stringi"))` functions to stringr's `r length(getNamespaceExports("stringr"))`.
-
-If you find yourself struggling to do something in stringr, it's worth taking a look at stringi. The packages work very similarly, so you should be able to translate your stringr knowledge in a natural way. The main difference is the prefix: `str_` vs. `stri_`.
-
-### Exercises
-
-1.  Find the stringi functions that:
-
-    1. Count the number of words.
-    1. Find duplicated strings.
-    1. Generate random text.
-
-1.  How do you control the language that `stri_sort()` uses for 
-    sorting?
     
     
     
@@ -1114,7 +623,7 @@ Next you'll learn about how arithmetic with dates works, including subtraction, 
 * __periods__, which represent human units like weeks and months.
 * __intervals__, which represent a starting and ending point.
 
-### Durations
+## Durations
 
 In R, when you subtract two dates, you get a difftime object:
 
@@ -1124,11 +633,17 @@ h_age <- today() - ymd(19791014)
 h_age
 ```
 
+## Durations
+
+
 A difftime class object records a time span of seconds, minutes, hours, days, or weeks. This ambiguity can make difftimes a little painful to work with, so lubridate provides an alternative which always uses seconds: the __duration__.
 
 ```{r}
 as.duration(h_age)
 ```
+
+## Durations
+
 
 Durations come with a bunch of convenient constructors:
 
@@ -1141,6 +656,9 @@ dweeks(3)
 dyears(1)
 ```
 
+
+## Durations
+
 Durations always record the time span in seconds. Larger units are created by converting minutes, hours, days, weeks, and years to seconds at the standard rate (60 seconds in a minute, 60 minutes in an hour, 24 hours in day, 7 days in a week, 365 days in a year).
 
 You can add and multiply durations:
@@ -1150,12 +668,18 @@ You can add and multiply durations:
 dyears(1) + dweeks(12) + dhours(15)
 ```
 
+
+## Durations
+
 You can add and subtract durations to and from days:
 
 ```{r}
 tomorrow <- today() + ddays(1)
 last_year <- today() - dyears(1)
 ```
+
+
+## Durations
 
 However, because durations represent an exact number of seconds, sometimes you might get an unexpected result:
 
@@ -1168,7 +692,7 @@ one_pm + ddays(1)
 
 Why is one day after 1pm on March 12, 2pm on March 13?! If you look carefully at the date you might also notice that the time zones have changed. Because of DST, March 12 only has 23 hours, so if add a full days worth of seconds we end up with a different time.
 
-### Periods
+## Periods
 
 To solve this problem, lubridate provides __periods__. Periods are time spans but don't have a fixed length in seconds, instead they work with "human" times, like days and months. That allows them work in a more intuitive way:
 
@@ -1176,6 +700,9 @@ To solve this problem, lubridate provides __periods__. Periods are time spans bu
 one_pm
 one_pm + days(1)
 ```
+
+
+## Periods
 
 Like durations, periods can be created with a number of friendly constructor functions. 
 
@@ -1189,12 +716,16 @@ weeks(3)
 years(1)
 ```
 
+## Periods
+
 You can add and multiply periods:
 
 ```{r}
 10 * (months(6) + days(1))
 days(50) + hours(25) + minutes(2)
 ```
+
+## Periods
 
 And of course, add them to dates. Compared to durations, periods are more likely to do what you expect:
 
@@ -1207,82 +738,6 @@ ymd("2016-01-01") + years(1)
 one_pm + ddays(1)
 one_pm + days(1)
 ```
-
-Let's use periods to fix an oddity related to our flight dates. Some planes appear to have arrived at their destination _before_ they departed from New York City.
-
-```{r}
-flights_dt %>% 
-  filter(arr_time < dep_time) 
-```
-
-These are overnight flights. We used the same date information for both the departure and the arrival times, but these flights arrived on the following day. We can fix this by adding `days(1)` to the arrival time of each overnight flight.
-
-```{r}
-flights_dt <- flights_dt %>% 
-  mutate(
-    overnight = arr_time < dep_time,
-    arr_time = arr_time + days(overnight * 1),
-    sched_arr_time = sched_arr_time + days(overnight * 1)
-  )
-```
-
-Now all of our flights obey the laws of physics.
-
-```{r}
-flights_dt %>% 
-  filter(overnight, arr_time < dep_time) 
-```
-
-### Intervals
-
-It's obvious what `dyears(1) / ddays(365)` should return: one, because durations are always represented by a number of seconds, and a duration of a year is defined as 365 days worth of seconds.
-
-What should `years(1) / days(1)` return? Well, if the year was 2015 it should return 365, but if it was 2016, it should return 366! There's not quite enough information for lubridate to give a single clear answer. What it does instead is give an estimate, with a warning:
-
-```{r}
-years(1) / days(1)
-```
-
-If you want a more accurate measurement, you'll have to use an __interval__. An interval is a duration with a starting point: that makes it precise so you can determine exactly how long it is:
-
-```{r}
-next_year <- today() + years(1)
-(today() %--% next_year) / ddays(1)
-```
-
-To find out how many periods fall into an interval, you need to use integer division:
-
-```{r}
-(today() %--% next_year) %/% days(1)
-```
-
-### Summary
-
-How do you pick between duration, periods, and intervals? As always, pick the simplest data structure that solves your problem. If you only care about physical time, use a duration; if you need to add human times, use a period; if you need to figure out how long a span is in human units, use an interval.
-
-Figure \@ref(fig:dt-algebra) summarises permitted arithmetic operations between the different data types.
-
-```{r dt-algebra, echo = FALSE, fig.cap = "The allowed arithmetic operations between pairs of date/time classes."}
-knitr::include_graphics("diagrams/datetimes-arithmetic.png")
-```
-
-### Exercises
-
-1.  Why is there `months()` but no `dmonths()`?
-
-1.  Explain `days(overnight * 1)` to someone who has just started 
-    learning R. How does it work?
-
-1.  Create a vector of dates giving the first day of every month in 2015.
-    Create a vector of dates giving the first day of every month
-    in the _current_ year.
-
-1.  Write a function that given your birthday (as a date), returns 
-    how old you are in years.
-
-1.  Why can't `(today() %--% (today() + years(1)) / months(1)` work?
- of all time zone names with `OlsonNames()`:
-
 
 
 ## Working with factors:`forcats`

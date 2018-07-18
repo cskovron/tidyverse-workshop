@@ -1,5 +1,5 @@
 ---
-title: "Exercises Part 2: wrangle with readr and tidyr"
+title: "Exercises Part 3: stringr"
 author: ""
 date: "`r Sys.Date()`"
 output: html_document
@@ -34,4 +34,36 @@ library(tidyverse)
 
 1.  What does `str_trim()` do? What's the opposite of `str_trim()`?
 
+### Exercises
 
+1. Find all words that come after a "number" like "one", "two", "three" etc.
+   Pull out both the number and the word.
+
+1. Find all contractions. Separate out the pieces before and after the 
+   apostrophe.
+
+### Exercises
+
+1.   Replace all forward slashes in a string with backslashes.
+
+1.   Implement a simple version of `str_to_lower()` using `replace_all()`.
+
+1.   Switch the first and last letters in `words`. Which of those strings
+     are still words?
+
+#### Exercises
+
+1.  Split up a string like `"apples, pears, and bananas"` into individual
+    components.
+    
+1.  Why is it better to split up by `boundary("word")` than `" "`?
+
+1.  What does splitting with an empty string (`""`) do? Experiment, and
+    then read the documentation.
+    
+### Exercises
+
+1.  How would you find all strings containing `\` with `regex()` vs.
+    with `fixed()`?
+
+1.  What are the five most common words in `sentences`?
