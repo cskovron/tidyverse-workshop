@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="dcterms.date" content="2018-07-17" />
+  <title>Introduction to the tidyverse: Data analysis with infer and broom</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="part5_data_analysis_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+</style>
+
+<link rel="stylesheet" href="part5_data_analysis_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Introduction to the tidyverse: Data analysis with <code>infer</code> and <code>broom</code></h1>
+    <h2 class="author"><div style="white-space: pre-line;">Christopher Skovron
+Northwestern University</div></h2>
+    <h3 class="date">July 17, 2018</h3>
+</section>
+
+<section id="the-workflow-modeling" class="slide level2">
+<h2>The workflow: modeling</h2>
+<p><img src="../images/data-science-explore.png" /></p>
+</section>
+<section id="how-do-i-do-tidy-data-analysis" class="slide level2">
+<h2>How do I do tidy data analysis?</h2>
+<p>Everything we’ve seen so far has been relatively complete. The final part of the tidyverse that’s under the most development is modeling.</p>
+<p><strong>Note</strong>: The <code>type</code> argument in <code>generate()</code> is automatically filled based on the entries for <code>specify()</code> and <code>hypothesize()</code>. It can be removed throughout the examples that follow. It is left in to reiterate the type of generation process being performed.</p>
+</section>
+<section id="data-preparation" class="slide level2">
+<h2>Data preparation</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(nycflights13)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(infer)
+<span class="kw">set.seed</span>(<span class="dv">2017</span>)
+fli_small &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">500</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">half_year =</span> <span class="kw">case_when</span>(
+    <span class="kw">between</span>(month, <span class="dv">1</span>, <span class="dv">6</span>) <span class="op">~</span><span class="st"> &quot;h1&quot;</span>,
+    <span class="kw">between</span>(month, <span class="dv">7</span>, <span class="dv">12</span>) <span class="op">~</span><span class="st"> &quot;h2&quot;</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_hour =</span> <span class="kw">case_when</span>(
+    <span class="kw">between</span>(hour, <span class="dv">1</span>, <span class="dv">12</span>) <span class="op">~</span><span class="st"> &quot;morning&quot;</span>,
+    <span class="kw">between</span>(hour, <span class="dv">13</span>, <span class="dv">24</span>) <span class="op">~</span><span class="st"> &quot;not morning&quot;</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(arr_delay, dep_delay, half_year, 
+         day_hour, origin, carrier)</code></pre></div>
+</section>
+<section id="data-preparation-1" class="slide level2">
+<h2>Data preparation</h2>
+<ul>
+<li>Two numeric - <code>arr_delay</code>, <code>dep_delay</code></li>
+<li>Two categories
+<ul>
+<li><code>half_year</code> (<code>&quot;h1&quot;</code>, <code>&quot;h2&quot;</code>),</li>
+<li><code>day_hour</code> (<code>&quot;morning&quot;</code>, <code>&quot;not morning&quot;</code>)</li>
+</ul></li>
+<li>Three categories - <code>origin</code> (<code>&quot;EWR&quot;</code>, <code>&quot;JFK&quot;</code>, <code>&quot;LGA&quot;</code>)</li>
+<li>Sixteen categories - <code>carrier</code></li>
+</ul>
+</section>
+<section id="calculate-observed-statistic" class="slide level2">
+<h2>Calculate observed statistic</h2>
+<p>The recommended approach is to use <code>specify() %&gt;% calculate()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obs_t &lt;-<span class="st"> </span>fli_small <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">specify</span>(arr_delay <span class="op">~</span><span class="st"> </span>half_year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">calculate</span>(<span class="dt">stat =</span> <span class="st">&quot;t&quot;</span>, <span class="dt">order =</span> <span class="kw">c</span>(<span class="st">&quot;h1&quot;</span>, <span class="st">&quot;h2&quot;</span>))</code></pre></div>
+<pre><code>## Warning: Removed 15 rows containing missing values.</code></pre>
+<p>The observed <span class="math inline">\(t\)</span> statistic is 0.8685463.</p>
+</section>
+<section id="calculate-observed-statistic-1" class="slide level2">
+<h2>Calculate observed statistic</h2>
+<p>Or using <code>t_test</code> in <code>infer</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obs_t &lt;-<span class="st"> </span>fli_small <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">t_test</span>(<span class="dt">formula =</span> arr_delay <span class="op">~</span><span class="st"> </span>half_year, <span class="dt">alternative =</span> <span class="st">&quot;two_sided&quot;</span>,
+         <span class="dt">order =</span> <span class="kw">c</span>(<span class="st">&quot;h1&quot;</span>, <span class="st">&quot;h2&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(statistic) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">pull</span>()</code></pre></div>
+<p>The observed <span class="math inline">\(t\)</span> statistic is 0.8685463.</p>
+</section>
+<section id="calculate-observed-statistic-2" class="slide level2">
+<h2>Calculate observed statistic</h2>
+<p>Or using another shortcut function in <code>infer</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obs_t &lt;-<span class="st"> </span>fli_small <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">t_stat</span>(<span class="dt">formula =</span> arr_delay <span class="op">~</span><span class="st"> </span>half_year, <span class="dt">order =</span> <span class="kw">c</span>(<span class="st">&quot;h1&quot;</span>, <span class="st">&quot;h2&quot;</span>))</code></pre></div>
+<pre><code>## Warning: Removed 15 rows containing missing values.</code></pre>
+<p>The observed <span class="math inline">\(t\)</span> statistic is 0.8685463.</p>
+</section>
+<section id="data-preparation---chi-square" class="slide level2">
+<h2>Data preparation - chi-square</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(nycflights13)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(infer)
+<span class="kw">set.seed</span>(<span class="dv">2017</span>)
+fli_small &lt;-<span class="st"> </span>flights <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">na.omit</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">500</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">season =</span> <span class="kw">case_when</span>(
+    month <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span><span class="op">:</span><span class="dv">12</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">~</span><span class="st"> &quot;winter&quot;</span>,
+    month <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">4</span><span class="op">:</span><span class="dv">9</span>) <span class="op">~</span><span class="st"> &quot;summer&quot;</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_hour =</span> <span class="kw">case_when</span>(
+    <span class="kw">between</span>(hour, <span class="dv">1</span>, <span class="dv">12</span>) <span class="op">~</span><span class="st"> &quot;morning&quot;</span>,
+    <span class="kw">between</span>(hour, <span class="dv">13</span>, <span class="dv">24</span>) <span class="op">~</span><span class="st"> &quot;not morning&quot;</span>
+  )) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(arr_delay, dep_delay, season, 
+         day_hour, origin, carrier)</code></pre></div>
+</section>
+<section id="calculate-observed-statistic-3" class="slide level2">
+<h2>Calculate observed statistic</h2>
+<p>The recommended approach is to use <code>specify() %&gt;% calculate()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obs_chisq &lt;-<span class="st"> </span>fli_small <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">specify</span>(origin <span class="op">~</span><span class="st"> </span>season) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># alt: response = origin, explanatory = season</span>
+<span class="st">  </span><span class="kw">calculate</span>(<span class="dt">stat =</span> <span class="st">&quot;Chisq&quot;</span>)</code></pre></div>
+<p>The observed <span class="math inline">\(\chi^2\)</span> statistic is 0.571898.</p>
+</section>
+<section id="calculate-observed-statistic-4" class="slide level2">
+<h2>Calculate observed statistic</h2>
+<p>Or using <code>chisq_test</code> in <code>infer</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obs_chisq &lt;-<span class="st"> </span>fli_small <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">chisq_test</span>(<span class="dt">formula =</span> origin <span class="op">~</span><span class="st"> </span>season) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(statistic)</code></pre></div>
+<p>Again, the observed <span class="math inline">\(\chi^2\)</span> statistic is 0.571898.</p>
+</section>
+<section id="calculate-observed-statistic-5" class="slide level2">
+<h2>Calculate observed statistic</h2>
+<p>Or using another shortcut function in <code>infer</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obs_chisq &lt;-<span class="st"> </span>fli_small <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">chisq_stat</span>(<span class="dt">formula =</span> origin <span class="op">~</span><span class="st"> </span>season)</code></pre></div>
+<p>Lastly, the observed <span class="math inline">\(\chi^2\)</span> statistic is 0.571898.</p>
+</section>
+<section id="broom-lets-tidy-up-a-bit" class="slide level2">
+<h2>broom: let’s tidy up a bit</h2>
+<p>The broom package takes the messy output of built-in functions in R, such as <code>lm</code>, <code>nls</code>, or <code>t.test</code>, and turns them into tidy data frames.</p>
+</section>
+<section id="tidying-functions" class="slide level2">
+<h2>Tidying functions</h2>
+<ul>
+<li><code>tidy</code>: constructs a data frame that summarizes the model’s statistical findings. This includes coefficients and p-values for each term in a regression, per-cluster information in clustering applications, or per-test information for <code>multtest</code> functions.</li>
+<li><code>augment</code>: add columns to the original data that was modeled. This includes predictions, residuals, and cluster assignments.</li>
+<li><code>glance</code>: construct a concise <em>one-row</em> summary of the model. This typically contains values such as R^2, adjusted R^2, and residual standard error that are computed once for the entire model.</li>
+</ul>
+</section>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lmfit &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">~</span><span class="st"> </span>wt, mtcars)
+lmfit</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ wt, data = mtcars)
+## 
+## Coefficients:
+## (Intercept)           wt  
+##      37.285       -5.344</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(lmfit)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ wt, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.5432 -2.3647 -0.1252  1.4096  6.8727 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  37.2851     1.8776  19.858  &lt; 2e-16 ***
+## wt           -5.3445     0.5591  -9.559 1.29e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.046 on 30 degrees of freedom
+## Multiple R-squared:  0.7528, Adjusted R-squared:  0.7446 
+## F-statistic: 91.38 on 1 and 30 DF,  p-value: 1.294e-10</code></pre>
+</section>
+<section id="tidy-the-output" class="slide level2">
+<h2>Tidy the output</h2>
+<p>Instead, you can use the <code>tidy</code> function, from the broom package, on the fit:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(broom)
+<span class="kw">tidy</span>(lmfit)</code></pre></div>
+<pre><code>##          term  estimate std.error statistic      p.value
+## 1 (Intercept) 37.285126  1.877627 19.857575 8.241799e-19
+## 2          wt -5.344472  0.559101 -9.559044 1.293959e-10</code></pre>
+</section>
+<section id="tidy-the-output-1" class="slide level2">
+<h2>Tidy the output</h2>
+<p>This gives you a data.frame representation. Note that the row names have been moved into a column called <code>term</code>, and the column names are simple and consistent (and can be accessed using <code>$</code>).</p>
+</section>
+<section id="augment-the-output" class="slide level2">
+<h2>Augment the output</h2>
+<p>Instead of viewing the coefficients, you might be interested in the fitted values and residuals for each of the original points in the regression. For this, use <code>augment</code>, which augments the original data with information from the model:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">augment</span>(lmfit)</code></pre></div>
+<pre><code>##              .rownames  mpg    wt   .fitted   .se.fit     .resid
+## 1            Mazda RX4 21.0 2.620 23.282611 0.6335798 -2.2826106
+## 2        Mazda RX4 Wag 21.0 2.875 21.919770 0.5714319 -0.9197704
+## 3           Datsun 710 22.8 2.320 24.885952 0.7359177 -2.0859521
+## 4       Hornet 4 Drive 21.4 3.215 20.102650 0.5384424  1.2973499
+## 5    Hornet Sportabout 18.7 3.440 18.900144 0.5526562 -0.2001440
+## 6              Valiant 18.1 3.460 18.793255 0.5552829 -0.6932545
+## 7           Duster 360 14.3 3.570 18.205363 0.5734244 -3.9053627
+## 8            Merc 240D 24.4 3.190 20.236262 0.5386565  4.1637381
+## 9             Merc 230 22.8 3.150 20.450041 0.5397522  2.3499593
+## 10            Merc 280 19.2 3.440 18.900144 0.5526562  0.2998560
+## 11           Merc 280C 17.8 3.440 18.900144 0.5526562 -1.1001440
+## 12          Merc 450SE 16.4 4.070 15.533127 0.7191881  0.8668731
+## 13          Merc 450SL 17.3 3.730 17.350247 0.6100029 -0.0502472
+## 14         Merc 450SLC 15.2 3.780 17.083024 0.6236291 -1.8830236
+## 15  Cadillac Fleetwood 10.4 5.250  9.226650 1.2576087  1.1733496
+## 16 Lincoln Continental 10.4 5.424  8.296712 1.3461693  2.1032876
+## 17   Chrysler Imperial 14.7 5.345  8.718926 1.3058069  5.9810744
+## 18            Fiat 128 32.4 2.200 25.527289 0.7831923  6.8727113
+## 19         Honda Civic 30.4 1.615 28.653805 1.0451849  1.7461954
+## 20      Toyota Corolla 33.9 1.835 27.478021 0.9418946  6.4219792
+## 21       Toyota Corona 21.5 2.465 24.111004 0.6832345 -2.6110037
+## 22    Dodge Challenger 15.5 3.520 18.472586 0.5644203 -2.9725862
+## 23         AMC Javelin 15.2 3.435 18.926866 0.5520329 -3.7268663
+## 24          Camaro Z28 13.3 3.840 16.762355 0.6412083 -3.4623553
+## 25    Pontiac Firebird 19.2 3.845 16.735633 0.6427306  2.4643670
+## 26           Fiat X1-9 27.3 1.935 26.943574 0.8965906  0.3564263
+## 27       Porsche 914-2 26.0 2.140 25.847957 0.8078823  0.1520430
+## 28        Lotus Europa 30.4 1.513 29.198941 1.0944578  1.2010593
+## 29      Ford Pantera L 15.8 3.170 20.343151 0.5390886 -4.5431513
+## 30        Ferrari Dino 19.7 2.770 22.480940 0.5936730 -2.7809399
+## 31       Maserati Bora 15.0 3.570 18.205363 0.5734244 -3.2053627
+## 32          Volvo 142E 21.4 2.780 22.427495 0.5913398 -1.0274952
+##          .hat   .sigma      .cooksd  .std.resid
+## 1  0.04326896 3.067494 1.327407e-02 -0.76616765
+## 2  0.03519677 3.093068 1.723963e-03 -0.30743051
+## 3  0.05837573 3.072127 1.543937e-02 -0.70575249
+## 4  0.03125017 3.088268 3.020558e-03  0.43275114
+## 5  0.03292182 3.097722 7.599578e-05 -0.06681879
+## 6  0.03323551 3.095184 9.210650e-04 -0.23148309
+## 7  0.03544265 3.008664 3.131386e-02 -1.30552216
+## 8  0.03127502 2.996697 3.113918e-02  1.38889709
+## 9  0.03140238 3.066058 9.961857e-03  0.78392687
+## 10 0.03292182 3.097435 1.705808e-04  0.10010803
+## 11 0.03292182 3.090979 2.296167e-03 -0.36728706
+## 12 0.05575179 3.093520 2.532453e-03  0.29288651
+## 13 0.04010861 3.097938 5.923263e-06 -0.01683789
+## 14 0.04192052 3.077286 8.727280e-03 -0.63159969
+## 15 0.17047665 3.088702 1.838257e-02  0.42296071
+## 16 0.19533191 3.067203 7.192515e-02  0.76979873
+## 17 0.18379417 2.843585 5.319056e-01  2.17353314
+## 18 0.06611662 2.802362 1.929858e-01  2.33490215
+## 19 0.11774978 3.078657 2.486028e-02  0.61035691
+## 20 0.09562654 2.832808 2.598750e-01  2.21708271
+## 21 0.05031684 3.057740 2.049815e-02 -0.87964013
+## 22 0.03433832 3.046600 1.753646e-02 -0.99313634
+## 23 0.03284761 3.016967 2.628727e-02 -1.24418015
+## 24 0.04431718 3.027336 3.134958e-02 -1.16279098
+## 25 0.04452785 3.062373 1.596432e-02  0.82771968
+## 26 0.08664873 3.097178 7.111643e-04  0.12244407
+## 27 0.07035096 3.097814 1.014165e-04  0.05177187
+## 28 0.12911356 3.088720 1.323493e-02  0.42254270
+## 29 0.03132522 2.977005 3.713611e-02 -1.51549710
+## 30 0.03798993 3.052884 1.710946e-02 -0.93086929
+## 31 0.03544265 3.038092 2.109445e-02 -1.07151943
+## 32 0.03769190 3.091840 2.315918e-03 -0.34388215</code></pre>
+<p>Note that each of the new columns begins with a <code>.</code> (to avoid overwriting any of the original columns).</p>
+</section>
+<section id="glance-at-the-output" class="slide level2">
+<h2>Glance at the output</h2>
+<p>Finally, several summary statistics are computed for the entire regression, such as R^2 and the F-statistic. These can be accessed with the <code>glance</code> function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glance</span>(lmfit)</code></pre></div>
+<pre><code>##   r.squared adj.r.squared    sigma statistic      p.value df    logLik
+## 1 0.7528328     0.7445939 3.045882  91.37533 1.293959e-10  2 -80.01471
+##        AIC      BIC deviance df.residual
+## 1 166.0294 170.4266 278.3219          30</code></pre>
+</section>
+<section id="generalized-linear-and-non-linear-models" class="slide level2">
+<h2>Generalized linear and non-linear models</h2>
+<p>These functions apply equally well to the output from <code>glm</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glmfit &lt;-<span class="st"> </span><span class="kw">glm</span>(am <span class="op">~</span><span class="st"> </span>wt, mtcars, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>)
+<span class="kw">tidy</span>(glmfit)</code></pre></div>
+<pre><code>##          term estimate std.error statistic     p.value
+## 1 (Intercept) 12.04037  4.509706  2.669879 0.007587858
+## 2          wt -4.02397  1.436416 -2.801396 0.005088198</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">augment</span>(glmfit)</code></pre></div>
+<pre><code>##              .rownames am    wt    .fitted   .se.fit      .resid
+## 1            Mazda RX4  1 2.620  1.4975684 0.9175750  0.63538540
+## 2        Mazda RX4 Wag  1 2.875  0.4714561 0.6761141  0.98483443
+## 3           Datsun 710  1 2.320  2.7047594 1.2799233  0.35984584
+## 4       Hornet 4 Drive  0 3.215 -0.8966937 0.6012064 -0.82717675
+## 5    Hornet Sportabout  0 3.440 -1.8020869 0.7486164 -0.55259722
+## 6              Valiant  0 3.460 -1.8825663 0.7669573 -0.53230123
+## 7           Duster 360  0 3.570 -2.3252030 0.8778451 -0.43191437
+## 8            Merc 240D  0 3.190 -0.7960945 0.5934948 -0.86291728
+## 9             Merc 230  0 3.150 -0.6351357 0.5855423 -0.92214813
+## 10            Merc 280  0 3.440 -1.8020869 0.7486164 -0.55259722
+## 11           Merc 280C  0 3.440 -1.8020869 0.7486164 -0.55259722
+## 12          Merc 450SE  0 4.070 -4.3371880 1.4929683 -0.16117395
+## 13          Merc 450SL  0 3.730 -2.9690382 1.0606783 -0.31647306
+## 14         Merc 450SLC  0 3.780 -3.1702367 1.1213659 -0.28683046
+## 15  Cadillac Fleetwood  0 5.250 -9.0854725 3.1242454 -0.01505280
+## 16 Lincoln Continental  0 5.424 -9.7856433 3.3701122 -0.01060678
+## 17   Chrysler Imperial  0 5.345 -9.4677497 3.2584063 -0.01243400
+## 18            Fiat 128  1 2.200  3.1876358 1.4355129  0.28439576
+## 19         Honda Civic  1 1.615  5.5416582 2.2296427  0.08845742
+## 20      Toyota Corolla  1 1.835  4.6563848 1.9264050  0.13752017
+## 21       Toyota Corona  0 2.465  2.1212838 1.0986229 -2.11400245
+## 22    Dodge Challenger  0 3.520 -2.1240045 0.8255412 -0.47524422
+## 23         AMC Javelin  0 3.435 -1.7819671 0.7441338 -0.55777321
+## 24          Camaro Z28  0 3.840 -3.4116749 1.1958204 -0.25476870
+## 25    Pontiac Firebird  0 3.845 -3.4317948 1.2020958 -0.25225893
+## 26           Fiat X1-9  1 1.935  4.2539878 1.7900311  0.16797312
+## 27       Porsche 914-2  1 2.140  3.4290740 1.5146708  0.25259692
+## 28        Lotus Europa  1 1.513  5.9521031 2.3713668  0.07206928
+## 29      Ford Pantera L  1 3.170 -0.7156151 0.5888315  1.49241202
+## 30        Ferrari Dino  1 2.770  0.8939729 0.7636007  0.82813011
+## 31       Maserati Bora  1 3.570 -2.3252030 0.8778451  2.19930809
+## 32          Volvo 142E  1 2.780  0.8537332 0.7544072  0.84231666
+##            .hat    .sigma      .cooksd  .std.resid
+## 1  0.1257790846 0.8033182 1.840562e-02  0.67955816
+## 2  0.1081622613 0.7897742 4.243491e-02  1.04284629
+## 3  0.0962849996 0.8101256 3.942789e-03  0.37853038
+## 4  0.0743817517 0.7973421 1.770694e-02 -0.85977015
+## 5  0.0681219431 0.8061915 6.469973e-03 -0.57243891
+## 6  0.0674410149 0.8067014 5.901376e-03 -0.55121283
+## 7  0.0625221495 0.8089391 3.477435e-03 -0.44608452
+## 8  0.0754584628 0.7959095 1.991066e-02 -0.89744110
+## 9  0.0776201060 0.7933814 2.417067e-02 -0.96016479
+## 10 0.0681219431 0.8061915 6.469973e-03 -0.57243891
+## 11 0.0681219431 0.8061915 6.469973e-03 -0.57243891
+## 12 0.0283992283 0.8126022 1.966455e-04 -0.16351249
+## 13 0.0522749067 0.8109255 1.494382e-03 -0.32508397
+## 14 0.0486423376 0.8113337 1.128445e-03 -0.29407178
+## 15 0.0011062888 0.8131645 6.281008e-08 -0.01506114
+## 16 0.0006392297 0.8131669 1.800245e-08 -0.01061017
+## 17 0.0008211272 0.8131660 3.179088e-08 -0.01243911
+## 18 0.0784553401 0.8113063 1.906282e-03  0.29625448
+## 19 0.0193439583 0.8130001 3.942488e-05  0.08932560
+## 20 0.0346095937 0.8127538 1.764080e-04  0.13996354
+## 21 0.1153880664 0.6978821 6.150170e-01 -2.24765210
+## 22 0.0650096505 0.8080313 4.445188e-03 -0.49148841
+## 23 0.0682828781 0.8060584 6.619348e-03 -0.57785066
+## 24 0.0442125645 0.8117282 7.982179e-04 -0.26059460
+## 25 0.0438437053 0.8117570 7.751932e-04 -0.25797767
+## 26 0.0442718720 0.8125431 3.443069e-04  0.17181956
+## 27 0.0697933541 0.8117136 1.307366e-03  0.26190171
+## 28 0.0145536992 0.8130575 1.948552e-05  0.07259951
+## 29 0.0764659752 0.7603170 9.168961e-02  1.55296722
+## 30 0.1201341619 0.7964717 3.173629e-02  0.88285696
+## 31 0.0625221495 0.6952187 3.638352e-01  2.27146246
+## 32 0.1192142533 0.7959067 3.271794e-02  0.89751198</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glance</span>(glmfit)</code></pre></div>
+<pre><code>##   null.deviance df.null    logLik      AIC      BIC deviance df.residual
+## 1      43.22973      31 -9.588042 23.17608 26.10756 19.17608          30</code></pre>
+</section>
+<section id="generalized-linear-and-non-linear-models-1" class="slide level2">
+<h2>Generalized linear and non-linear models</h2>
+<p>These functions also work on other fits, such as nonlinear models (<code>nls</code>):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nlsfit &lt;-<span class="st"> </span><span class="kw">nls</span>(mpg <span class="op">~</span><span class="st"> </span>k <span class="op">/</span><span class="st"> </span>wt <span class="op">+</span><span class="st"> </span>b, mtcars, <span class="dt">start=</span><span class="kw">list</span>(<span class="dt">k=</span><span class="dv">1</span>, <span class="dt">b=</span><span class="dv">0</span>))
+<span class="kw">tidy</span>(nlsfit)</code></pre></div>
+<pre><code>##   term  estimate std.error statistic      p.value
+## 1    k 45.829488  4.249155 10.785554 7.639162e-12
+## 2    b  4.386254  1.536418  2.854858 7.737378e-03</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">augment</span>(nlsfit, mtcars)</code></pre></div>
+<pre><code>##              .rownames  mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+## 1            Mazda RX4 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+## 2        Mazda RX4 Wag 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+## 3           Datsun 710 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+## 4       Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+## 5    Hornet Sportabout 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
+## 6              Valiant 18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+## 7           Duster 360 14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
+## 8            Merc 240D 24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+## 9             Merc 230 22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+## 10            Merc 280 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+## 11           Merc 280C 17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
+## 12          Merc 450SE 16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
+## 13          Merc 450SL 17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
+## 14         Merc 450SLC 15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
+## 15  Cadillac Fleetwood 10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
+## 16 Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
+## 17   Chrysler Imperial 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
+## 18            Fiat 128 32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+## 19         Honda Civic 30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+## 20      Toyota Corolla 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+## 21       Toyota Corona 21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+## 22    Dodge Challenger 15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
+## 23         AMC Javelin 15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
+## 24          Camaro Z28 13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
+## 25    Pontiac Firebird 19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
+## 26           Fiat X1-9 27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+## 27       Porsche 914-2 26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+## 28        Lotus Europa 30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+## 29      Ford Pantera L 15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4
+## 30        Ferrari Dino 19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+## 31       Maserati Bora 15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8
+## 32          Volvo 142E 21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+##     .fitted      .resid
+## 1  21.87843 -0.87842506
+## 2  20.32695  0.67305444
+## 3  24.14034 -1.34034371
+## 4  18.64115  2.75885073
+## 5  17.70878  0.99122032
+## 6  17.63177  0.46822913
+## 7  17.22365 -2.92364570
+## 8  18.75286  5.64713525
+## 9  18.93530  3.86470210
+## 10 17.70878  1.49122032
+## 11 17.70878  0.09122032
+## 12 15.64657  0.75342942
+## 13 16.67298  0.62701988
+## 14 16.51046 -1.31045729
+## 15 13.11568 -2.71568042
+## 16 12.83564 -2.43564352
+## 17 12.96053  1.73947308
+## 18 25.21784  7.18216050
+## 19 32.76365 -2.36364593
+## 20 29.36145  4.53854817
+## 21 22.97834 -1.47833844
+## 22 17.40600 -1.90599501
+## 23 17.72817 -2.52817201
+## 24 16.32102 -3.02101661
+## 25 16.30550  2.89450323
+## 26 28.07074 -0.77074394
+## 27 25.80190  0.19809736
+## 28 34.67673 -4.27672852
+## 29 18.84351 -3.04350583
+## 30 20.93120 -1.23119559
+## 31 17.22365 -2.22364570
+## 32 20.87168  0.52831859</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glance</span>(nlsfit)</code></pre></div>
+<pre><code>##     sigma isConv      finTol    logLik      AIC      BIC deviance
+## 1 2.77405   TRUE 2.87694e-08 -77.02329 160.0466 164.4438 230.8606
+##   df.residual
+## 1          30</code></pre>
+</section>
+<section id="hypothesis-testing" class="slide level2">
+<h2>Hypothesis testing</h2>
+<p>The <code>tidy</code> function can also be applied to <code>htest</code> objects, such as those output by popular built-in functions like <code>t.test</code>, <code>cor.test</code>, and <code>wilcox.test</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(wt <span class="op">~</span><span class="st"> </span>am, mtcars)
+<span class="kw">tidy</span>(tt)</code></pre></div>
+<pre><code>##   estimate estimate1 estimate2 statistic     p.value parameter  conf.low
+## 1 1.357895  3.768895     2.411  5.493905 6.27202e-06  29.23352 0.8525632
+##   conf.high                  method alternative
+## 1  1.863226 Welch Two Sample t-test   two.sided</code></pre>
+</section>
+<section id="hypothesis-testing-1" class="slide level2">
+<h2>Hypothesis testing</h2>
+<p>Some cases might have fewer columns (for example, no confidence interval):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wt &lt;-<span class="st"> </span><span class="kw">wilcox.test</span>(wt <span class="op">~</span><span class="st"> </span>am, mtcars)
+<span class="kw">tidy</span>(wt)</code></pre></div>
+<pre><code>##   statistic      p.value                                            method
+## 1     230.5 4.347026e-05 Wilcoxon rank sum test with continuity correction
+##   alternative
+## 1   two.sided</code></pre>
+</section>
+<section id="hypothesis-testing-2" class="slide level2">
+<h2>Hypothesis testing</h2>
+<p>Since the <code>tidy</code> output is already only one row, <code>glance</code> returns the same output:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glance</span>(tt)</code></pre></div>
+<pre><code>##   estimate estimate1 estimate2 statistic     p.value parameter  conf.low
+## 1 1.357895  3.768895     2.411  5.493905 6.27202e-06  29.23352 0.8525632
+##   conf.high                  method alternative
+## 1  1.863226 Welch Two Sample t-test   two.sided</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glance</span>(wt)</code></pre></div>
+<pre><code>##   statistic      p.value                                            method
+## 1     230.5 4.347026e-05 Wilcoxon rank sum test with continuity correction
+##   alternative
+## 1   two.sided</code></pre>
+</section>
+<section><section id="broom-and-dplyr" class="titleslide slide level1"><h1>broom and dplyr</h1></section></section>
+    </div>
+  </div>
+
+  <script src="part5_data_analysis_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="part5_data_analysis_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

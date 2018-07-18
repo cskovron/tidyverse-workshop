@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="dcterms.date" content="2018-07-16" />
+  <meta name="dcterms.date" content="2018-07-17" />
   <title>Introduction to the tidyverse: tidying data with tidyr</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -484,7 +484,7 @@ document.getElementsByTagName('head')[0].appendChild(style);
     <h1 class="title">Introduction to the tidyverse: tidying data with <code>tidyr</code></h1>
     <h2 class="author"><div style="white-space: pre-line;">Christopher Skovron
 Northwestern University</div></h2>
-    <h3 class="date">July 16, 2018</h3>
+    <h3 class="date">July 17, 2018</h3>
 </section>
 
 <section id="so-whats-a-tibble-anyway" class="slide level2">
@@ -492,9 +492,6 @@ Northwestern University</div></h2>
 <p>Tibbles <em>are</em> data frames, but they tweak some older behaviours to make life a little easier.</p>
 <p>To learn more, check out <code>vignette(&quot;tibble&quot;)</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)</code></pre></div>
-<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.4.3</code></pre>
-<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.3</code></pre>
-<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.3</code></pre>
 </section>
 <section id="creating-tibbles" class="slide level2">
 <h2>Creating tibbles</h2>
@@ -503,16 +500,16 @@ Northwestern University</div></h2>
 <pre><code>## # A tibble: 150 x 5
 ##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
 ##           &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
-##  1         5.10        3.50         1.40       0.200 setosa 
-##  2         4.90        3.00         1.40       0.200 setosa 
-##  3         4.70        3.20         1.30       0.200 setosa 
-##  4         4.60        3.10         1.50       0.200 setosa 
-##  5         5.00        3.60         1.40       0.200 setosa 
-##  6         5.40        3.90         1.70       0.400 setosa 
-##  7         4.60        3.40         1.40       0.300 setosa 
-##  8         5.00        3.40         1.50       0.200 setosa 
-##  9         4.40        2.90         1.40       0.200 setosa 
-## 10         4.90        3.10         1.50       0.100 setosa 
+##  1          5.1         3.5          1.4         0.2 setosa 
+##  2          4.9         3            1.4         0.2 setosa 
+##  3          4.7         3.2          1.3         0.2 setosa 
+##  4          4.6         3.1          1.5         0.2 setosa 
+##  5          5           3.6          1.4         0.2 setosa 
+##  6          5.4         3.9          1.7         0.4 setosa 
+##  7          4.6         3.4          1.4         0.3 setosa 
+##  8          5           3.4          1.5         0.2 setosa 
+##  9          4.4         2.9          1.4         0.2 setosa 
+## 10          4.9         3.1          1.5         0.1 setosa 
 ## # ... with 140 more rows</code></pre>
 </section>
 <section id="creating-tibbles-1" class="slide level2">
@@ -526,11 +523,11 @@ Northwestern University</div></h2>
 <pre><code>## # A tibble: 5 x 3
 ##       x     y     z
 ##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1     1    1.    2.
-## 2     2    1.    5.
-## 3     3    1.   10.
-## 4     4    1.   17.
-## 5     5    1.   26.</code></pre>
+## 1     1     1     2
+## 2     2     1     5
+## 3     3     1    10
+## 4     4     1    17
+## 5     5     1    26</code></pre>
 </section>
 <section id="differences-from-data.frame" class="slide level2">
 <h2>Differences from <code>data.frame()</code></h2>
@@ -566,18 +563,18 @@ tb</code></pre></div>
   <span class="dt">e =</span> <span class="kw">sample</span>(letters, <span class="fl">1e3</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>)
 )</code></pre></div>
 <pre><code>## # A tibble: 1,000 x 5
-##    a                   b              c      d e    
-##    &lt;dttm&gt;              &lt;date&gt;     &lt;int&gt;  &lt;dbl&gt; &lt;chr&gt;
-##  1 2018-07-16 10:42:26 2018-07-28     1 0.842  u    
-##  2 2018-07-16 10:01:57 2018-08-07     2 0.447  i    
-##  3 2018-07-17 00:04:13 2018-07-16     3 0.375  h    
-##  4 2018-07-16 22:21:20 2018-08-13     4 0.902  w    
-##  5 2018-07-16 23:04:16 2018-07-21     5 0.887  y    
-##  6 2018-07-16 19:36:04 2018-08-01     6 0.952  s    
-##  7 2018-07-16 21:25:24 2018-08-05     7 0.869  i    
-##  8 2018-07-17 02:51:52 2018-07-21     8 0.857  b    
-##  9 2018-07-16 08:05:39 2018-07-25     9 0.482  p    
-## 10 2018-07-16 10:35:34 2018-07-21    10 0.0322 g    
+##    a                   b              c     d e    
+##    &lt;dttm&gt;              &lt;date&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
+##  1 2018-07-18 05:06:11 2018-08-10     1 0.218 c    
+##  2 2018-07-18 21:22:47 2018-08-13     2 0.241 q    
+##  3 2018-07-18 16:31:08 2018-08-01     3 0.490 q    
+##  4 2018-07-18 08:53:59 2018-08-09     4 0.713 w    
+##  5 2018-07-18 11:26:30 2018-07-29     5 0.809 v    
+##  6 2018-07-18 12:13:00 2018-07-19     6 0.504 f    
+##  7 2018-07-18 05:48:59 2018-07-28     7 0.184 z    
+##  8 2018-07-17 22:58:40 2018-08-01     8 0.941 p    
+##  9 2018-07-18 03:35:47 2018-07-31     9 0.286 t    
+## 10 2018-07-18 08:39:56 2018-08-08    10 0.903 e    
 ## # ... with 990 more rows</code></pre>
 <p>Tibbles are designed so that you don’t accidentally overwhelm your console when you print large data frames. But sometimes you need more output than the default display. There are a few options that can help.</p>
 <p>First, you can explicitly <code>print()</code> the data frame and control the number of rows (<code>n</code>) and the <code>width</code> of the display. <code>width = Inf</code> will display all columns:</p>
@@ -739,9 +736,8 @@ read_csv(&quot;1,2,3\n4,5,6&quot;, col_names = c(&quot;x&quot;, &quot;y&quot;, &
 <h2>Dates, date-times, and times</h2>
 <ul>
 <li><p><code>parse_time()</code> expects the hour, <code>:</code>, minutes, optionally <code>:</code> and seconds, and an optional am/pm specifier:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(hms)</code></pre></div>
-<pre><code>## Warning: package &#39;hms&#39; was built under R version 3.4.3</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">parse_time</span>(<span class="st">&quot;01:10 am&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(hms)
+<span class="kw">parse_time</span>(<span class="st">&quot;01:10 am&quot;</span>)</code></pre></div>
 <pre><code>## 01:10:00</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">parse_time</span>(<span class="st">&quot;20:10:01&quot;</span>)</code></pre></div>
 <pre><code>## 20:10:01</code></pre></li>
@@ -967,28 +963,15 @@ table4a  <span class="co"># cases</span></code></pre></div>
 ## 4 Afghanistan 2000    2666
 ## 5 Brazil      2000   80488
 ## 6 China       2000  213766</code></pre>
-<p>The columns to gather are specified with <code>dplyr::select()</code> style notation. Here there are only two columns, so we list them individually. Note that “1999” and “2000” are non-syntactic names (because they don’t start with a letter) so we have to surround them in backticks. To refresh your memory of the other ways to select columns, see <a href="#/select">select</a>.</p>
-<div class="figure">
-<img src="images/tidy-9.png" alt="Gathering `table4` into a tidy form." width="100%" />
-<p class="caption">
-Gathering <code>table4</code> into a tidy form.
-</p>
-</div>
+<p>The columns to gather are specified with <code>dplyr::select()</code> style notation. Here there are only two columns, so we list them individually. Note that “1999” and “2000” are non-syntactic names (because they don’t start with a letter) so we have to surround them in backticks.</p>
 </section>
 <section id="gathering-3" class="slide level2">
 <h2>Gathering</h2>
-<p>In the final result, the gathered columns are dropped, and we get new <code>key</code> and <code>value</code> columns. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure @ref(fig:tidy-gather). We can use <code>gather()</code> to tidy <code>table4b</code> in a similar fashion. The only difference is the variable stored in the cell values:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table4b <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">gather</span>(<span class="st">`</span><span class="dt">1999</span><span class="st">`</span>, <span class="st">`</span><span class="dt">2000</span><span class="st">`</span>, <span class="dt">key =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;population&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 6 x 3
-##   country     year  population
-##   &lt;chr&gt;       &lt;chr&gt;      &lt;int&gt;
-## 1 Afghanistan 1999    19987071
-## 2 Brazil      1999   172006362
-## 3 China       1999  1272915272
-## 4 Afghanistan 2000    20595360
-## 5 Brazil      2000   174504898
-## 6 China       2000  1280428583</code></pre>
+<p><img src="../images/tidy-9.png" /></p>
+</section>
+<section id="gathering-4" class="slide level2">
+<h2>Gathering</h2>
+<p>In the final result, the gathered columns are dropped, and we get new <code>key</code> and <code>value</code> columns.</p>
 <p>To combine the tidied versions of <code>table4a</code> and <code>table4b</code> into a single tibble, we need to use <code>dplyr::left_join()</code>, which you’ll learn about in <a href="#/relational-data">relational data</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tidy4a &lt;-<span class="st"> </span>table4a <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">gather</span>(<span class="st">`</span><span class="dt">1999</span><span class="st">`</span>, <span class="st">`</span><span class="dt">2000</span><span class="st">`</span>, <span class="dt">key =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;cases&quot;</span>)
@@ -1030,6 +1013,9 @@ tidy4b &lt;-<span class="st"> </span>table4b <span class="op">%&gt;%</span><span
 <li><p>The column that contains variable names, the <code>key</code> column. Here, it’s <code>type</code>.</p></li>
 <li><p>The column that contains values forms multiple variables, the <code>value</code> column. Here it’s <code>count</code>.</p></li>
 </ul>
+</section>
+<section id="spreading-1" class="slide level2">
+<h2>Spreading</h2>
 <p>Once we’ve figured that out, we can use <code>spread()</code>, as shown programmatically below, and visually in Figure @ref(fig:tidy-spread).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">spread</span>(table2, <span class="dt">key =</span> type, <span class="dt">value =</span> count)</code></pre></div>
 <pre><code>## # A tibble: 6 x 4
@@ -1048,46 +1034,13 @@ Spreading <code>table2</code> makes it tidy
 </p>
 </div>
 <p>As you might have guessed from the common <code>key</code> and <code>value</code> arguments, <code>spread()</code> and <code>gather()</code> are complements. <code>gather()</code> makes wide tables narrower and longer; <code>spread()</code> makes long tables shorter and wider.</p>
-<h3 id="exercises">Exercises</h3>
-<ol type="1">
-<li><p>Why are <code>gather()</code> and <code>spread()</code> not perfectly symmetrical?<br />
-Carefully consider the following example:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks &lt;-<span class="st"> </span><span class="kw">tibble</span>(
-  <span class="dt">year   =</span> <span class="kw">c</span>(<span class="dv">2015</span>, <span class="dv">2015</span>, <span class="dv">2016</span>, <span class="dv">2016</span>),
-  <span class="dt">half  =</span> <span class="kw">c</span>(   <span class="dv">1</span>,    <span class="dv">2</span>,     <span class="dv">1</span>,    <span class="dv">2</span>),
-  <span class="dt">return =</span> <span class="kw">c</span>(<span class="fl">1.88</span>, <span class="fl">0.59</span>, <span class="fl">0.92</span>, <span class="fl">0.17</span>)
-)
-stocks <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">spread</span>(year, return) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">gather</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;return&quot;</span>, <span class="st">`</span><span class="dt">2015</span><span class="st">`</span><span class="op">:</span><span class="st">`</span><span class="dt">2016</span><span class="st">`</span>)</code></pre></div>
-<p>(Hint: look at the variable types and think about column <em>names</em>.)</p>
-<p>Both <code>spread()</code> and <code>gather()</code> have a <code>convert</code> argument. What does it do?</p></li>
-<li><p>Why does this code fail?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table4a <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">gather</span>(<span class="dv">1999</span>, <span class="dv">2000</span>, <span class="dt">key =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;cases&quot;</span>)</code></pre></div>
-<pre><code>## Error in inds_combine(.vars, ind_list): Position must be between 0 and n</code></pre></li>
-<li><p>Why does spreading this tibble fail? How could you add a new column to fix the problem?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">people &lt;-<span class="st"> </span><span class="kw">tribble</span>(
-  <span class="op">~</span>name,             <span class="op">~</span>key,    <span class="op">~</span>value,
-  <span class="co">#-----------------|--------|------</span>
-  <span class="st">&quot;Phillip Woods&quot;</span>,   <span class="st">&quot;age&quot;</span>,       <span class="dv">45</span>,
-  <span class="st">&quot;Phillip Woods&quot;</span>,   <span class="st">&quot;height&quot;</span>,   <span class="dv">186</span>,
-  <span class="st">&quot;Phillip Woods&quot;</span>,   <span class="st">&quot;age&quot;</span>,       <span class="dv">50</span>,
-  <span class="st">&quot;Jessica Cordero&quot;</span>, <span class="st">&quot;age&quot;</span>,       <span class="dv">37</span>,
-  <span class="st">&quot;Jessica Cordero&quot;</span>, <span class="st">&quot;height&quot;</span>,   <span class="dv">156</span>
-)</code></pre></div></li>
-<li><p>Tidy the simple tibble below. Do you need to spread or gather it? What are the variables?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preg &lt;-<span class="st"> </span><span class="kw">tribble</span>(
-  <span class="op">~</span>pregnant, <span class="op">~</span>male, <span class="op">~</span>female,
-  <span class="st">&quot;yes&quot;</span>,     <span class="ot">NA</span>,    <span class="dv">10</span>,
-  <span class="st">&quot;no&quot;</span>,      <span class="dv">20</span>,    <span class="dv">12</span>
-)</code></pre></div></li>
-</ol>
 </section>
 <section id="separating-and-uniting" class="slide level2">
 <h2>Separating and uniting</h2>
 <p>So far you’ve learned how to tidy <code>table2</code> and <code>table4</code>, but not <code>table3</code>. <code>table3</code> has a different problem: we have one column (<code>rate</code>) that contains two variables (<code>cases</code> and <code>population</code>). To fix this problem, we’ll need the <code>separate()</code> function. You’ll also learn about the complement of <code>separate()</code>: <code>unite()</code>, which you use if a single variable is spread across multiple columns.</p>
-<h3 id="separate">Separate</h3>
+</section>
+<section id="separate" class="slide level2">
+<h2>Separate</h2>
 <p><code>separate()</code> pulls apart one column into multiple columns, by splitting wherever a separator character appears. Take <code>table3</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table3</code></pre></div>
 <pre><code>## # A tibble: 6 x 3
@@ -1099,6 +1052,9 @@ stocks <span class="op">%&gt;%</span><span class="st"> </span>
 ## 4 Brazil       2000 80488/174504898  
 ## 5 China        1999 212258/1272915272
 ## 6 China        2000 213766/1280428583</code></pre>
+</section>
+<section id="separate-1" class="slide level2">
+<h2>Separate</h2>
 <p>The <code>rate</code> column contains both <code>cases</code> and <code>population</code> variables, and we need to split it into two variables. <code>separate()</code> takes the name of the column to separate, and the names of the columns to separate into, as shown in Figure @ref(fig:tidy-separate) and the code below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table3 <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">separate</span>(rate, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;population&quot;</span>))</code></pre></div>
@@ -1111,42 +1067,15 @@ stocks <span class="op">%&gt;%</span><span class="st"> </span>
 ## 4 Brazil       2000 80488  174504898 
 ## 5 China        1999 212258 1272915272
 ## 6 China        2000 213766 1280428583</code></pre>
-<div class="figure">
-<img src="images/tidy-17.png" alt="Separating `table3` makes it tidy" width="75%" />
-<p class="caption">
-Separating <code>table3</code> makes it tidy
-</p>
-</div>
+</section>
+<section id="separate-2" class="slide level2">
+<h2>Separate</h2>
 <p>By default, <code>separate()</code> will split values wherever it sees a non-alphanumeric character (i.e. a character that isn’t a number or letter). For example, in the code above, <code>separate()</code> split the values of <code>rate</code> at the forward slash characters. If you wish to use a specific character to separate a column, you can pass the character to the <code>sep</code> argument of <code>separate()</code>. For example, we could rewrite the code above as:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table3 <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">separate</span>(rate, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;population&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>)</code></pre></div>
-<p>(Formally, <code>sep</code> is a regular expression, which you’ll learn more about in [strings].)</p>
-<p>Look carefully at the column types: you’ll notice that <code>case</code> and <code>population</code> are character columns. This is the default behaviour in <code>separate()</code>: it leaves the type of the column as is. Here, however, it’s not very useful as those really are numbers. We can ask <code>separate()</code> to try and convert to better types using <code>convert = TRUE</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table3 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(rate, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;population&quot;</span>), <span class="dt">convert =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## # A tibble: 6 x 4
-##   country      year  cases population
-## * &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;
-## 1 Afghanistan  1999    745   19987071
-## 2 Afghanistan  2000   2666   20595360
-## 3 Brazil       1999  37737  172006362
-## 4 Brazil       2000  80488  174504898
-## 5 China        1999 212258 1272915272
-## 6 China        2000 213766 1280428583</code></pre>
-<p>You can also pass a vector of integers to <code>sep</code>. <code>separate()</code> will interpret the integers as positions to split at. Positive values start at 1 on the far-left of the strings; negative value start at -1 on the far-right of the strings. When using integers to separate strings, the length of <code>sep</code> should be one less than the number of names in <code>into</code>.</p>
-<p>You can use this arrangement to separate the last two digits of each year. This make this data less tidy, but is useful in other cases, as you’ll see in a little bit.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table3 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(year, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;century&quot;</span>, <span class="st">&quot;year&quot;</span>), <span class="dt">sep =</span> <span class="dv">2</span>)</code></pre></div>
-<pre><code>## # A tibble: 6 x 4
-##   country     century year  rate             
-## * &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;            
-## 1 Afghanistan 19      99    745/19987071     
-## 2 Afghanistan 20      00    2666/20595360    
-## 3 Brazil      19      99    37737/172006362  
-## 4 Brazil      20      00    80488/174504898  
-## 5 China       19      99    212258/1272915272
-## 6 China       20      00    213766/1280428583</code></pre>
-<h3 id="unite">Unite</h3>
+</section>
+<section id="unite" class="slide level2">
+<h2>Unite</h2>
 <p><code>unite()</code> is the inverse of <code>separate()</code>: it combines multiple columns into a single column. You’ll need it much less frequently than <code>separate()</code>, but it’s still a useful tool to have in your back pocket.</p>
 <div class="figure">
 <img src="images/tidy-18.png" alt="Uniting `table5` makes it tidy" width="75%" />
@@ -1154,6 +1083,9 @@ Separating <code>table3</code> makes it tidy
 Uniting <code>table5</code> makes it tidy
 </p>
 </div>
+</section>
+<section id="unite-1" class="slide level2">
+<h2>Unite</h2>
 <p>We can use <code>unite()</code> to rejoin the <em>century</em> and <em>year</em> columns that we created in the last example. That data is saved as <code>tidyr::table5</code>. <code>unite()</code> takes a data frame, the name of the new variable to create, and a set of columns to combine, again specified in <code>dplyr::select()</code> style:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table5 <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">unite</span>(new, century, year)</code></pre></div>
@@ -1166,301 +1098,6 @@ Uniting <code>table5</code> makes it tidy
 ## 4 Brazil      20_00 80488/174504898  
 ## 5 China       19_99 212258/1272915272
 ## 6 China       20_00 213766/1280428583</code></pre>
-<p>In this case we also need to use the <code>sep</code> argument. The default will place an underscore (<code>_</code>) between the values from different columns. Here we don’t want any separator so we use <code>&quot;&quot;</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table5 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">unite</span>(new, century, year, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)</code></pre></div>
-<pre><code>## # A tibble: 6 x 3
-##   country     new   rate             
-##   &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;            
-## 1 Afghanistan 1999  745/19987071     
-## 2 Afghanistan 2000  2666/20595360    
-## 3 Brazil      1999  37737/172006362  
-## 4 Brazil      2000  80488/174504898  
-## 5 China       1999  212258/1272915272
-## 6 China       2000  213766/1280428583</code></pre>
-<h3 id="exercises-1">Exercises</h3>
-<ol type="1">
-<li><p>What do the <code>extra</code> and <code>fill</code> arguments do in <code>separate()</code>? Experiment with the various options for the following two toy datasets.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e,f,g&quot;</span>, <span class="st">&quot;h,i,j&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>))
-
-<span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e&quot;</span>, <span class="st">&quot;f,g,i&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>))</code></pre></div></li>
-<li><p>Both <code>unite()</code> and <code>separate()</code> have a <code>remove</code> argument. What does it do? Why would you set it to <code>FALSE</code>?</p></li>
-<li><p>Compare and contrast <code>separate()</code> and <code>extract()</code>. Why are there three variations of separation (by position, by separator, and with groups), but only one unite?</p></li>
-</ol>
-</section>
-<section id="missing-values" class="slide level2">
-<h2>Missing values</h2>
-<p>Changing the representation of a dataset brings up an important subtlety of missing values. Surprisingly, a value can be missing in one of two possible ways:</p>
-<ul>
-<li><strong>Explicitly</strong>, i.e. flagged with <code>NA</code>.</li>
-<li><strong>Implicitly</strong>, i.e. simply not present in the data.</li>
-</ul>
-<p>Let’s illustrate this idea with a very simple data set:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks &lt;-<span class="st"> </span><span class="kw">tibble</span>(
-  <span class="dt">year   =</span> <span class="kw">c</span>(<span class="dv">2015</span>, <span class="dv">2015</span>, <span class="dv">2015</span>, <span class="dv">2015</span>, <span class="dv">2016</span>, <span class="dv">2016</span>, <span class="dv">2016</span>),
-  <span class="dt">qtr    =</span> <span class="kw">c</span>(   <span class="dv">1</span>,    <span class="dv">2</span>,    <span class="dv">3</span>,    <span class="dv">4</span>,    <span class="dv">2</span>,    <span class="dv">3</span>,    <span class="dv">4</span>),
-  <span class="dt">return =</span> <span class="kw">c</span>(<span class="fl">1.88</span>, <span class="fl">0.59</span>, <span class="fl">0.35</span>,   <span class="ot">NA</span>, <span class="fl">0.92</span>, <span class="fl">0.17</span>, <span class="fl">2.66</span>)
-)</code></pre></div>
-<p>There are two missing values in this dataset:</p>
-<ul>
-<li><p>The return for the fourth quarter of 2015 is explicitly missing, because the cell where its value should be instead contains <code>NA</code>.</p></li>
-<li><p>The return for the first quarter of 2016 is implicitly missing, because it simply does not appear in the dataset.</p></li>
-</ul>
-<p>One way to think about the difference is with this Zen-like koan: An explicit missing value is the presence of an absence; an implicit missing value is the absence of a presence.</p>
-<p>The way that a dataset is represented can make implicit values explicit. For example, we can make the implicit missing value explicit by putting years in the columns:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">spread</span>(year, return)</code></pre></div>
-<pre><code>## # A tibble: 4 x 3
-##     qtr `2015` `2016`
-##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1    1.  1.88  NA    
-## 2    2.  0.590  0.920
-## 3    3.  0.350  0.170
-## 4    4. NA      2.66</code></pre>
-<p>Because these explicit missing values may not be important in other representations of the data, you can set <code>na.rm = TRUE</code> in <code>gather()</code> to turn explicit missing values implicit:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">spread</span>(year, return) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">gather</span>(year, return, <span class="st">`</span><span class="dt">2015</span><span class="st">`</span><span class="op">:</span><span class="st">`</span><span class="dt">2016</span><span class="st">`</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## # A tibble: 6 x 3
-##     qtr year  return
-## * &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
-## 1    1. 2015   1.88 
-## 2    2. 2015   0.590
-## 3    3. 2015   0.350
-## 4    2. 2016   0.920
-## 5    3. 2016   0.170
-## 6    4. 2016   2.66</code></pre>
-<p>Another important tool for making missing values explicit in tidy data is <code>complete()</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stocks <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">complete</span>(year, qtr)</code></pre></div>
-<pre><code>## # A tibble: 8 x 3
-##    year   qtr return
-##   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
-## 1 2015.    1.  1.88 
-## 2 2015.    2.  0.590
-## 3 2015.    3.  0.350
-## 4 2015.    4. NA    
-## 5 2016.    1. NA    
-## 6 2016.    2.  0.920
-## 7 2016.    3.  0.170
-## 8 2016.    4.  2.66</code></pre>
-<p><code>complete()</code> takes a set of columns, and finds all unique combinations. It then ensures the original dataset contains all those values, filling in explicit <code>NA</code>s where necessary.</p>
-<p>There’s one other important tool that you should know for working with missing values. Sometimes when a data source has primarily been used for data entry, missing values indicate that the previous value should be carried forward:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">treatment &lt;-<span class="st"> </span><span class="kw">tribble</span>(
-  <span class="op">~</span><span class="st"> </span>person,           <span class="op">~</span><span class="st"> </span>treatment, <span class="op">~</span>response,
-  <span class="st">&quot;Derrick Whitmore&quot;</span>, <span class="dv">1</span>,           <span class="dv">7</span>,
-  <span class="ot">NA</span>,                 <span class="dv">2</span>,           <span class="dv">10</span>,
-  <span class="ot">NA</span>,                 <span class="dv">3</span>,           <span class="dv">9</span>,
-  <span class="st">&quot;Katherine Burke&quot;</span>,  <span class="dv">1</span>,           <span class="dv">4</span>
-)</code></pre></div>
-<p>You can fill in these missing values with <code>fill()</code>. It takes a set of columns where you want missing values to be replaced by the most recent non-missing value (sometimes called last observation carried forward).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">treatment <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">fill</span>(person)</code></pre></div>
-<pre><code>## # A tibble: 4 x 3
-##   person           treatment response
-##   &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
-## 1 Derrick Whitmore        1.       7.
-## 2 Derrick Whitmore        2.      10.
-## 3 Derrick Whitmore        3.       9.
-## 4 Katherine Burke         1.       4.</code></pre>
-<h3 id="exercises-2">Exercises</h3>
-<ol type="1">
-<li><p>Compare and contrast the <code>fill</code> arguments to <code>spread()</code> and <code>complete()</code>.</p></li>
-<li><p>What does the direction argument to <code>fill()</code> do?</p></li>
-</ol>
-</section>
-<section id="case-study" class="slide level2">
-<h2>Case Study</h2>
-<p>To finish off the chapter, let’s pull together everything you’ve learned to tackle a realistic data tidying problem. The <code>tidyr::who</code> dataset contains tuberculosis (TB) cases broken down by year, country, age, gender, and diagnosis method. The data comes from the <em>2014 World Health Organization Global Tuberculosis Report</em>, available at <a href="http://www.who.int/tb/country/data/download/en/" class="uri">http://www.who.int/tb/country/data/download/en/</a>.</p>
-<p>There’s a wealth of epidemiological information in this dataset, but it’s challenging to work with the data in the form that it’s provided:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who</code></pre></div>
-<pre><code>## # A tibble: 7,240 x 60
-##    country     iso2  iso3   year new_sp_m014 new_sp_m1524 new_sp_m2534
-##    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;int&gt;       &lt;int&gt;        &lt;int&gt;        &lt;int&gt;
-##  1 Afghanistan AF    AFG    1980          NA           NA           NA
-##  2 Afghanistan AF    AFG    1981          NA           NA           NA
-##  3 Afghanistan AF    AFG    1982          NA           NA           NA
-##  4 Afghanistan AF    AFG    1983          NA           NA           NA
-##  5 Afghanistan AF    AFG    1984          NA           NA           NA
-##  6 Afghanistan AF    AFG    1985          NA           NA           NA
-##  7 Afghanistan AF    AFG    1986          NA           NA           NA
-##  8 Afghanistan AF    AFG    1987          NA           NA           NA
-##  9 Afghanistan AF    AFG    1988          NA           NA           NA
-## 10 Afghanistan AF    AFG    1989          NA           NA           NA
-## # ... with 7,230 more rows, and 53 more variables: new_sp_m3544 &lt;int&gt;,
-## #   new_sp_m4554 &lt;int&gt;, new_sp_m5564 &lt;int&gt;, new_sp_m65 &lt;int&gt;,
-## #   new_sp_f014 &lt;int&gt;, new_sp_f1524 &lt;int&gt;, new_sp_f2534 &lt;int&gt;,
-## #   new_sp_f3544 &lt;int&gt;, new_sp_f4554 &lt;int&gt;, new_sp_f5564 &lt;int&gt;,
-## #   new_sp_f65 &lt;int&gt;, new_sn_m014 &lt;int&gt;, new_sn_m1524 &lt;int&gt;,
-## #   new_sn_m2534 &lt;int&gt;, new_sn_m3544 &lt;int&gt;, new_sn_m4554 &lt;int&gt;,
-## #   new_sn_m5564 &lt;int&gt;, new_sn_m65 &lt;int&gt;, new_sn_f014 &lt;int&gt;,
-## #   new_sn_f1524 &lt;int&gt;, new_sn_f2534 &lt;int&gt;, new_sn_f3544 &lt;int&gt;,
-## #   new_sn_f4554 &lt;int&gt;, new_sn_f5564 &lt;int&gt;, new_sn_f65 &lt;int&gt;,
-## #   new_ep_m014 &lt;int&gt;, new_ep_m1524 &lt;int&gt;, new_ep_m2534 &lt;int&gt;,
-## #   new_ep_m3544 &lt;int&gt;, new_ep_m4554 &lt;int&gt;, new_ep_m5564 &lt;int&gt;,
-## #   new_ep_m65 &lt;int&gt;, new_ep_f014 &lt;int&gt;, new_ep_f1524 &lt;int&gt;,
-## #   new_ep_f2534 &lt;int&gt;, new_ep_f3544 &lt;int&gt;, new_ep_f4554 &lt;int&gt;,
-## #   new_ep_f5564 &lt;int&gt;, new_ep_f65 &lt;int&gt;, newrel_m014 &lt;int&gt;,
-## #   newrel_m1524 &lt;int&gt;, newrel_m2534 &lt;int&gt;, newrel_m3544 &lt;int&gt;,
-## #   newrel_m4554 &lt;int&gt;, newrel_m5564 &lt;int&gt;, newrel_m65 &lt;int&gt;,
-## #   newrel_f014 &lt;int&gt;, newrel_f1524 &lt;int&gt;, newrel_f2534 &lt;int&gt;,
-## #   newrel_f3544 &lt;int&gt;, newrel_f4554 &lt;int&gt;, newrel_f5564 &lt;int&gt;,
-## #   newrel_f65 &lt;int&gt;</code></pre>
-<p>This is a very typical real-life example dataset. It contains redundant columns, odd variable codes, and many missing values. In short, <code>who</code> is messy, and we’ll need multiple steps to tidy it. Like dplyr, tidyr is designed so that each function does one thing well. That means in real-life situations you’ll usually need to string together multiple verbs into a pipeline.</p>
-<p>The best place to start is almost always to gather together the columns that are not variables. Let’s have a look at what we’ve got:</p>
-<ul>
-<li><p>It looks like <code>country</code>, <code>iso2</code>, and <code>iso3</code> are three variables that redundantly specify the country.</p></li>
-<li><p><code>year</code> is clearly also a variable.</p></li>
-<li><p>We don’t know what all the other columns are yet, but given the structure in the variable names (e.g. <code>new_sp_m014</code>, <code>new_ep_m014</code>, <code>new_ep_f014</code>) these are likely to be values, not variables.</p></li>
-</ul>
-<p>So we need to gather together all the columns from <code>new_sp_m014</code> to <code>newrel_f65</code>. We don’t know what those values represent yet, so we’ll give them the generic name <code>&quot;key&quot;</code>. We know the cells represent the count of cases, so we’ll use the variable <code>cases</code>. There are a lot of missing values in the current representation, so for now we’ll use <code>na.rm</code> just so we can focus on the values that are present.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who1 &lt;-<span class="st"> </span>who <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">gather</span>(new_sp_m014<span class="op">:</span>newrel_f65, <span class="dt">key =</span> <span class="st">&quot;key&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;cases&quot;</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
-who1</code></pre></div>
-<pre><code>## # A tibble: 76,046 x 6
-##    country     iso2  iso3   year key         cases
-##  * &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;       &lt;int&gt;
-##  1 Afghanistan AF    AFG    1997 new_sp_m014     0
-##  2 Afghanistan AF    AFG    1998 new_sp_m014    30
-##  3 Afghanistan AF    AFG    1999 new_sp_m014     8
-##  4 Afghanistan AF    AFG    2000 new_sp_m014    52
-##  5 Afghanistan AF    AFG    2001 new_sp_m014   129
-##  6 Afghanistan AF    AFG    2002 new_sp_m014    90
-##  7 Afghanistan AF    AFG    2003 new_sp_m014   127
-##  8 Afghanistan AF    AFG    2004 new_sp_m014   139
-##  9 Afghanistan AF    AFG    2005 new_sp_m014   151
-## 10 Afghanistan AF    AFG    2006 new_sp_m014   193
-## # ... with 76,036 more rows</code></pre>
-<p>We can get some hint of the structure of the values in the new <code>key</code> column by counting them:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who1 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">count</span>(key)</code></pre></div>
-<pre><code>## # A tibble: 56 x 2
-##    key              n
-##    &lt;chr&gt;        &lt;int&gt;
-##  1 new_ep_f014   1032
-##  2 new_ep_f1524  1021
-##  3 new_ep_f2534  1021
-##  4 new_ep_f3544  1021
-##  5 new_ep_f4554  1017
-##  6 new_ep_f5564  1017
-##  7 new_ep_f65    1014
-##  8 new_ep_m014   1038
-##  9 new_ep_m1524  1026
-## 10 new_ep_m2534  1020
-## # ... with 46 more rows</code></pre>
-<p>You might be able to parse this out by yourself with a little thought and some experimentation, but luckily we have the data dictionary handy. It tells us:</p>
-<ol type="1">
-<li><p>The first three letters of each column denote whether the column contains new or old cases of TB. In this dataset, each column contains new cases.</p></li>
-<li><p>The next two letters describe the type of TB:</p>
-<ul>
-<li><code>rel</code> stands for cases of relapse</li>
-<li><code>ep</code> stands for cases of extrapulmonary TB</li>
-<li><code>sn</code> stands for cases of pulmonary TB that could not be diagnosed by a pulmonary smear (smear negative)</li>
-<li><code>sp</code> stands for cases of pulmonary TB that could be diagnosed be a pulmonary smear (smear positive)</li>
-</ul></li>
-<li><p>The sixth letter gives the sex of TB patients. The dataset groups cases by males (<code>m</code>) and females (<code>f</code>).</p></li>
-<li><p>The remaining numbers gives the age group. The dataset groups cases into seven age groups:</p>
-<ul>
-<li><code>014</code> = 0 – 14 years old</li>
-<li><code>1524</code> = 15 – 24 years old</li>
-<li><code>2534</code> = 25 – 34 years old</li>
-<li><code>3544</code> = 35 – 44 years old</li>
-<li><code>4554</code> = 45 – 54 years old</li>
-<li><code>5564</code> = 55 – 64 years old</li>
-<li><code>65</code> = 65 or older</li>
-</ul></li>
-</ol>
-<p>We need to make a minor fix to the format of the column names: unfortunately the names are slightly inconsistent because instead of <code>new_rel</code> we have <code>newrel</code> (it’s hard to spot this here but if you don’t fix it we’ll get errors in subsequent steps). You’ll learn about <code>str_replace()</code> in [strings], but the basic idea is pretty simple: replace the characters “newrel” with “new_rel”. This makes all variable names consistent.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who2 &lt;-<span class="st"> </span>who1 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">key =</span> stringr<span class="op">::</span><span class="kw">str_replace</span>(key, <span class="st">&quot;newrel&quot;</span>, <span class="st">&quot;new_rel&quot;</span>))</code></pre></div>
-<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who2</code></pre></div>
-<pre><code>## # A tibble: 76,046 x 6
-##    country     iso2  iso3   year key         cases
-##    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;       &lt;int&gt;
-##  1 Afghanistan AF    AFG    1997 new_sp_m014     0
-##  2 Afghanistan AF    AFG    1998 new_sp_m014    30
-##  3 Afghanistan AF    AFG    1999 new_sp_m014     8
-##  4 Afghanistan AF    AFG    2000 new_sp_m014    52
-##  5 Afghanistan AF    AFG    2001 new_sp_m014   129
-##  6 Afghanistan AF    AFG    2002 new_sp_m014    90
-##  7 Afghanistan AF    AFG    2003 new_sp_m014   127
-##  8 Afghanistan AF    AFG    2004 new_sp_m014   139
-##  9 Afghanistan AF    AFG    2005 new_sp_m014   151
-## 10 Afghanistan AF    AFG    2006 new_sp_m014   193
-## # ... with 76,036 more rows</code></pre>
-<p>We can separate the values in each code with two passes of <code>separate()</code>. The first pass will split the codes at each underscore.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who3 &lt;-<span class="st"> </span>who2 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(key, <span class="kw">c</span>(<span class="st">&quot;new&quot;</span>, <span class="st">&quot;type&quot;</span>, <span class="st">&quot;sexage&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)
-who3</code></pre></div>
-<pre><code>## # A tibble: 76,046 x 8
-##    country     iso2  iso3   year new   type  sexage cases
-##    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;
-##  1 Afghanistan AF    AFG    1997 new   sp    m014       0
-##  2 Afghanistan AF    AFG    1998 new   sp    m014      30
-##  3 Afghanistan AF    AFG    1999 new   sp    m014       8
-##  4 Afghanistan AF    AFG    2000 new   sp    m014      52
-##  5 Afghanistan AF    AFG    2001 new   sp    m014     129
-##  6 Afghanistan AF    AFG    2002 new   sp    m014      90
-##  7 Afghanistan AF    AFG    2003 new   sp    m014     127
-##  8 Afghanistan AF    AFG    2004 new   sp    m014     139
-##  9 Afghanistan AF    AFG    2005 new   sp    m014     151
-## 10 Afghanistan AF    AFG    2006 new   sp    m014     193
-## # ... with 76,036 more rows</code></pre>
-<p>Then we might as well drop the <code>new</code> column because it’s constant in this dataset. While we’re dropping columns, let’s also drop <code>iso2</code> and <code>iso3</code> since they’re redundant.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who3 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">count</span>(new)</code></pre></div>
-<pre><code>## # A tibble: 1 x 2
-##   new       n
-##   &lt;chr&gt; &lt;int&gt;
-## 1 new   76046</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who4 &lt;-<span class="st"> </span>who3 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>new, <span class="op">-</span>iso2, <span class="op">-</span>iso3)</code></pre></div>
-<p>Next we’ll separate <code>sexage</code> into <code>sex</code> and <code>age</code> by splitting after the first character:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who5 &lt;-<span class="st"> </span>who4 <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(sexage, <span class="kw">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;age&quot;</span>), <span class="dt">sep =</span> <span class="dv">1</span>)
-who5</code></pre></div>
-<pre><code>## # A tibble: 76,046 x 6
-##    country      year type  sex   age   cases
-##    &lt;chr&gt;       &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;int&gt;
-##  1 Afghanistan  1997 sp    m     014       0
-##  2 Afghanistan  1998 sp    m     014      30
-##  3 Afghanistan  1999 sp    m     014       8
-##  4 Afghanistan  2000 sp    m     014      52
-##  5 Afghanistan  2001 sp    m     014     129
-##  6 Afghanistan  2002 sp    m     014      90
-##  7 Afghanistan  2003 sp    m     014     127
-##  8 Afghanistan  2004 sp    m     014     139
-##  9 Afghanistan  2005 sp    m     014     151
-## 10 Afghanistan  2006 sp    m     014     193
-## # ... with 76,036 more rows</code></pre>
-<p>The <code>who</code> dataset is now tidy!</p>
-<p>I’ve shown you the code a piece at a time, assigning each interim result to a new variable. This typically isn’t how you’d work interactively. Instead, you’d gradually build up a complex pipe:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">who <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">gather</span>(code, value, new_sp_m014<span class="op">:</span>newrel_f65, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">code =</span> stringr<span class="op">::</span><span class="kw">str_replace</span>(code, <span class="st">&quot;newrel&quot;</span>, <span class="st">&quot;new_rel&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">separate</span>(code, <span class="kw">c</span>(<span class="st">&quot;new&quot;</span>, <span class="st">&quot;var&quot;</span>, <span class="st">&quot;sexage&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>new, <span class="op">-</span>iso2, <span class="op">-</span>iso3) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">separate</span>(sexage, <span class="kw">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;age&quot;</span>), <span class="dt">sep =</span> <span class="dv">1</span>)</code></pre></div>
-<h3 id="exercises-3">Exercises</h3>
-<ol type="1">
-<li><p>In this case study I set <code>na.rm = TRUE</code> just to make it easier to check that we had the correct values. Is this reasonable? Think about how missing values are represented in this dataset. Are there implicit missing values? What’s the difference between an <code>NA</code> and zero?</p></li>
-<li><p>What happens if you neglect the <code>mutate()</code> step? (<code>mutate(key = stringr::str_replace(key, &quot;newrel&quot;, &quot;new_rel&quot;))</code>)</p></li>
-<li><p>I claimed that <code>iso2</code> and <code>iso3</code> were redundant with <code>country</code>. Confirm this claim.</p></li>
-<li><p>For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.</p></li>
-</ol>
-</section>
-<section id="non-tidy-data" class="slide level2">
-<h2>Non-tidy data</h2>
-<p>Before we continue on to other topics, it’s worth talking briefly about non-tidy data. Earlier in the chapter, I used the pejorative term “messy” to refer to non-tidy data. That’s an oversimplification: there are lots of useful and well-founded data structures that are not tidy data. There are two main reasons to use other data structures:</p>
-<ul>
-<li><p>Alternative representations may have substantial performance or space advantages.</p></li>
-<li><p>Specialised fields have evolved their own conventions for storing data that may be quite different to the conventions of tidy data.</p></li>
-</ul>
-<p>Either of these reasons means you’ll need something other than a tibble (or data frame). If your data does fit naturally into a rectangular structure composed of observations and variables, I think tidy data should be your default choice. But there are good reasons to use other structures; tidy data is not the only way.</p>
-<p>If you’d like to learn more about non-tidy data, I’d highly recommend this thoughtful blog post by Jeff Leek: <a href="http://simplystatistics.org/2016/02/17/non-tidy-data/" class="uri">http://simplystatistics.org/2016/02/17/non-tidy-data/</a></p>
 </section>
     </div>
   </div>
